@@ -62,7 +62,7 @@
     "intent-chip": {
       "desc": "a small chip showing the detected intent and confidence",
       "ask": "Should the UI show a small readout of the detected intent?",
-      "span": 4, "minH": 1,
+      "span": 4, "minH": 1, "pin": true,
       "enter": "spring", "exit": "fade"
     },
     "summary-card": {
@@ -104,7 +104,7 @@
     "alert-banner": {
       "desc": "a full-width warning/alert strip for something urgent or broken",
       "ask": "Should the UI show a prominent alert/warning banner?",
-      "span": 12, "minH": 1,
+      "span": 12, "minH": 1, "pin": true,
       "enter": "wipe", "exit": "fade"
     },
     "action-bar": {

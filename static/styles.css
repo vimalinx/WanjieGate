@@ -17,9 +17,8 @@ html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
 body { overflow: hidden; }
 
 #app {
-  display: grid; height: 100vh;
-  grid-template-rows: 52px auto 1fr;
-  grid-template-columns: 1fr;
+  display: flex; flex-direction: column;
+  height: 100vh;
   padding: 0 28px 28px;
 }
 
@@ -32,12 +31,19 @@ header { display: flex; align-items: center; justify-content: space-between; }
 .conn-mock{ border-color: var(--accent-2); color: var(--accent-2); }
 .conn-off { border-color: var(--warn); color: var(--warn); }
 
-#composer { position: relative; padding: 8px 0 18px; }
+#composer { position: relative; padding: 8px 0 18px; flex: none;
+  margin-top: 0;
+  transition: margin-top .7s cubic-bezier(.22,1.1,.3,1);
+}
+/* idle:屏幕上只有居中的输入框 */
+#app.idle #composer { margin-top: 32vh; }
+#app.idle #input { font-size: 26px; }
 #input {
   width: 100%; min-height: 84px; max-height: 30vh; resize: none;
   background: transparent; border: none; outline: none;
   color: var(--text); font-size: 22px; line-height: 1.55; font-family: inherit;
   caret-color: var(--accent);
+  transition: font-size .7s cubic-bezier(.22,1.1,.3,1);
 }
 #input::placeholder { color: #3a4258; }
 #pulse { position: absolute; right: 4px; bottom: 22px; font-size: 11px; color: var(--dim); display: flex; gap: 6px; align-items: center; }
@@ -45,9 +51,11 @@ header { display: flex; align-items: center; justify-content: space-between; }
 #pulse.thinking #pulse-dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 
 #stage {
-  position: relative; overflow: hidden;
+  position: relative; overflow: hidden; flex: 1;
   border-top: 1px solid var(--line);
+  opacity: 1; transition: opacity .5s ease;
 }
+#app.idle #stage { opacity: 0; pointer-events: none; }
 
 /* ---- materializing cards ---- */
 .card {

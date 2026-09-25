@@ -18,6 +18,8 @@ let manifest = null;
 let cards = new Map();      // id -> {el, m, target, prob, bound, rect, applied}
 let layoutMode = "empty", densityCap = 1, emphasis = "none";
 let intent = {choice: "explore", confidence: 0};
+let committed = false;      // 意图已定:摘幽灵态,卡片直奔实体
+const COMMIT_MARGIN_IN = 0.30, COMMIT_MARGIN_OUT = 0.15;   // 意图判定走"头两名差距",比归一化置信度对小模型更稳
 let latestText = "", seq = 0, inflight = null;
 let dirty = {layout: true, debug: true};
 
@@ -73,30 +75,43 @@ async function decide() {
 }
 
 function applyAnswers(a) {
-  if (a.intent) { intent = a.intent; renderCard("intent-chip"); renderCard("action-bar"); }
+  if (a.intent) {
+    intent = a.intent;
+    const ps = Object.values(intent.probabilities || {}).sort((x, y) => y - x);
+    const margin = (ps[0] || 0) - (ps[1] || 0);
+    committed = intent.choice !== "explore" && margin >= (committed ? COMMIT_MARGIN_OUT : COMMIT_MARGIN_IN);
+    renderCard("intent-chip"); renderCard("action-bar");
+  }
   if (a.layout) layoutMode = a.layout.choice;
-  if (a.density) densityCap = [0, 1, 3, 5, 9][Math.round(a.density.score)] ?? 3;
+  if (a.density) densityCap = [0, 2, 4, 7, 10][Math.round(a.density.score)] ?? 4;
   if (a.emphasis) emphasis = a.emphasis.choice;
   const probs = {};
   for (const id of Object.keys(manifest.components))
     probs[id] = a["vis_" + id]?.noul ?? 0;
-  // 布局容量裁剪:按概率排序,只放行前 N 个
+  // 布局容量裁剪:非 pin 组件按概率排序放行前 N 个;pin 组件(alert/HUD)只过幽灵阈值
   const cap = {empty: 0, focus: 1, split: 4, dashboard: 9}[layoutMode] ?? 4;
   const limit = Math.min(cap, densityCap);
+  const pinned = id => !!manifest.components[id].pin;
   const allowed = new Set(
-    Object.entries(probs).sort((x, y) => y[1] - x[1]).slice(0, limit)
-      .filter(([, p]) => p > GHOST_LO).map(([id]) => id));
-  for (const [id, p] of Object.entries(probs)) setTarget(id, allowed.has(id) ? p : 0);
+    Object.entries(probs).filter(([id, p]) => pinned(id) && p > GHOST_LO).map(([id]) => id));
+  Object.entries(probs).filter(([id]) => !pinned(id)).sort((x, y) => y[1] - x[1])
+    .slice(0, limit).filter(([, p]) => p > GHOST_LO).forEach(([id]) => allowed.add(id));
+  for (const [id, p] of Object.entries(probs)) {
+    // 已定:判定即裁决,p>=SOLID 才实体化,其余退场;未定:概率即透明度(幽灵层)
+    const want = allowed.has(id) && (!committed || p >= SOLID);
+    setTarget(id, p, want ? (committed ? 1 : p) : 0);
+  }
   for (const [id, c] of Object.entries(manifest.components))
     if (c.bind && a["bind_" + id]) setBinding(id, a["bind_" + id].choice);
   dirty.layout = dirty.debug = true;
 }
 
-function setTarget(id, p) {
+function setTarget(id, p, target) {
   let c = cards.get(id);
-  if (!c && p > MOUNT_P) c = mount(id);
+  if (!c && target > MOUNT_P) c = mount(id);
   if (!c) return;
-  c.prob = p; c.target = p;
+  c.prob = p; c.target = target;
+  c.el.dataset.p = p.toFixed(3); c.el.dataset.target = target.toFixed(3);   // 供自测/debug 读
 }
 
 function setBinding(id, key) {
@@ -269,7 +284,9 @@ async function mockDecide() {
   }
   const intentMap = [["analyze-data", /数据|指标|销售|营收|data|metric/i], ["report-issue", /错误|故障|bug|挂了|alert/i], ["plan-work", /计划|任务|步骤|plan|todo/i], ["monitor-status", /监控|状态|monitor|latency/i], ["write-document", /写|文章|文档|note|draft/i]];
   const top = intentMap.find(([, kw]) => kw.test(latestText));
-  answers.intent = {type: "choice", choice: top ? top[0] : "explore", confidence: top ? 0.7 : 0.3, probabilities: {}};
+  const ip = {}; for (const [k] of intentMap) ip[k] = 0.05; ip.explore = 0.1;
+  if (top) ip[top[0]] = 0.7; else ip.explore = 0.6;
+  answers.intent = {type: "choice", choice: top ? top[0] : "explore", confidence: top ? 0.7 : 0.3, probabilities: ip};
   answers.layout = {type: "choice", choice: latestText.length < 4 ? "empty" : (Object.values(answers).filter(a => a.noul > SOLID).length > 3 ? "dashboard" : "split"), probabilities: {}};
   answers.density = {type: "score", score: latestText.length < 4 ? 0 : 3, probabilities: {}, legend: {}};
   answers.emphasis = {type: "choice", choice: "none", probabilities: {}};
@@ -285,16 +302,25 @@ function setConn(st, latency) {
 }
 function renderDebug() {
   const rows = [`<div class="d-row"><b>layout</b><b>${layoutMode} · cap ${densityCap}</b></div>`,
-    `<div class="d-row"><b>intent</b><b>${intent.choice} ${(intent.confidence * 100) | 0}%</b></div>`];
+    `<div class="d-row"><b>intent</b><b>${intent.choice} ${(intent.confidence * 100) | 0}% ${committed ? "· COMMITTED" : ""}</b></div>`];
   for (const [id, c] of [...cards.entries()].sort((a, b) => b[1].prob - a[1].prob))
     rows.push(`<div class="d-row"><span>${id}</span><b>${c.prob.toFixed(2)} → m ${c.m.toFixed(2)}</b></div><div class="d-bar"><i style="width:${c.prob * 100}%"></i></div>`);
   debug.innerHTML = rows.join("");
+}
+
+function clearScene() {
+  committed = false; layoutMode = "empty";
+  for (const c of cards.values()) { c.prob = 0; c.target = 0; c.el.dataset.p = "0"; c.el.dataset.target = "0"; }
+  dirty.layout = dirty.debug = true;
 }
 
 /* ---------- 事件 ---------- */
 let timer = null;
 input.addEventListener("input", () => {
   latestText = input.value;
+  const empty = latestText.trim() === "";
+  document.getElementById("app").classList.toggle("idle", empty);
+  if (empty) { clearTimeout(timer); clearScene(); return; }   // 清空 → 收回舞台,不再问模型
   for (const id of ["summary-card", "note-card", "timeline-card", "alert-banner"]) renderCard(id); // 本地派生属性即时刷新
   clearTimeout(timer); timer = setTimeout(decide, DEBOUNCE_MS);
 });
@@ -304,7 +330,7 @@ addEventListener("resize", () => { dirty.layout = true; });
 /* ---------- boot ---------- */
 (async () => {
   manifest = await (await fetch("manifest.json")).json();
+  document.getElementById("app").classList.add("idle");
   setConn(MOCK ? "mock" : "off");
   requestAnimationFrame(tick);
-  decide();
 })();
