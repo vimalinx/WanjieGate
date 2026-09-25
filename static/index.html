@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WanjieGate · 万界门</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand">万界门 <span>WanjieGate</span></div>
+    <div id="conn" class="conn conn-off">kev · offline</div>
+  </header>
+
+  <section id="composer">
+    <textarea id="input" autofocus spellcheck="false"
+      placeholder="随便说点什么——页面会随着你的话自己长出来。"></textarea>
+    <div id="pulse"><span id="pulse-dot"></span><span id="pulse-text">listening</span></div>
+  </section>
+
+  <section id="stage" aria-live="polite"></section>
+
+  <aside id="debug" class="hidden"></aside>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

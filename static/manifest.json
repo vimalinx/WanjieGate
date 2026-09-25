@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "kev": {
+    "baseUrl": "http://127.0.0.1:8208",
+    "model": "kev-latest"
+  },
+  "stateNote": "The user is typing into an adaptive canvas; the text may be mid-sentence. The interface rearranges itself to fit what the user seems to be doing. Prefer stability: keep a fitting element unless the text has clearly moved on.",
+  "questions": {
+    "intent": {
+      "type": "choice",
+      "instructions": "What is the user most likely doing with this text?",
+      "criteria": {
+        "analyze-data": "describing or asking about numbers, metrics, trends, or a dataset",
+        "write-document": "drafting prose, notes, an article, or documentation",
+        "monitor-status": "watching a system, service, or ongoing process",
+        "plan-work": "listing tasks, steps, a schedule, or a timeline",
+        "report-issue": "describing a problem, bug, alert, or something broken",
+        "explore": "just exploring, chatting, or no clear task yet"
+      }
+    },
+    "layout": {
+      "type": "choice",
+      "instructions": "Which overall page layout fits best right now?",
+      "criteria": {
+        "empty": "nothing useful to show yet; keep the stage mostly empty",
+        "focus": "one dominant element, minimal chrome",
+        "dashboard": "several information cards in a grid",
+        "split": "input echo on one side, supporting panels on the other"
+      }
+    },
+    "density": {
+      "type": "score",
+      "instructions": "How much information should be on screen? 0 = almost nothing, 4 = dense dashboard.",
+      "criteria": [
+        "nearly empty",
+        "one or two elements",
+        "a few elements",
+        "several elements",
+        "dense dashboard"
+      ]
+    },
+    "emphasis": {
+      "type": "choice",
+      "instructions": "If several elements are shown, which one deserves the most visual emphasis?",
+      "criteria": {
+        "none": "no emphasis needed",
+        "intent-chip": "the intent readout",
+        "summary-card": "the input summary",
+        "metric-card": "the KPI metric",
+        "chart-card": "the trend chart",
+        "table-card": "the detail table",
+        "alert-banner": "the alert banner",
+        "action-bar": "the action buttons",
+        "timeline-card": "the timeline",
+        "note-card": "the note",
+        "hero-stat": "the hero number",
+        "progress-card": "the progress bar"
+      }
+    }
+  },
+  "components": {
+    "intent-chip": {
+      "desc": "a small chip showing the detected intent and confidence",
+      "ask": "Should the UI show a small readout of the detected intent?",
+      "span": 4, "minH": 1,
+      "enter": "spring", "exit": "fade"
+    },
+    "summary-card": {
+      "desc": "a card summarizing the input text itself (length, words, language)",
+      "ask": "Should the UI show a summary/statistics card about the text being typed?",
+      "span": 4, "minH": 2,
+      "enter": "ghost", "exit": "fade"
+    },
+    "metric-card": {
+      "desc": "a KPI card with one big number and a trend arrow",
+      "ask": "Should the UI show a single highlighted numeric metric (KPI card)?",
+      "span": 3, "minH": 2,
+      "bind": {
+        "question": "Which dataset should the metric card display?",
+        "options": {"sales": "weekly revenue", "traffic": "site visitors", "latency": "p95 response ms", "errors": "error count"}
+      },
+      "enter": "spring", "exit": "fade"
+    },
+    "chart-card": {
+      "desc": "a line/bar chart of a trend over time",
+      "ask": "Should the UI show a trend chart?",
+      "span": 6, "minH": 3,
+      "bind": {
+        "question": "Which dataset should the chart display?",
+        "options": {"sales": "weekly revenue", "traffic": "site visitors", "latency": "p95 response ms", "errors": "error count"}
+      },
+      "enter": "ghost", "exit": "fade"
+    },
+    "table-card": {
+      "desc": "a compact table of detail rows",
+      "ask": "Should the UI show a detail table of rows?",
+      "span": 6, "minH": 3,
+      "bind": {
+        "question": "Which dataset should the table display?",
+        "options": {"sales": "weekly revenue", "traffic": "site visitors", "latency": "p95 response ms", "tasks": "task list"}
+      },
+      "enter": "ghost", "exit": "fade"
+    },
+    "alert-banner": {
+      "desc": "a full-width warning/alert strip for something urgent or broken",
+      "ask": "Should the UI show a prominent alert/warning banner?",
+      "span": 12, "minH": 1,
+      "enter": "wipe", "exit": "fade"
+    },
+    "action-bar": {
+      "desc": "a row of contextual action buttons (run, export, share...)",
+      "ask": "Should the UI show a row of contextual action buttons?",
+      "span": 6, "minH": 1,
+      "enter": "spring", "exit": "fade"
+    },
+    "timeline-card": {
+      "desc": "a vertical timeline of steps or events",
+      "ask": "Should the UI show a timeline of steps or events?",
+      "span": 4, "minH": 3,
+      "enter": "ghost", "exit": "fade"
+    },
+    "note-card": {
+      "desc": "a sticky-note style card for a quote, reminder, or aside",
+      "ask": "Should the UI show a sticky note / aside card?",
+      "span": 3, "minH": 2,
+      "enter": "ghost", "exit": "fade"
+    },
+    "hero-stat": {
+      "desc": "a very large centered headline number",
+      "ask": "Should the UI show one huge centered headline number?",
+      "span": 12, "minH": 3,
+      "bind": {
+        "question": "Which dataset should the hero number come from?",
+        "options": {"sales": "weekly revenue", "traffic": "site visitors", "latency": "p95 response ms", "errors": "error count"}
+      },
+      "enter": "zoom", "exit": "fade"
+    },
+    "progress-card": {
+      "desc": "a labeled progress bar",
+      "ask": "Should the UI show a progress indicator?",
+      "span": 4, "minH": 1,
+      "enter": "ghost", "exit": "fade"
+    }
+  },
+  "datasets": {
+    "sales":   {"title": "周营收", "unit": "¥", "series": [12, 18, 15, 22, 28, 24, 31], "latest": 31, "trend": "up", "rows": [["周一", 12], ["周二", 18], ["周三", 15], ["周四", 22], ["周五", 28], ["周六", 24], ["周日", 31]]},
+    "traffic": {"title": "访问量", "unit": "", "series": [420, 380, 510, 640, 590, 720, 810], "latest": 810, "trend": "up", "rows": [["00时", 420], ["04时", 380], ["08时", 510], ["12时", 640], ["16时", 590], ["20时", 720], ["24时", 810]]},
+    "latency": {"title": "P95 延迟", "unit": "ms", "series": [210, 185, 240, 170, 155, 148, 132], "latest": 132, "trend": "down", "rows": [["api", 132], ["web", 148], ["db", 96], ["cache", 21], ["queue", 55]]},
+    "errors":  {"title": "错误数", "unit": "", "series": [2, 5, 1, 8, 3, 12, 4], "latest": 4, "trend": "down", "rows": [["500", 1], ["502", 2], ["timeout", 4], ["auth", 3]]},
+    "tasks":   {"title": "任务", "unit": "", "series": [3, 5, 4, 6, 7, 5, 8], "latest": 8, "trend": "up", "rows": [["设计评审", "进行中"], ["接口联调", "待办"], ["数据回填", "完成"], ["发布窗口", "待办"], ["回归测试", "进行中"]]}
+  }
+}

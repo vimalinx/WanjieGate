@@ -1,0 +1,42 @@
+
+=== zh-data: '帮我看看这周的销售数据趋势,营收好像涨得不错,把图表和明细表都摆出来'  (45.0ms, 275 tok)
+  intent       analyze-data (conf 0.75)  [analyze-data=0.79  explore=0.11  plan-work=0.03  write-document=0.03  monitor-status=0.03  report-issue=0.02]
+  show_chart   p(yes)=0.960
+  show_alert   p(yes)=0.260
+  show_table   p(yes)=0.882
+  density      score=2.35  {'0': 0.0562, '1': 0.1396, '2': 0.2827, '3': 0.4454, '4': 0.0761}
+
+=== zh-alert: '线上服务挂了!错误率飙升,赶紧看监控'  (23.0ms, 264 tok)
+  intent       report-issue (conf 0.34)  [report-issue=0.45  monitor-status=0.29  explore=0.10  analyze-data=0.09  plan-work=0.05  write-document=0.02]
+  show_chart   p(yes)=0.761
+  show_alert   p(yes)=0.897
+  show_table   p(yes)=0.691
+  density      score=2.10  {'0': 0.0798, '1': 0.2243, '2': 0.3051, '3': 0.2997, '4': 0.0911}
+
+=== zh-plan: '列一下明天要做的事:\n- 设计评审\n- 接口联调\n- 发布'  (24.9ms, 274 tok)
+  intent       plan-work (conf 0.79)  [plan-work=0.82  explore=0.10  write-document=0.04  monitor-status=0.02  analyze-data=0.01  report-issue=0.01]
+  show_chart   p(yes)=0.303
+  show_alert   p(yes)=0.311
+  show_table   p(yes)=0.438
+  density      score=1.86  {'0': 0.1206, '1': 0.2638, '2': 0.3047, '3': 0.255, '4': 0.0559}
+
+=== zh-empty: '嗯'  (23.7ms, 254 tok)
+  intent       explore (conf 0.42)  [explore=0.52  write-document=0.18  plan-work=0.16  analyze-data=0.06  report-issue=0.06  monitor-status=0.03]
+  show_chart   p(yes)=0.412
+  show_alert   p(yes)=0.336
+  show_table   p(yes)=0.486
+  density      score=1.87  {'0': 0.0796, '1': 0.289, '2': 0.3388, '3': 0.2664, '4': 0.0262}
+
+=== en-data: 'show me the weekly sales trend and put t'  (22.1ms, 266 tok)
+  intent       analyze-data (conf 0.59)  [analyze-data=0.66  plan-work=0.15  explore=0.14  write-document=0.03  report-issue=0.01  monitor-status=0.01]
+  show_chart   p(yes)=0.935
+  show_alert   p(yes)=0.193
+  show_table   p(yes)=0.832
+  density      score=2.17  {'0': 0.0777, '1': 0.1773, '2': 0.3035, '3': 0.3845, '4': 0.057}
+
+=== en-alert: 'prod is down, error rate spiked to 12%, '  (22.7ms, 269 tok)
+  intent       monitor-status (conf 0.23)  [monitor-status=0.36  report-issue=0.24  analyze-data=0.20  explore=0.12  plan-work=0.06  write-document=0.02]
+  show_chart   p(yes)=0.844
+  show_alert   p(yes)=0.850
+  show_table   p(yes)=0.661
+  density      score=2.00  {'0': 0.0795, '1': 0.2388, '2': 0.3292, '3': 0.3026, '4': 0.0499}
