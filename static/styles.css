@@ -73,6 +73,26 @@ header {
 #stage .reg.br { bottom: 6px; right: 6px; border-left: none; border-top: none; }
 #app.idle #stage { opacity: 0; pointer-events: none; }
 
+/* ---------- FUI 骨架:角括号 / 序号 / 数据标签,随线速出现 ---------- */
+.card > .fc, .card > .fui-idx, .card > .fui-tag { opacity: 1; }
+.fc { position: absolute; width: 9px; height: 9px; border: 1px solid var(--hair); }
+.fc.tl { top: 3px; left: 3px; border-right: 0; border-bottom: 0; }
+.fc.tr { top: 3px; right: 3px; border-left: 0; border-bottom: 0; }
+.fc.bl { bottom: 3px; left: 3px; border-right: 0; border-top: 0; }
+.fc.br { bottom: 3px; right: 3px; border-left: 0; border-top: 0; }
+.fui-idx { position: absolute; top: 8px; right: 12px; font-size: 9px; letter-spacing: .24em; color: var(--dim); }
+.fui-tag { position: absolute; bottom: 8px; right: 12px; font-size: 8.5px; letter-spacing: .22em; color: var(--dim); text-transform: uppercase; }
+.fui-lbl { font-size: 9px; letter-spacing: .24em; color: var(--dim); text-transform: uppercase; margin-right: 10px; }
+.fui-axis { display: flex; justify-content: space-between; font-size: 8.5px; letter-spacing: .12em; color: var(--dim); margin-top: 6px; }
+
+/* 慢速扫描亮带,FUI 的"活" */
+.scan { position: absolute; left: 0; right: 0; top: -22%; height: 22%; z-index: 0;
+  background: linear-gradient(180deg, transparent, rgba(140,160,210,.04), transparent);
+  animation: scan 16s linear infinite; pointer-events: none; }
+@keyframes scan { to { transform: translateY(600%); } }
+#stage::after { content: "wanjiegate · adaptive canvas"; position: absolute; bottom: 5px; left: 14px;
+  font-size: 8px; letter-spacing: .34em; color: var(--hair); text-transform: uppercase; pointer-events: none; }
+
 /* ---------- 区域:没有底色,边界线由 JS 按 materialize 逐帧拉出 ---------- */
 .card {
   position: absolute; left: 0; top: 0;
@@ -91,6 +111,22 @@ header {
 .card.emph .c-title { color: var(--accent); }
 
 .card .c-title { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
+.card .c-title::before { content: "▸ "; color: var(--accent); }
+
+.segbar { display: inline-flex; gap: 3px; align-items: center; }
+.segbar i { width: 6px; height: 11px; background: var(--line); }
+.segbar i.on { background: var(--accent); }
+.kv { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--line); }
+.kv span { color: var(--dim); font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; }
+.kv b { font-weight: 400; }
+.spark { width: 100%; height: 20px; margin-top: 8px; }
+.chart { width: 100%; height: 62%; }
+.rows .th td { font-size: 8.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); border-bottom: 1px solid var(--hair); }
+.rows td.seq { color: var(--dim); font-size: 10px; }
+.tl .step em { font-style: normal; font-size: 9px; color: var(--dim); letter-spacing: .1em; min-width: 16px; }
+.hero-wrap { display: flex; align-items: center; gap: 22px; width: 100%; }
+.hero-wrap .hl { flex: 1; height: 1px; background: var(--hair); }
+.btxt { flex: 1; }
 .card .c-big { font-size: clamp(26px, 3.6vh, 42px); font-weight: 300; line-height: 1.05; letter-spacing: -.02em; }
 .card .c-sub { font-size: 11.5px; color: var(--dim); margin-top: 5px; }
 .card .trend-up { color: var(--accent); }

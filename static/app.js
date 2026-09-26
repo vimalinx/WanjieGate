@@ -242,9 +242,15 @@ function tick(now) {
   requestAnimationFrame(tick);
 }
 
-/* ---------- 卡片内容 ---------- */
+/* ---------- 卡片内容(FUI 骨架 + 数据细节) ---------- */
 function esc(s) { return s.replace(/[&<>"]/g, ch => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[ch])); }
 function ds(key) { return manifest.datasets[key] || manifest.datasets.sales; }
+
+function chrome(id, tag) {
+  const idx = String(Object.keys(manifest.components).indexOf(id) + 1).padStart(2, "0");
+  return `<i class="fc tl"></i><i class="fc tr"></i><i class="fc bl"></i><i class="fc br"></i>` +
+    `<div class="fui-idx">${idx}</div>` + (tag ? `<div class="fui-tag">${esc(tag)}</div>` : "");
+}
 
 function renderCard(id) {
   const c = cards.get(id); if (!c) return;
@@ -252,66 +258,84 @@ function renderCard(id) {
   const lines = t.split("\n").map(s => s.trim()).filter(Boolean);
   const first = lines[0] || "", lastLine = lines[lines.length - 1] || "";
   switch (id) {
-    case "intent-chip":
-      el.innerHTML = `<div class="c-title">detected intent</div>
+    case "intent-chip": {
+      const seg = Array.from({length: 10}, (_, i) =>
+        `<i class="${i < Math.round(intent.confidence * 10) ? "on" : ""}"></i>`).join("");
+      el.innerHTML = chrome(id, "intent") + `<div class="c-title">detected intent</div>
         <div class="chip"><span class="val">${esc(intent.choice || "—")}</span>
-        <span class="bar"><i style="width:${(intent.confidence * 100) | 0}%"></i></span>
+        <span class="segbar">${seg}</span>
         <span class="c-sub">${(intent.confidence * 100) | 0}%</span></div>`;
       break;
+    }
     case "summary-card": {
-      const zh = /[一-鿿]/.test(t);
-      el.innerHTML = `<div class="c-title">input summary</div>
-        <div class="c-big">${t.length}<span class="c-sub"> chars</span></div>
-        <div class="c-sub">${lines.length} 行 · ${zh ? "中文" : "latin"} · ${t.split(/\s+/).filter(Boolean).length} words</div>`;
+      const zh = /[一-鿿]/.test(t), words = t.split(/\s+/).filter(Boolean).length;
+      el.innerHTML = chrome(id, "input") + `<div class="c-title">input summary</div>
+        <div class="kv"><span>chars</span><b>${t.length}</b></div>
+        <div class="kv"><span>lines</span><b>${lines.length}</b></div>
+        <div class="kv"><span>lang</span><b>${zh ? "zh-CN" : "latin"}</b></div>
+        <div class="kv"><span>words</span><b>${words}</b></div>`;
       break;
     }
     case "metric-card": {
-      const d = ds(c.bound);
-      el.innerHTML = `<div class="c-title">${esc(d.title)}</div>
+      const d = ds(c.bound), s = d.series, mx = Math.max(...s), mn = Math.min(...s);
+      const sp = s.map((v, i) => `${(i / (s.length - 1)) * 100},${20 - ((v - mn) / (mx - mn || 1)) * 18}`).join(" ");
+      el.innerHTML = chrome(id, c.bound) + `<div class="c-title">${esc(d.title)}</div>
         <div class="c-big">${d.unit}${d.latest}</div>
-        <div class="c-sub trend-${d.trend}">${d.trend === "up" ? "↗ 上升" : "↘ 下降"}</div>`;
+        <div class="c-sub trend-${d.trend}">${d.trend === "up" ? "▲ 上升" : "▼ 下降"}</div>
+        <svg class="spark" viewBox="0 0 100 22" preserveAspectRatio="none">
+          <polyline points="${sp}" fill="none" stroke="var(--accent-2)" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>`;
       break;
     }
     case "chart-card": {
       const d = ds(c.bound), s = d.series, max = Math.max(...s), min = Math.min(...s);
       const pts = s.map((v, i) => `${(i / (s.length - 1)) * 100},${36 - ((v - min) / (max - min || 1)) * 32}`).join(" ");
-      el.innerHTML = `<div class="c-title">${esc(d.title)} · trend</div>
-        <svg viewBox="0 0 100 40" preserveAspectRatio="none" style="width:100%;height:70%">
-          <polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>`;
+      const grid = [8, 16, 24, 32].map(y => `<line x1="0" x2="100" y1="${y}" y2="${y}" stroke="#1b2332" stroke-width="0.3"/>`).join("");
+      const ly = 36 - ((s[s.length - 1] - min) / (max - min || 1)) * 32;
+      el.innerHTML = chrome(id, c.bound) + `<div class="c-title">${esc(d.title)} · trend</div>
+        <svg viewBox="0 0 100 40" preserveAspectRatio="none" class="chart">
+          ${grid}<polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+          <circle cx="100" cy="${ly}" r="1.8" fill="var(--accent)"/></svg>
+        <div class="fui-axis">${d.rows.map(r => `<span>${esc(String(r[0]))}</span>`).join("")}</div>`;
       break;
     }
     case "table-card": {
       const d = ds(c.bound);
-      el.innerHTML = `<div class="c-title">${esc(d.title)} · detail</div>
-        <table class="rows">${d.rows.map(r => `<tr><td>${esc(String(r[0]))}</td><td>${esc(String(r[1]))}</td></tr>`).join("")}</table>`;
+      el.innerHTML = chrome(id, c.bound) + `<div class="c-title">${esc(d.title)} · detail</div>
+        <table class="rows"><tr class="th"><td>seq</td><td>item</td><td>val</td></tr>
+        ${d.rows.map((r, i) => `<tr><td class="seq">${String(i + 1).padStart(2, "0")}</td><td>${esc(String(r[0]))}</td><td>${esc(String(r[1]))}</td></tr>`).join("")}</table>`;
       break;
     }
-    case "alert-banner":
+    case "alert-banner": {
       el.classList.add("banner");
-      el.innerHTML = `<span class="dot"></span><div>${esc(first || "需要关注")}</div>`;
+      const ts = new Date().toLocaleTimeString("en-GB");
+      el.innerHTML = `<i class="fc tl"></i><i class="fc tr"></i><i class="fc bl"></i><i class="fc br"></i>
+        <span class="dot"></span><div class="btxt">${esc(first || "需要关注")}</div><div class="fui-tag">alrt · ${ts}</div>`;
       break;
+    }
     case "action-bar": {
       const acts = {"analyze-data": ["导出报表", "下钻明细"], "report-issue": ["创建工单", "通知值班"], "plan-work": ["生成看板", "排期"], "write-document": ["润色", "归档"], "monitor-status": ["全屏监控", "设告警"], "explore": ["继续"]}[intent.choice] || ["继续"];
-      el.innerHTML = `<div class="actions">${acts.map((a, i) => `<button class="btn${i === 0 ? " primary" : ""}">${a}</button>`).join("")}<button class="btn">更多…</button></div>`;
+      el.innerHTML = chrome(id, "exec") + `<div class="actions"><span class="fui-lbl">exec</span>${acts.map((a, i) => `<button class="btn${i === 0 ? " primary" : ""}">${a}</button>`).join("")}<button class="btn">更多…</button></div>`;
       break;
     }
     case "timeline-card": {
       const steps = lines.filter(l => /^[-*\d•·]/.test(l)).map(l => l.replace(/^[-*\d•·.\s]+/, ""));
       const show = steps.length ? steps : ["起草", "细化", "评审", "发布"];
-      el.innerHTML = `<div class="c-title">timeline</div><div class="tl">${show.slice(0, 6).map(s => `<div class="step"><i></i><span>${esc(s)}</span></div>`).join("")}</div>`;
+      el.innerHTML = chrome(id, "seq") + `<div class="c-title">timeline</div><div class="tl">${show.slice(0, 6).map((s, i) => `<div class="step"><em>${String(i + 1).padStart(2, "0")}</em><i></i><span>${esc(s)}</span></div>`).join("")}</div>`;
       break;
     }
     case "note-card":
-      el.innerHTML = `<div class="c-title">note</div><div class="note">${esc(lastLine || first || "…")}</div>`;
+      el.innerHTML = chrome(id, "note") + `<div class="c-title">note</div><div class="note">${esc(lastLine || first || "…")}</div>`;
       break;
     case "hero-stat": {
       const d = ds(c.bound);
-      el.innerHTML = `<div class="c-title">${esc(d.title)}</div><div class="hero-num">${d.unit}${d.latest}</div>`;
+      el.innerHTML = chrome(id, c.bound) + `<div class="c-title">${esc(d.title)}</div>
+        <div class="hero-wrap"><i class="hl"></i><div class="hero-num">${d.unit}${d.latest}</div><i class="hl"></i></div>`;
       break;
     }
     case "progress-card": {
       const d = manifest.datasets.tasks, done = d.rows.filter(r => r[1] === "完成").length, pc = Math.round(done / d.rows.length * 100);
-      el.innerHTML = `<div class="c-title">progress</div><div class="c-sub">${done}/${d.rows.length} 完成</div><div class="prog"><i style="width:${pc}%"></i></div>`;
+      el.innerHTML = chrome(id, "tasks") + `<div class="c-title">progress</div><div class="c-big">${pc}<span class="c-sub">%</span></div>
+        <div class="c-sub">${done}/${d.rows.length} 完成</div><div class="prog"><i style="width:${pc}%"></i></div>`;
       break;
     }
   }
