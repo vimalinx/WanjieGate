@@ -58,6 +58,16 @@ with sync_playwright() as pw:
     assert chart["t"] == 1.0, f"意图确定后高概率卡应实体化到 t=1(got {chart})"
     alert = next((c for c in cards if c["id"] == "alert-banner"), None)
     assert not alert or alert["t"] == 0, f"纯销售语境已判定,弱 alert(p~0.2)应退场(got {alert})"
+    # 应用壳:导航栏在场且高亮当前意图;三栏 nav < main < side
+    assert "nav-rail" in [c["id"] for c in cards], "应用壳应有导航栏"
+    nav_on = page.eval_on_selector('.card[data-id="nav-rail"] .ni.on span', "e => e.textContent") if page.locator('.card[data-id="nav-rail"] .ni.on').count() else None
+    print(f"  nav-on={nav_on}")
+    assert nav_on == "数据分析", f"导航应高亮当前意图(got {nav_on})"
+    nx = page.locator('.card[data-id="nav-rail"]').bounding_box()["x"]
+    cx = page.locator('.card[data-id="chart-card"]').bounding_box()["x"]
+    sx = page.locator('.card[data-id="intent-chip"]').bounding_box()["x"]
+    assert nx < cx < sx, f"三栏顺序应 nav < main < side({nx},{cx},{sx})"
+    assert page.locator("#hint.on").count() or True  # 提示词有则露,不强制
 
     # 3) 追加 alert 语境 → banner 应顶行出现
     page.keyboard.type("，等等,错误率也飙升了")

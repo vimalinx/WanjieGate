@@ -17,6 +17,10 @@
         "report-issue": "describing a problem, bug, alert, or something broken",
         "check-social": "asking about friends, contacts, messages, or someone's recent activity",
         "explore": "just exploring, chatting, or no clear task yet"
+      },
+      "labels": {
+        "analyze-data": "数据分析", "write-document": "写作", "monitor-status": "监控",
+        "plan-work": "规划", "report-issue": "排查", "check-social": "社交", "explore": "探索"
       }
     },
     "layout": {
@@ -60,22 +64,28 @@
     }
   },
   "components": {
+    "nav-rail": {
+      "desc": "the app navigation rail listing all sections, highlighting the active one",
+      "ask": "Should the UI show the app navigation rail?",
+      "zone": "nav", "minH": 6, "pin": true,
+      "enter": "ghost", "exit": "fade"
+    },
     "intent-chip": {
       "desc": "a small chip showing the detected intent and confidence",
       "ask": "Should the UI show a small readout of the detected intent?",
-      "span": 4, "minH": 1, "pin": true,
+      "zone": "side", "minH": 1, "pin": true,
       "enter": "spring", "exit": "fade"
     },
     "summary-card": {
       "desc": "a card summarizing the input text itself (length, words, language)",
       "ask": "Should the UI show a summary/statistics card about the text being typed?",
-      "span": 4, "minH": 2,
+      "zone": "side", "minH": 2,
       "enter": "ghost", "exit": "fade"
     },
     "metric-card": {
       "desc": "a KPI card with one big number and a trend arrow",
       "ask": "Should the UI show a single highlighted numeric metric (KPI card)?",
-      "span": 3, "minH": 2,
+      "zone": "side", "minH": 2,
       "bind": {
         "question": "Which dataset should the metric card display?",
         "options": {"sales": "weekly revenue", "traffic": "site visitors", "latency": "p95 response ms", "errors": "error count"}
@@ -85,7 +95,7 @@
     "chart-card": {
       "desc": "a line/bar chart of a trend over time",
       "ask": "Should the UI show a trend chart?",
-      "span": 6, "minH": 3,
+      "zone": "main", "minH": 3,
       "bind": {
         "question": "Which dataset should the chart display?",
         "options": {"sales": "weekly revenue", "traffic": "site visitors", "latency": "p95 response ms", "errors": "error count"}
@@ -95,7 +105,7 @@
     "table-card": {
       "desc": "a compact table of detail rows",
       "ask": "Should the UI show a detail table of rows?",
-      "span": 6, "minH": 3,
+      "zone": "main", "minH": 3,
       "bind": {
         "question": "Which dataset should the table display?",
         "options": {"sales": "weekly revenue", "traffic": "site visitors", "latency": "p95 response ms", "tasks": "task list"}
@@ -105,31 +115,31 @@
     "alert-banner": {
       "desc": "a full-width warning/alert strip for something urgent or broken",
       "ask": "Should the UI show a prominent alert/warning banner?",
-      "span": 12, "minH": 1, "pin": true,
+      "zone": "top", "minH": 1, "pin": true,
       "enter": "wipe", "exit": "fade"
     },
     "action-bar": {
       "desc": "a row of contextual action buttons (run, export, share...)",
       "ask": "Should the UI show a row of contextual action buttons?",
-      "span": 6, "minH": 1,
+      "zone": "bottom", "minH": 1,
       "enter": "spring", "exit": "fade"
     },
     "timeline-card": {
       "desc": "a vertical timeline of steps or events",
       "ask": "Should the UI show a timeline of steps or events?",
-      "span": 4, "minH": 3,
+      "zone": "main", "minH": 3,
       "enter": "ghost", "exit": "fade"
     },
     "note-card": {
       "desc": "a sticky-note style card for a quote, reminder, or aside",
       "ask": "Should the UI show a sticky note / aside card?",
-      "span": 3, "minH": 2,
+      "zone": "main", "minH": 2,
       "enter": "ghost", "exit": "fade"
     },
     "hero-stat": {
       "desc": "a very large centered headline number",
       "ask": "Should the UI show one huge centered headline number?",
-      "span": 12, "minH": 3,
+      "zone": "main", "minH": 3,
       "bind": {
         "question": "Which dataset should the hero number come from?",
         "options": {"sales": "weekly revenue", "traffic": "site visitors", "latency": "p95 response ms", "errors": "error count"}
@@ -139,7 +149,7 @@
     "progress-card": {
       "desc": "a labeled progress bar",
       "ask": "Should the UI show a progress indicator?",
-      "span": 4, "minH": 1,
+      "zone": "side", "minH": 1,
       "enter": "ghost", "exit": "fade"
     }
   },
@@ -205,6 +215,36 @@
     "report-issue": "描述现象,日志在下面",
     "check-social": "想知道谁?继续说,朋友圈已经铺开了",
     "explore": "随便说点什么——页面会随着你的话自己长出来。"
+  },
+  "scenes": {
+    "analyze-data": {
+      "attach": "datasets",
+      "hints": ["下方芯片可即时换绑数据集", "说'只看错误'或'对比流量'换一份数据", "补一句'导出'可以召出操作栏"]
+    },
+    "write-document": {
+      "attach": "news",
+      "hints": ["素材在下方,继续写就行", "说'记个日记'会换上今天的照片", "回车换行,停顿即排版"]
+    },
+    "monitor-status": {
+      "attach": "services",
+      "hints": ["点名服务看详情", "说'错误日志'调出最近记录", "绿了就是自己好了"]
+    },
+    "plan-work": {
+      "attach": "tasks",
+      "hints": ["列步骤,我帮你排", "按行写下来就是时间线", "说'生成看板'召出操作栏"]
+    },
+    "report-issue": {
+      "attach": "logs",
+      "hints": ["描述现象,日志在下面", "附上时间点更容易定位", "说'通知值班'召出操作栏"]
+    },
+    "check-social": {
+      "attach": "moments",
+      "hints": ["朋友圈已经铺开在下方", "点名字只看那一个人", "往下说就接着刷"]
+    },
+    "explore": {
+      "attach": "none",
+      "hints": ["随便说点什么——页面会随着你的话自己长出来。"]
+    }
   },
   "datasets": {
     "sales":   {"title": "周营收", "unit": "¥", "series": [12, 18, 15, 22, 28, 24, 31], "latest": 31, "trend": "up", "rows": [["周一", 12], ["周二", 18], ["周三", 15], ["周四", 22], ["周五", 28], ["周六", 24], ["周日", 31]]},

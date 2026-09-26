@@ -15,10 +15,11 @@ const STRIP_H = 54;
 const EASE = "cubic-bezier(.22,1.2,.3,1)";
 
 let manifest = null;
-let cards = new Map();      // id -> {el, m, target, prob, bound, rect, applied}
+let cards = new Map();      // id -> {el, m, target, prob, bound, rect, applied, delay}
 let layoutMode = "empty", densityCap = 1, emphasis = "none";
 let intent = {choice: "explore", confidence: 0};
 let committed = false;      // 意图已定:摘幽灵态,卡片直奔实体
+let sceneId = null;         // 当前已定场景的页面 id(= 已承诺意图)
 const COMMIT_MARGIN_IN = 0.30, COMMIT_MARGIN_OUT = 0.15;   // 意图判定走"头两名差距",比归一化置信度对小模型更稳
 let latestText = "", seq = 0, inflight = null;
 let dirty = {layout: true, debug: true};
@@ -82,18 +83,24 @@ function applyAnswers(a) {
     const ps = Object.values(intent.probabilities || {}).sort((x, y) => y - x);
     const margin = (ps[0] || 0) - (ps[1] || 0);
     committed = intent.choice !== "explore" && margin >= (committed ? COMMIT_MARGIN_OUT : COMMIT_MARGIN_IN);
-    renderCard("intent-chip"); renderCard("action-bar");
+    renderCard("intent-chip"); renderCard("action-bar"); renderCard("nav-rail");
   }
   if (a.layout) layoutMode = a.layout.choice;
   if (a.density) densityCap = [0, 2, 4, 7, 10][Math.round(a.density.score)] ?? 4;
   if (a.emphasis) emphasis = a.emphasis.choice;
-  { // 附件:取 noul 概率最高的素材类型,>0.3 才显示
+  const scene = manifest.scenes?.[intent.choice] || {};
+  { // 附件:模型 argmax (>0.3);未定时不兜底,已定时退回场景预设——每页都有成熟配套
     let best = "none", bp = 0;
     for (const ctx of Object.keys(manifest.attachments || {})) {
       const p = a["att_" + ctx]?.noul ?? 0;
       if (p > bp) { bp = p; best = ctx; }
     }
-    setAttach(bp > 0.3 ? best : "none");
+    setAttach(bp > 0.3 ? best : (committed ? scene.attach || "none" : "none"));
+  }
+  { // 场景提示词逐层披露:未定只露第一条(幽灵),已定露下一条(更深引导)
+    const hints = scene.hints || [];
+    const hint = intent.choice === "explore" ? "" : (hints[committed ? 1 : 0] || hints[0] || "");
+    setHint(hint, !committed);
   }
   if (a.intent) {
     $("#mode").textContent = committed ? intent.choice : "";
@@ -103,6 +110,7 @@ function applyAnswers(a) {
   const probs = {};
   for (const id of Object.keys(manifest.components))
     probs[id] = a["vis_" + id]?.noul ?? 0;
+  probs["nav-rail"] = Math.max(probs["nav-rail"] ?? 0, latestText.trim() ? 0.6 : 0);  // 应用壳随内容常驻
   // 布局容量裁剪:非 pin 组件按概率排序放行前 N 个;pin 组件(alert/HUD)只过幽灵阈值
   const cap = {empty: 0, focus: 1, split: 4, dashboard: 9}[layoutMode] ?? 4;
   const limit = Math.min(cap, densityCap);
@@ -118,6 +126,16 @@ function applyAnswers(a) {
   }
   for (const [id, c] of Object.entries(manifest.components))
     if (c.bind && a["bind_" + id]) setBinding(id, a["bind_" + id].choice);
+  // 页面生命周期:已承诺意图切换 = 换页。旧场景卡片错峰退场,新场景错峰进场
+  const newScene = committed ? intent.choice : null;
+  if (newScene && newScene !== sceneId) {
+    let eo = 0, io = 0;
+    for (const c of cards.values()) {
+      if (c.target === 0 && c.m > 0.05) c.delay = (eo++) * 0.03;
+      else if (c.target > 0 && c.m < 0.5) c.delay = 0.14 + (io++) * 0.045;
+    }
+  }
+  sceneId = newScene;
   dirty.layout = dirty.debug = true;
 }
 
@@ -134,9 +152,17 @@ function setBinding(id, key) {
   if (c && c.bound !== key && manifest.datasets[key]) { c.bound = key; renderCard(id); }
 }
 
-/* ---------- 输入框的自适应附件 ---------- */
-const attachEl = document.getElementById("attach");
+/* ---------- 输入框的自适应附件 + 场景提示 ---------- */
+const attachEl = document.getElementById("attach"), hintEl = document.getElementById("hint");
 let attachCtx = "";
+function setHint(text, ghost) {
+  const on = !!text;
+  if ((hintEl.dataset.t || "") !== (text || ""))
+    hintEl.innerHTML = on ? `<b>hint</b><span>${esc(text)}</span>` : "";
+  hintEl.dataset.t = text || "";
+  hintEl.classList.toggle("on", on);
+  hintEl.style.opacity = on ? (ghost ? .45 : 1) : 0;
+}
 function setAttach(ctx) {
   if (ctx === attachCtx) { attachEl.style.opacity = committed ? 1 : .5; return; }
   attachCtx = ctx;
@@ -185,7 +211,7 @@ function mount(id) {
   const el = document.createElement("div");
   el.className = "card"; el.dataset.id = id;
   stage.appendChild(el);
-  const c = {id, el, m: 0, target: 0, prob: 0, bound: defaultBinding(id), rect: null, applied: ""};
+  const c = {id, el, m: 0, target: 0, prob: 0, bound: defaultBinding(id), rect: null, applied: "", delay: 0};
   cards.set(id, c); renderCard(id);
   dirty.layout = true;
   return c;
@@ -196,17 +222,17 @@ function defaultBinding(id) {
   return b ? Object.keys(b.options)[0] : null;
 }
 
-/* ---------- 空间分划:留白 + 主附分区 ----------
- * 顶/底条带与中部主区/侧栏之间留 16-20px 空白;组内区域间 10px;
- * 每条边界都是独立的描边矩形,线不互相连接。
+/* ---------- 应用壳分栏:nav | main | side ----------
+ * 固定三栏(X 式应用版面):左导航栏、中主列、右信息列;
+ * 顶/底条带横贯全宽;栏内卡片按 minH 权重铺满;窄屏退回单列。
  */
-const PAD = 20, GUT = 20, GAP = 14, GAP_IN = 10;
+const PAD = 20, GAP = 14, GAP_IN = 12, COL_GAP = 26;
+const NAV_W = 200, SIDE_W = 292;
 function zoneOf(id) {
-  if (id === "alert-banner") return "top";
-  if (id === "action-bar") return "bottom";
+  const z = manifest.components[id].zone;
+  if (z === "nav" || z === "top" || z === "bottom") return z;
   if (id === emphasis) return "main";
-  const d = manifest.components[id];
-  return (d.minH >= 3 || d.span >= 6) ? "main" : "rail";
+  return z || "main";
 }
 
 function pack() {
@@ -216,9 +242,10 @@ function pack() {
     .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
   const tops  = vis.filter(c => zoneOf(c.id) === "top");
   const bots  = vis.filter(c => zoneOf(c.id) === "bottom");
-  const mains = vis.filter(c => zoneOf(c.id) === "main");
-  const rails = vis.filter(c => zoneOf(c.id) === "rail");
-  const Wi = W - PAD * 2, Hi = H - PAD * 2;
+  const navs  = vis.filter(c => zoneOf(c.id) === "nav");
+  let mains   = vis.filter(c => zoneOf(c.id) === "main");
+  let sides   = vis.filter(c => zoneOf(c.id) === "side");
+  const Wi = W - PAD * 2;
 
   let y = PAD;
   for (const c of tops) { c.rect = {x: PAD, y, w: Wi, h: STRIP_H}; y += STRIP_H + GAP; }
@@ -226,13 +253,7 @@ function pack() {
   for (const c of bots) { by -= STRIP_H; c.rect = {x: PAD, y: by, w: Wi, h: STRIP_H}; by -= GAP; }
   const midY = y, midH = Math.max(0, by - midY);   // 条带循环里已含间隔
 
-  const narrow = Wi < 720;
-  let mainW = Wi;
-  if (mains.length && rails.length && !narrow)
-    mainW = Math.round(Wi * (layoutMode === "split" ? 0.52 : 0.60));
-  else if (!mains.length) mainW = 0;
-
-  // 一列区域内按 minH 权重铺满,组内 10px 间隔,最后一个吃掉舍入余量
+  // 一列区域内按 minH 权重铺满,组内 12px 间隔,最后一个吃掉舍入余量
   const stack = (list, x0, w, y0, h) => {
     const tot = list.reduce((s, c) => s + (manifest.components[c.id].minH || 1), 0);
     let cy = y0;
@@ -243,11 +264,22 @@ function pack() {
       cy += ch + GAP_IN;
     });
   };
-  if (narrow) stack([...mains, ...rails], PAD, Wi, midY, midH);
-  else {
-    if (mains.length) stack(mains, PAD, mainW, midY, midH);
-    if (rails.length) stack(rails, mains.length ? PAD + mainW + GUT : PAD, mains.length ? Wi - mainW - GUT : Wi, midY, midH);
+
+  const narrow = Wi < 980;
+  if (narrow) {                                     // 窄屏:导航变横条,侧列并入主列
+    for (const c of navs) { c.el.classList.add("flat"); c.rect = {x: PAD, y, w: Wi, h: 46}; y += 46 + GAP_IN; }
+    stack([...mains, ...sides], PAD, Wi, y, Math.max(0, by - y));
+    return;
   }
+  for (const c of navs) c.el.classList.remove("flat");
+
+  let x = PAD;
+  if (navs.length) { stack(navs, x, NAV_W, midY, midH); x += NAV_W + COL_GAP; }
+  if (!mains.length) { mains = sides; sides = []; } // 主列空时侧列内容进主列
+  const sideW = sides.length ? SIDE_W : 0;
+  const mainW = Wi - (x - PAD) - sideW - (sides.length ? COL_GAP : 0);
+  if (mains.length) stack(mains, x, mainW, midY, midH);
+  if (sides.length) stack(sides, x + mainW + COL_GAP, sideW, midY, midH);
 }
 
 /* ---------- 渲染循环 ---------- */
@@ -256,8 +288,11 @@ function tick(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
   if (dirty.layout) { pack(); dirty.layout = false; }
   for (const c of [...cards.values()]) {
-    const tau = c.target > c.m ? TAU_IN : TAU_OUT;
-    c.m += (c.target - c.m) * (1 - Math.exp(-dt / tau));
+    if (c.delay > 0) c.delay -= dt;                 // 场景切换的错峰调度
+    else {
+      const tau = c.target > c.m ? TAU_IN : TAU_OUT;
+      c.m += (c.target - c.m) * (1 - Math.exp(-dt / tau));
+    }
     if (c.target === 0 && c.m < MOUNT_P) { c.el.remove(); cards.delete(c.id); dirty.layout = true; continue; }
     const r = c.rect; if (!r) continue;
     const m = c.m, lift = 1 - m;
@@ -287,7 +322,10 @@ function tick(now) {
     c.el.classList.toggle("ghost", ghosting);
     c.el.classList.toggle("emph", c.id === emphasis && !ghosting);
     // 边界线随 m 拉出:幽灵=虚线轮廓;实体=发丝线(强调区用 accent)
-    if (ghosting) {
+    if (c.id === "nav-rail") {                      // 导航栏是壳的一部分:只有右缘发丝线
+      c.el.style.outline = "none"; c.el.style.boxShadow = "none";
+      c.el.style.borderRight = `1px ${ghosting ? "dashed" : "solid"} rgba(120,140,180,${(m * (ghosting ? 0.55 : 0.45)).toFixed(3)})`;
+    } else if (ghosting) {
       c.el.style.boxShadow = "none";
       c.el.style.outline = `1px dashed rgba(120,140,190,${(m * 0.85).toFixed(3)})`;
       c.el.style.outlineOffset = "-4px";
@@ -317,6 +355,14 @@ function renderCard(id) {
   const lines = t.split("\n").map(s => s.trim()).filter(Boolean);
   const first = lines[0] || "", lastLine = lines[lines.length - 1] || "";
   switch (id) {
+    case "nav-rail": {
+      const labels = manifest.questions.intent.labels || {};
+      const probs = intent.probabilities || {};
+      el.innerHTML = `<div class="nav-list">${Object.entries(labels).map(([k, zh]) =>
+        `<div class="ni ${k === intent.choice ? "on" : ""}"><i></i><span>${esc(zh)}</span><b>${Math.round((probs[k] || 0) * 100)}</b></div>`).join("")}
+        </div><div class="rail-foot">nav · kev</div>`;
+      break;
+    }
     case "intent-chip": {
       const seg = Array.from({length: 10}, (_, i) =>
         `<i class="${i < Math.round(intent.confidence * 10) ? "on" : ""}"></i>`).join("");
@@ -450,9 +496,10 @@ function renderDebug() {
 }
 
 function clearScene() {
-  committed = false; layoutMode = "empty";
+  committed = false; layoutMode = "empty"; sceneId = null;
   intent = {choice: "explore", confidence: 0};
   setAttach("none"); attachCtx = "";
+  setHint("");
   attachEl.innerHTML = ""; attachEl.classList.remove("on");
   $("#mode").textContent = "";
   input.placeholder = manifest.prompts?.explore || "";
