@@ -13,9 +13,9 @@
         "analyze-data": "describing or asking about numbers, metrics, trends, or a dataset",
         "write-document": "drafting prose, notes, an article, or documentation",
         "monitor-status": "watching a system, service, or ongoing process",
-        "plan-work": "listing tasks, steps, a schedule, or a timeline",
+        "plan-work": "making a to-do list, planning one's own work steps, or scheduling tasks",
         "report-issue": "describing a problem, bug, alert, or something broken",
-        "check-social": "asking about friends, contacts, messages, or someone's recent activity",
+        "check-social": "casually asking what friends, contacts, a group, or 'everyone' is doing or up to; checking a social feed, group activity, or messages",
         "explore": "just exploring, chatting, or no clear task yet"
       },
       "labels": {
@@ -136,6 +136,12 @@
       "zone": "main", "minH": 2,
       "enter": "ghost", "exit": "fade"
     },
+    "feed-card": {
+      "desc": "a feed of friends' recent posts with avatars, text, time and likes",
+      "ask": "Should the UI show a social feed of friends' recent posts?",
+      "zone": "main", "minH": 4,
+      "enter": "ghost", "exit": "fade"
+    },
     "hero-stat": {
       "desc": "a very large centered headline number",
       "ask": "Should the UI show one huge centered headline number?",
@@ -183,7 +189,7 @@
       ]
     },
     "tasks": {
-      "cue": "Is the user planning their day or listing things to do? Show today's task list.",
+      "cue": "Is the user planning their own work or making a to-do list? Show today's task list.",
       "items": "datasets.tasks"
     },
     "datasets": {
@@ -191,7 +197,7 @@
       "items": "datasets.*"
     },
     "moments": {
-      "cue": "Is the user asking about friends, contacts or social updates? Show the friends' recent posts feed.",
+      "cue": "Is the user casually asking what other people or friends are doing right now (e.g. 'what is everyone up to'), or checking a social feed? Show the friends' recent posts feed.",
       "items": [
         {"who": "林晚", "hue": 205, "time": "08:12", "text": "晨跑 6km,河边的雾还没散", "meta": "♡ 12"},
         {"who": "赵一", "hue": 160, "time": "11:40", "text": "新键盘到了,码字手感起飞", "meta": "♡ 8"},

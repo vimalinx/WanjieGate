@@ -253,13 +253,17 @@ function pack() {
   for (const c of bots) { by -= STRIP_H; c.rect = {x: PAD, y: by, w: Wi, h: STRIP_H}; by -= GAP; }
   const midY = y, midH = Math.max(0, by - midY);   // 条带循环里已含间隔
 
-  // 一列区域内按 minH 权重铺满,组内 12px 间隔,最后一个吃掉舍入余量
+  // 栏内卡片给"自然高"(minH*66)顶对齐堆叠,超出列高才按比例压缩;
+  // 剩余高度留白——卡片自己找位置,不被撑成比例失调的大块
+  const NAT = 66;
   const stack = (list, x0, w, y0, h) => {
-    const tot = list.reduce((s, c) => s + (manifest.components[c.id].minH || 1), 0);
+    const hs = list.map(c => Math.max(52, (manifest.components[c.id].minH || 1) * NAT));
+    const gaps = GAP_IN * (list.length - 1);
+    const need = hs.reduce((s, v) => s + v, 0) + gaps;
+    const k = need > h ? (h - gaps) / Math.max(1, need - gaps) : 1;
     let cy = y0;
     list.forEach((c, i) => {
-      const ch = i === list.length - 1 ? y0 + h - Math.round(cy)
-        : Math.round((h - GAP_IN * (list.length - 1)) * (manifest.components[c.id].minH || 1) / tot);
+      const ch = Math.round(hs[i] * k);
       c.rect = {x: x0, y: Math.round(cy), w, h: Math.max(0, ch)};
       cy += ch + GAP_IN;
     });
@@ -274,7 +278,7 @@ function pack() {
   for (const c of navs) c.el.classList.remove("flat");
 
   let x = PAD;
-  if (navs.length) { stack(navs, x, NAV_W, midY, midH); x += NAV_W + COL_GAP; }
+  if (navs.length) { navs[0].rect = {x, y: midY, w: NAV_W, h: midH}; x += NAV_W + COL_GAP; }
   if (!mains.length) { mains = sides; sides = []; } // 主列空时侧列内容进主列
   const sideW = sides.length ? SIDE_W : 0;
   const mainW = Wi - (x - PAD) - sideW - (sides.length ? COL_GAP : 0);
@@ -430,6 +434,14 @@ function renderCard(id) {
     case "note-card":
       el.innerHTML = chrome(id, "note") + `<div class="c-title">note</div><div class="note">${esc(lastLine || first || "…")}</div>`;
       break;
+    case "feed-card": {
+      const items = manifest.attachments?.moments?.items || [];
+      el.innerHTML = chrome(id, "feed") + `<div class="c-title">moments · feed</div>` +
+        items.map(m => `<div class="feed-row"><i class="av" style="--h:${m.hue}">${esc(m.who[0])}</i>
+          <div class="fbody"><div class="fhead"><b>${esc(m.who)}</b><i>${m.time}</i></div>
+          <div class="ftext">${esc(m.text)}</div></div><b class="fmeta">${m.meta}</b></div>`).join("");
+      break;
+    }
     case "hero-stat": {
       const d = ds(c.bound);
       el.innerHTML = chrome(id, c.bound) + `<div class="c-title">${esc(d.title)}</div>
@@ -457,6 +469,7 @@ const MOCK_KW = {
   "hero-stat": /hero|大字|总数|一共/i,
   "progress-card": /进度|progress|完成度/i,
   "summary-card": /总结|summary|统计/i,
+  "feed-card": /朋友|大家|社交|feed|moments|朋友圈/i,
   "intent-chip": /./,
 };
 async function mockDecide() {

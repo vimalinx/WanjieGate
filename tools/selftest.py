@@ -107,10 +107,22 @@ with sync_playwright() as pw:
     cards, _ = state(page, "7-social")
     attach_head = page.eval_on_selector("#attach .a-head", "e => e.textContent") if page.locator("#attach .a-head").count() else None
     n_mom = page.locator("#attach .a-row b.who").count()
+    n_feed = page.locator('.card[data-id="feed-card"] .feed-row').count()
     cmode = page.get_attribute("#composer", "data-cmode")
-    print(f"  attach={attach_head} moments={n_mom} cmode={cmode}")
+    print(f"  attach={attach_head} moments={n_mom} feed_rows={n_feed} cmode={cmode}")
     assert attach_head == "moments" and n_mom >= 3, f"社交语境应召出朋友圈(got head={attach_head}, n={n_mom})"
     assert cmode == "check-social", f"社交语境输入框应变形为 check-social(got {cmode})"
+    assert n_feed >= 3, f"主列应有朋友圈 feed(got {n_feed} 行)"
+
+    # 7) 口语化模糊输入 → 不判错,幽灵态候场 + 版式整齐
+    page.fill("#input", "大家在干啥?")
+    page.wait_for_timeout(2200)
+    cards, _ = state(page, "8-ambiguous")
+    boxes = {c["id"]: page.locator(f'.card[data-id="{c["id"]}"]').bounding_box() for c in cards if c["op"] > 0.05}
+    heights = {k: round(b["height"]) for k, b in boxes.items()}
+    print(f"  ambiguous heights={heights}")
+    assert all(h < 320 for k, h in heights.items() if k != "nav-rail"), \
+        f"非导航卡应是自然高(<320),不被撑大: {heights}"
 
     browser.close()
 
