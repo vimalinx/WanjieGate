@@ -32,6 +32,8 @@ function buildQuestions() {
     q["vis_" + id] = {type: "noul", instructions: c.ask};
     if (c.bind) q["bind_" + id] = {type: "choice", instructions: c.bind.question, criteria: c.bind.options};
   }
+  for (const [ctx, a] of Object.entries(manifest.attachments || {}))
+    q["att_" + ctx] = {type: "noul", instructions: a.cue};
   return q;
 }
 
@@ -85,6 +87,18 @@ function applyAnswers(a) {
   if (a.layout) layoutMode = a.layout.choice;
   if (a.density) densityCap = [0, 2, 4, 7, 10][Math.round(a.density.score)] ?? 4;
   if (a.emphasis) emphasis = a.emphasis.choice;
+  { // 附件:取 noul 概率最高的素材类型,>0.3 才显示
+    let best = "none", bp = 0;
+    for (const ctx of Object.keys(manifest.attachments || {})) {
+      const p = a["att_" + ctx]?.noul ?? 0;
+      if (p > bp) { bp = p; best = ctx; }
+    }
+    setAttach(bp > 0.3 ? best : "none");
+  }
+  if (a.intent) {
+    $("#mode").textContent = committed ? intent.choice : "";
+    input.placeholder = (manifest.prompts || {})[intent.choice] || manifest.prompts?.explore || input.placeholder;
+  }
   const probs = {};
   for (const id of Object.keys(manifest.components))
     probs[id] = a["vis_" + id]?.noul ?? 0;
@@ -118,6 +132,49 @@ function setBinding(id, key) {
   const c = cards.get(id);
   if (c && c.bound !== key && manifest.datasets[key]) { c.bound = key; renderCard(id); }
 }
+
+/* ---------- 输入框的自适应附件 ---------- */
+const attachEl = document.getElementById("attach");
+let attachCtx = "";
+function setAttach(ctx) {
+  if (ctx === attachCtx) { attachEl.style.opacity = committed ? 1 : .5; return; }
+  attachCtx = ctx;
+  const on = ctx && ctx !== "none";
+  attachEl.innerHTML = on ? buildAttach(ctx) : "";
+  attachEl.classList.toggle("on", on);
+  attachEl.style.opacity = committed ? 1 : .5;
+}
+
+function buildAttach(ctx) {
+  const items = manifest.attachments?.[ctx]?.items;
+  const head = `<div class="a-head">${ctx}</div>`;
+  switch (ctx) {
+    case "photos":
+      return head + `<div class="a-photos">${(items || []).map(p =>
+        `<div class="a-ph" style="--h:${p.h}"><b>${p.time}</b><span>${esc(p.label)}</span></div>`).join("")}</div>`;
+    case "news":
+      return head + (items || []).map(n =>
+        `<div class="a-row"><i>${n.time}</i><b>${esc(n.src)}</b><span>${esc(n.title)}</span></div>`).join("");
+    case "logs":
+      return head + (items || []).map(l =>
+        `<div class="a-row"><i>${l.time}</i><b class="lv-${l.lvl}">${l.lvl}</b><span>${esc(l.msg)}</span></div>`).join("");
+    case "tasks": {
+      const d = manifest.datasets.tasks;
+      return head + d.rows.map(r =>
+        `<div class="a-row"><i class="tk ${r[1] === "完成" ? "done" : r[1] === "进行中" ? "doing" : ""}"></i><span>${esc(r[0])}</span><b>${r[1]}</b></div>`).join("");
+    }
+    case "datasets":
+      return head + `<div class="a-chips">${Object.keys(manifest.datasets).map(k =>
+        `<button class="a-chip" onclick="window.__rebind('${k}')">${k}</button>`).join("")}</div>`;
+    case "services":
+      return head + `<div class="a-chips">${(items || []).map(s =>
+        `<span class="a-svc ${s.ok ? "ok" : "bad"}"><i></i>${s.name}</span>`).join("")}</div>`;
+    default: return "";
+  }
+}
+window.__rebind = key => {
+  for (const [id] of cards) if (manifest.components[id].bind) setBinding(id, key);
+};
 
 /* ---------- DOM ---------- */
 function mount(id) {
@@ -247,9 +304,7 @@ function esc(s) { return s.replace(/[&<>"]/g, ch => ({"&": "&amp;", "<": "&lt;",
 function ds(key) { return manifest.datasets[key] || manifest.datasets.sales; }
 
 function chrome(id, tag) {
-  const idx = String(Object.keys(manifest.components).indexOf(id) + 1).padStart(2, "0");
-  return `<i class="fc tl"></i><i class="fc tr"></i><i class="fc bl"></i><i class="fc br"></i>` +
-    `<div class="fui-idx">${idx}</div>` + (tag ? `<div class="fui-tag">${esc(tag)}</div>` : "");
+  return tag ? `<div class="fui-tag">${esc(tag)}</div>` : "";
 }
 
 function renderCard(id) {
@@ -308,8 +363,7 @@ function renderCard(id) {
     case "alert-banner": {
       el.classList.add("banner");
       const ts = new Date().toLocaleTimeString("en-GB");
-      el.innerHTML = `<i class="fc tl"></i><i class="fc tr"></i><i class="fc bl"></i><i class="fc br"></i>
-        <span class="dot"></span><div class="btxt">${esc(first || "需要关注")}</div><div class="fui-tag">alrt · ${ts}</div>`;
+      el.innerHTML = `<span class="dot"></span><div class="btxt">${esc(first || "需要关注")}</div><div class="fui-tag">alrt · ${ts}</div>`;
       break;
     }
     case "action-bar": {
@@ -368,6 +422,8 @@ async function mockDecide() {
   const ip = {}; for (const [k] of intentMap) ip[k] = 0.05; ip.explore = 0.1;
   if (top) ip[top[0]] = 0.7; else ip.explore = 0.6;
   answers.intent = {type: "choice", choice: top ? top[0] : "explore", confidence: top ? 0.7 : 0.3, probabilities: ip};
+  const ctxMap = [["photos", /日记|照片|今天.*拍|journal|diary/i], ["news", /文章|新闻|报道|article|news|essay/i], ["logs", /错误|日志|bug|报错|log/i], ["tasks", /任务|计划|安排|todo|task/i], ["datasets", /数据|营收|sales|traffic|chart/i], ["services", /服务|监控|status|service/i]];
+  for (const [ctx, kw] of ctxMap) answers["att_" + ctx] = {type: "noul", noul: kw.test(latestText) ? 0.8 : 0.15};
   answers.layout = {type: "choice", choice: latestText.length < 4 ? "empty" : (Object.values(answers).filter(a => a.noul > SOLID).length > 3 ? "dashboard" : "split"), probabilities: {}};
   answers.density = {type: "score", score: latestText.length < 4 ? 0 : 3, probabilities: {}, legend: {}};
   answers.emphasis = {type: "choice", choice: "none", probabilities: {}};
@@ -391,6 +447,11 @@ function renderDebug() {
 
 function clearScene() {
   committed = false; layoutMode = "empty";
+  intent = {choice: "explore", confidence: 0};
+  setAttach("none"); attachCtx = "";
+  attachEl.innerHTML = ""; attachEl.classList.remove("on");
+  $("#mode").textContent = "";
+  input.placeholder = manifest.prompts?.explore || "";
   for (const c of cards.values()) { c.prob = 0; c.target = 0; c.el.dataset.p = "0"; c.el.dataset.target = "0"; }
   dirty.layout = dirty.debug = true;
 }

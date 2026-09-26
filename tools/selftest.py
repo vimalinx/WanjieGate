@@ -16,7 +16,9 @@ def state(page, tag):
         "ghost: e.classList.contains('ghost'), emph: e.classList.contains('emph')}))")
     idle = page.eval_on_selector("#app", "e => e.classList.contains('idle')")
     conn = page.text_content("#conn")
-    print(f"[{tag}] idle={idle} conn={conn!r} cards={json.dumps(cards, ensure_ascii=False)}")
+    attach = page.eval_on_selector("#attach", "e => e.className + ':' + e.childElementCount")
+    mode = page.eval_on_selector("#mode", "e => e.textContent")
+    print(f"[{tag}] idle={idle} conn={conn!r} attach={attach} mode={mode!r} cards={json.dumps(cards, ensure_ascii=False)}")
     page.screenshot(path=f"{SHOTS}/{tag}.png")
     return cards, idle
 
@@ -77,6 +79,15 @@ with sync_playwright() as pw:
     cards, idle = state(page, "5-cleared")
     assert idle, "清空后应回到 idle"
     assert not [c for c in cards if c["op"] > 0.05], "清空后卡片应散尽"
+
+    # 5) 日记语境 → 输入框应自动配上"今日照片"附件
+    page.fill("#input", "今天拍了好多照片,记个日记吧")
+    page.wait_for_timeout(2200)
+    cards, _ = state(page, "6-diary")
+    attach_head = page.eval_on_selector("#attach .a-head", "e => e.textContent") if page.locator("#attach .a-head").count() else None
+    n_ph = page.locator("#attach .a-ph").count()
+    print(f"  attach={attach_head} photos={n_ph}")
+    assert attach_head == "photos" and n_ph >= 3, f"日记语境应召出照片附件(got head={attach_head}, n={n_ph})"
 
     browser.close()
 

@@ -50,8 +50,44 @@ header {
 }
 #input::placeholder { color: #39425a; }
 #pulse { position: absolute; right: 26px; bottom: 16px; font-size: 10px; letter-spacing: .12em; color: var(--dim); display: flex; gap: 6px; align-items: center; }
+#mode { color: var(--accent); font-size: 9px; letter-spacing: .18em; margin-right: 6px; text-transform: uppercase; }
 #pulse-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--dim); transition: background .2s; }
 #pulse.thinking #pulse-dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+/* ---------- 输入框的自适应附件 ---------- */
+#attach { max-height: 0; overflow: hidden; opacity: 0; transform: translateY(-4px);
+  transition: max-height .55s cubic-bezier(.22,1.1,.3,1), opacity .4s, transform .55s cubic-bezier(.22,1.1,.3,1); }
+#attach.on { max-height: 160px; opacity: 1; transform: none; margin-top: 10px; border-top: 1px solid var(--line); padding-top: 10px; }
+.a-head { font-size: 8.5px; letter-spacing: .28em; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
+.a-head::before { content: "＋ "; color: var(--accent); }
+.a-photos { display: flex; gap: 8px; }
+.a-ph { width: 88px; height: 62px; flex: none; position: relative; overflow: hidden;
+  background: linear-gradient(150deg, hsl(var(--h), 30%, 22%), hsl(var(--h), 45%, 12%));
+  border: 1px solid var(--hair); }
+.a-ph b { position: absolute; top: 5px; left: 7px; font-size: 8px; font-weight: 400; letter-spacing: .14em; color: rgba(235,240,250,.7); }
+.a-ph span { position: absolute; bottom: 5px; left: 7px; right: 7px; font-size: 8.5px; color: rgba(235,240,250,.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.a-row { display: flex; align-items: baseline; gap: 12px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+.a-row:last-child { border-bottom: none; }
+.a-row i { font-style: normal; font-size: 9px; color: var(--dim); letter-spacing: .08em; min-width: 46px; }
+.a-row b { font-weight: 400; font-size: 9px; letter-spacing: .18em; color: var(--accent-2); text-transform: uppercase; min-width: 52px; }
+.a-row b.lv-err { color: var(--warn); }
+.a-row b.lv-warn { color: #e0b56a; }
+.a-row b.lv-info { color: var(--dim); }
+.a-row span { color: var(--text); font-size: 11.5px; }
+.a-row > b:last-child { margin-left: auto; color: var(--dim); font-size: 9.5px; }
+.a-row .tk { width: 7px; height: 7px; border: 1px solid var(--dim); min-width: 7px; align-self: center; }
+.a-row .tk.done { background: var(--accent); border-color: var(--accent); }
+.a-row .tk.doing { border-color: var(--accent); }
+.a-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.a-chip { font: inherit; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; padding: 5px 12px;
+  background: transparent; border: 1px solid var(--hair); color: var(--text); cursor: pointer; transition: all .18s; }
+.a-chip:hover { border-color: var(--accent); color: var(--accent); }
+.a-svc { display: inline-flex; align-items: center; gap: 7px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  border: 1px solid var(--hair); padding: 5px 10px; color: var(--dim); }
+.a-svc i { width: 6px; height: 6px; border-radius: 50%; background: var(--dim); }
+.a-svc.ok i { background: var(--accent); }
+.a-svc.bad { color: var(--text); border-color: rgba(255,143,143,.45); }
+.a-svc.bad i { background: var(--warn); box-shadow: 0 0 6px var(--warn); }
 
 /* ---------- 画布:一整个被分划的空间 ---------- */
 #stage {
@@ -73,25 +109,11 @@ header {
 #stage .reg.br { bottom: 6px; right: 6px; border-left: none; border-top: none; }
 #app.idle #stage { opacity: 0; pointer-events: none; }
 
-/* ---------- FUI 骨架:角括号 / 序号 / 数据标签,随线速出现 ---------- */
-.card > .fc, .card > .fui-idx, .card > .fui-tag { opacity: 1; }
-.fc { position: absolute; width: 9px; height: 9px; border: 1px solid var(--hair); }
-.fc.tl { top: 3px; left: 3px; border-right: 0; border-bottom: 0; }
-.fc.tr { top: 3px; right: 3px; border-left: 0; border-bottom: 0; }
-.fc.bl { bottom: 3px; left: 3px; border-right: 0; border-top: 0; }
-.fc.br { bottom: 3px; right: 3px; border-left: 0; border-top: 0; }
-.fui-idx { position: absolute; top: 8px; right: 12px; font-size: 9px; letter-spacing: .24em; color: var(--dim); }
+/* ---------- 真实数据标签(无装饰性骨架) ---------- */
+.card > .fui-tag { opacity: 1; }
 .fui-tag { position: absolute; bottom: 8px; right: 12px; font-size: 8.5px; letter-spacing: .22em; color: var(--dim); text-transform: uppercase; }
 .fui-lbl { font-size: 9px; letter-spacing: .24em; color: var(--dim); text-transform: uppercase; margin-right: 10px; }
 .fui-axis { display: flex; justify-content: space-between; font-size: 8.5px; letter-spacing: .12em; color: var(--dim); margin-top: 6px; }
-
-/* 慢速扫描亮带,FUI 的"活" */
-.scan { position: absolute; left: 0; right: 0; top: -22%; height: 22%; z-index: 0;
-  background: linear-gradient(180deg, transparent, rgba(140,160,210,.04), transparent);
-  animation: scan 16s linear infinite; pointer-events: none; }
-@keyframes scan { to { transform: translateY(600%); } }
-#stage::after { content: "wanjiegate · adaptive canvas"; position: absolute; bottom: 5px; left: 14px;
-  font-size: 8px; letter-spacing: .34em; color: var(--hair); text-transform: uppercase; pointer-events: none; }
 
 /* ---------- 区域:没有底色,边界线由 JS 按 materialize 逐帧拉出 ---------- */
 .card {
