@@ -86,8 +86,21 @@ with sync_playwright() as pw:
     cards, _ = state(page, "6-diary")
     attach_head = page.eval_on_selector("#attach .a-head", "e => e.textContent") if page.locator("#attach .a-head").count() else None
     n_ph = page.locator("#attach .a-ph").count()
-    print(f"  attach={attach_head} photos={n_ph}")
+    cmode = page.get_attribute("#composer", "data-cmode")
+    print(f"  attach={attach_head} photos={n_ph} cmode={cmode}")
     assert attach_head == "photos" and n_ph >= 3, f"日记语境应召出照片附件(got head={attach_head}, n={n_ph})"
+    assert cmode == "write-document", f"日记语境输入框应变形为 write-document(got {cmode})"
+
+    # 6) 社交语境 → 朋友圈浮现 + 输入框换 social 气质
+    page.fill("#input", "我的朋友们最近都咋样了")
+    page.wait_for_timeout(2200)
+    cards, _ = state(page, "7-social")
+    attach_head = page.eval_on_selector("#attach .a-head", "e => e.textContent") if page.locator("#attach .a-head").count() else None
+    n_mom = page.locator("#attach .a-row b.who").count()
+    cmode = page.get_attribute("#composer", "data-cmode")
+    print(f"  attach={attach_head} moments={n_mom} cmode={cmode}")
+    assert attach_head == "moments" and n_mom >= 3, f"社交语境应召出朋友圈(got head={attach_head}, n={n_mom})"
+    assert cmode == "check-social", f"社交语境输入框应变形为 check-social(got {cmode})"
 
     browser.close()
 

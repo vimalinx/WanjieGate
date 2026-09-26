@@ -5,7 +5,7 @@
 "use strict";
 
 const $ = s => document.querySelector(s);
-const stage = $("#stage"), input = $("#input"), conn = $("#conn"), pulse = $("#pulse"), debug = $("#debug");
+const stage = $("#stage"), input = $("#input"), conn = $("#conn"), pulse = $("#pulse"), debug = $("#debug"), composer = $("#composer");
 
 const MOCK = new URLSearchParams(location.search).has("mock");
 const DEBOUNCE_MS = 320;
@@ -98,6 +98,7 @@ function applyAnswers(a) {
   if (a.intent) {
     $("#mode").textContent = committed ? intent.choice : "";
     input.placeholder = (manifest.prompts || {})[intent.choice] || manifest.prompts?.explore || input.placeholder;
+    composer.dataset.cmode = intent.choice;   // 输入框本身也是状态,随意图头名即时变形
   }
   const probs = {};
   for (const id of Object.keys(manifest.components))
@@ -166,6 +167,9 @@ function buildAttach(ctx) {
     case "datasets":
       return head + `<div class="a-chips">${Object.keys(manifest.datasets).map(k =>
         `<button class="a-chip" onclick="window.__rebind('${k}')">${k}</button>`).join("")}</div>`;
+    case "moments":
+      return head + (items || []).map(m =>
+        `<div class="a-row"><i>${m.time}</i><b class="who" style="--h:${m.hue}">${esc(m.who)}</b><span>${esc(m.text)}</span><b>${m.meta}</b></div>`).join("");
     case "services":
       return head + `<div class="a-chips">${(items || []).map(s =>
         `<span class="a-svc ${s.ok ? "ok" : "bad"}"><i></i>${s.name}</span>`).join("")}</div>`;
@@ -417,12 +421,12 @@ async function mockDecide() {
     const noise = 0.25 + (hit ? 0.55 : 0) + Math.random() * 0.15;
     answers["vis_" + id] = {type: "noul", noul: Math.min(0.98, latestText.length > 2 ? noise : noise * 0.4)};
   }
-  const intentMap = [["analyze-data", /数据|指标|销售|营收|data|metric/i], ["report-issue", /错误|故障|bug|挂了|alert/i], ["plan-work", /计划|任务|步骤|plan|todo/i], ["monitor-status", /监控|状态|monitor|latency/i], ["write-document", /写|文章|文档|note|draft/i]];
+  const intentMap = [["analyze-data", /数据|指标|销售|营收|data|metric/i], ["report-issue", /错误|故障|bug|挂了|alert/i], ["plan-work", /计划|任务|步骤|plan|todo/i], ["monitor-status", /监控|状态|monitor|latency/i], ["write-document", /写|文章|文档|note|draft/i], ["check-social", /朋友|大家|谁.*咋样|friend|social/i]];
   const top = intentMap.find(([, kw]) => kw.test(latestText));
   const ip = {}; for (const [k] of intentMap) ip[k] = 0.05; ip.explore = 0.1;
   if (top) ip[top[0]] = 0.7; else ip.explore = 0.6;
   answers.intent = {type: "choice", choice: top ? top[0] : "explore", confidence: top ? 0.7 : 0.3, probabilities: ip};
-  const ctxMap = [["photos", /日记|照片|今天.*拍|journal|diary/i], ["news", /文章|新闻|报道|article|news|essay/i], ["logs", /错误|日志|bug|报错|log/i], ["tasks", /任务|计划|安排|todo|task/i], ["datasets", /数据|营收|sales|traffic|chart/i], ["services", /服务|监控|status|service/i]];
+  const ctxMap = [["photos", /日记|照片|今天.*拍|journal|diary/i], ["news", /文章|新闻|报道|article|news|essay/i], ["logs", /错误|日志|bug|报错|log/i], ["tasks", /任务|计划|安排|todo|task/i], ["datasets", /数据|营收|sales|traffic|chart/i], ["services", /服务|监控|status|service/i], ["moments", /朋友|大家|谁.*咋样|friend|social|朋友圈/i]];
   for (const [ctx, kw] of ctxMap) answers["att_" + ctx] = {type: "noul", noul: kw.test(latestText) ? 0.8 : 0.15};
   answers.layout = {type: "choice", choice: latestText.length < 4 ? "empty" : (Object.values(answers).filter(a => a.noul > SOLID).length > 3 ? "dashboard" : "split"), probabilities: {}};
   answers.density = {type: "score", score: latestText.length < 4 ? 0 : 3, probabilities: {}, legend: {}};
@@ -452,6 +456,7 @@ function clearScene() {
   attachEl.innerHTML = ""; attachEl.classList.remove("on");
   $("#mode").textContent = "";
   input.placeholder = manifest.prompts?.explore || "";
+  composer.dataset.cmode = "";
   for (const c of cards.values()) { c.prob = 0; c.target = 0; c.el.dataset.p = "0"; c.el.dataset.target = "0"; }
   dirty.layout = dirty.debug = true;
 }

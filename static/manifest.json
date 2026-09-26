@@ -15,6 +15,7 @@
         "monitor-status": "watching a system, service, or ongoing process",
         "plan-work": "listing tasks, steps, a schedule, or a timeline",
         "report-issue": "describing a problem, bug, alert, or something broken",
+        "check-social": "asking about friends, contacts, messages, or someone's recent activity",
         "explore": "just exploring, chatting, or no clear task yet"
       }
     },
@@ -179,6 +180,15 @@
       "cue": "Is the user asking about data, metrics or trends? Show quick dataset pickers.",
       "items": "datasets.*"
     },
+    "moments": {
+      "cue": "Is the user asking about friends, contacts or social updates? Show the friends' recent posts feed.",
+      "items": [
+        {"who": "林晚", "hue": 205, "time": "08:12", "text": "晨跑 6km,河边的雾还没散", "meta": "♡ 12"},
+        {"who": "赵一", "hue": 160, "time": "11:40", "text": "新键盘到了,码字手感起飞", "meta": "♡ 8"},
+        {"who": "阿灿", "hue": 320, "time": "14:05", "text": "咖啡拉花终于拉出一片叶子", "meta": "♡ 21"},
+        {"who": "Momo", "hue": 45, "time": "17:26", "text": "今晚线上的桌游局,缺一人", "meta": "♡ 5"}
+      ]
+    },
     "services": {
       "cue": "Is the user monitoring systems or service health? Show service status.",
       "items": [
@@ -193,6 +203,7 @@
     "monitor-status": "盯哪个服务?",
     "plan-work": "列步骤,我帮你排",
     "report-issue": "描述现象,日志在下面",
+    "check-social": "想知道谁?继续说,朋友圈已经铺开了",
     "explore": "随便说点什么——页面会随着你的话自己长出来。"
   },
   "datasets": {
