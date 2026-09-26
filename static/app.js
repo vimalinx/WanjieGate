@@ -11,7 +11,7 @@ const MOCK = new URLSearchParams(location.search).has("mock");
 const DEBOUNCE_MS = 320;
 const TAU_IN = 0.16, TAU_OUT = 0.5;        // 进场快、退场慢(秒)
 const MOUNT_P = 0.03, GHOST_LO = 0.15, SOLID = 0.55;
-const COLS = 12, ROW_H = 92, GAP = 12;
+const STRIP_H = 58, DIV = 1;                  // 条带高度 / 分隔线宽
 const EASE = "cubic-bezier(.22,1.2,.3,1)";
 
 let manifest = null;
@@ -135,23 +135,52 @@ function defaultBinding(id) {
   return b ? Object.keys(b.options)[0] : null;
 }
 
-/* ---------- 布局打包:12 列流式 ---------- */
+/* ---------- 空间分划:舞台被切成条带 + 主区/侧栏,区域按权重填满 ---------- */
+function zoneOf(id) {
+  if (id === "alert-banner") return "top";
+  if (id === "action-bar") return "bottom";
+  if (id === emphasis) return "main";
+  const d = manifest.components[id];
+  return (d.minH >= 3 || d.span >= 6) ? "main" : "rail";
+}
+
 function pack() {
-  const W = stage.clientWidth, colW = (W - GAP * (COLS - 1)) / COLS;
-  // 正在淡出的卡片保留槽位(m>MOUNT_P),避免布局在动画中塌陷;按 m 排序让已有卡片位置稳定
+  const W = stage.clientWidth, H = stage.clientHeight;
+  const order = Object.keys(manifest.components);
   const vis = [...cards.values()].filter(c => c.target > 0 || c.m > MOUNT_P)
-    .sort((a, b) => b.m - a.m);
-  vis.sort((a, b) => (b.id === "alert-banner") - (a.id === "alert-banner"));
-  let x = 0, yPx = 0, rowMaxH = 0;
-  for (const c of vis) {
-    const def = manifest.components[c.id];
-    let span = Math.min(COLS, def.span);
-    if (layoutMode === "focus") span = Math.max(span, 8);
-    const hPx = (def.minH || 1) * ROW_H + ((def.minH || 1) - 1) * GAP;
-    if (x + span > COLS) { x = 0; yPx += rowMaxH + GAP; rowMaxH = 0; }
-    c.rect = {x: x * (colW + GAP), y: yPx, w: span * colW + (span - 1) * GAP, h: hPx};
-    x += span; rowMaxH = Math.max(rowMaxH, hPx);
-    if (x >= COLS) { x = 0; yPx += rowMaxH + GAP; rowMaxH = 0; }
+    .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+  const tops  = vis.filter(c => zoneOf(c.id) === "top");
+  const bots  = vis.filter(c => zoneOf(c.id) === "bottom");
+  const mains = vis.filter(c => zoneOf(c.id) === "main");
+  const rails = vis.filter(c => zoneOf(c.id) === "rail");
+
+  let y = 0;
+  for (const c of tops) { c.rect = {x: 0, y, w: W, h: STRIP_H}; y += STRIP_H + DIV; }
+  let by = H;
+  for (const c of bots) { by -= STRIP_H; c.rect = {x: 0, y: by, w: W, h: STRIP_H}; by -= DIV; }
+  const midH = Math.max(0, by + DIV - y);
+
+  const narrow = W < 720;
+  let mainW = W;
+  if (mains.length && rails.length && !narrow)
+    mainW = Math.round(W * (layoutMode === "split" ? 0.52 : 0.62));
+  else if (!mains.length) mainW = 0;
+
+  // 一列区域内按 minH 权重铺满,最后一个吃掉舍入余量
+  const stack = (list, x0, w, y0, h) => {
+    const tot = list.reduce((s, c) => s + (manifest.components[c.id].minH || 1), 0);
+    let cy = y0;
+    list.forEach((c, i) => {
+      const ch = i === list.length - 1 ? y0 + h - Math.round(cy)
+        : Math.round((h - DIV * (list.length - 1)) * (manifest.components[c.id].minH || 1) / tot);
+      c.rect = {x: x0, y: Math.round(cy), w, h: Math.max(0, ch)};
+      cy += ch + DIV;
+    });
+  };
+  if (narrow) stack([...mains, ...rails], 0, W, y, midH);
+  else {
+    if (mains.length) stack(mains, 0, mainW, y, midH);
+    if (rails.length) stack(rails, mains.length ? mainW + DIV : 0, mains.length ? W - mainW - DIV : W, y, midH);
   }
 }
 

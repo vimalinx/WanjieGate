@@ -35,7 +35,7 @@ with sync_playwright() as pw:
     assert not cards, "初始不应有卡片"
     box = page.locator("#composer").bounding_box()
     vh = page.viewport_size["height"]
-    print(f"  composer top={box['y']:.0f} (期望 ~{vh*0.32:.0f})")
+    print(f"  composer top={box['y']:.0f} (期望 ~{vh*0.33:.0f})")
 
     # 2) 逐字输入中文 → 决策帧到达后卡片应以幽灵/实体浮现
     page.click("#input")
@@ -65,6 +65,11 @@ with sync_playwright() as pw:
     print(f"  cards={ids}")
     alert = next((c for c in cards if c["id"] == "alert-banner"), None)
     assert alert and alert["t"] >= 0.4, f"alert 语境应召出 banner(got {alert})"
+    # 空间分划:banner 应是舞台顶部的整宽条带
+    stage_box = page.locator("#stage").bounding_box()
+    abox = page.locator('.card[data-id="alert-banner"]').bounding_box()
+    assert abs(abox["y"] - stage_box["y"]) < 24 and abox["width"] > stage_box["width"] * 0.95, \
+        f"banner 应为顶行整宽条带(stage={stage_box}, alert={abox})"
 
     # 4) 清空 → 收回 idle
     page.fill("#input", "")
