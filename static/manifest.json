@@ -115,7 +115,7 @@
     "alert-banner": {
       "desc": "a full-width warning/alert strip for something urgent or broken",
       "ask": "Should the UI show a prominent alert/warning banner?",
-      "zone": "top", "minH": 1, "pin": true,
+      "zone": "top", "minH": 1, "pin": true, "solid": 0.40,
       "enter": "wipe", "exit": "fade"
     },
     "action-bar": {
@@ -225,30 +225,37 @@
   "scenes": {
     "analyze-data": {
       "attach": "datasets",
+      "ensure": {"intent-chip": 0.6, "summary-card": 0.58, "chart-card": 0.62},
       "hints": ["下方芯片可即时换绑数据集", "说'只看错误'或'对比流量'换一份数据", "补一句'导出'可以召出操作栏"]
     },
     "write-document": {
       "attach": "news",
+      "ensure": {"intent-chip": 0.6, "note-card": 0.58, "summary-card": 0.56},
       "hints": ["素材在下方,继续写就行", "说'记个日记'会换上今天的照片", "回车换行,停顿即排版"]
     },
     "monitor-status": {
       "attach": "services",
+      "ensure": {"intent-chip": 0.6, "metric-card": 0.58, "progress-card": 0.56},
       "hints": ["点名服务看详情", "说'错误日志'调出最近记录", "绿了就是自己好了"]
     },
     "plan-work": {
       "attach": "tasks",
+      "ensure": {"intent-chip": 0.6, "timeline-card": 0.6, "progress-card": 0.56},
       "hints": ["列步骤,我帮你排", "按行写下来就是时间线", "说'生成看板'召出操作栏"]
     },
     "report-issue": {
       "attach": "logs",
+      "ensure": {"intent-chip": 0.6, "alert-banner": 0.58, "summary-card": 0.55, "action-bar": 0.55},
       "hints": ["描述现象,日志在下面", "附上时间点更容易定位", "说'通知值班'召出操作栏"]
     },
     "check-social": {
       "attach": "moments",
+      "ensure": {"feed-card": 0.7, "intent-chip": 0.6},
       "hints": ["朋友圈已经铺开在下方", "点名字只看那一个人", "往下说就接着刷"]
     },
     "explore": {
       "attach": "none",
+      "ensure": {},
       "hints": ["随便说点什么——页面会随着你的话自己长出来。"]
     }
   },

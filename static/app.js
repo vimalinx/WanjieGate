@@ -108,20 +108,22 @@ function applyAnswers(a) {
     composer.dataset.cmode = intent.choice;   // 输入框本身也是状态,随意图头名即时变形
   }
   const probs = {};
+  const ensure = committed ? (scene.ensure || {}) : {};   // 已定时场景预设保底核心组件:页面总是成型的,模型只加强不缺席
   for (const id of Object.keys(manifest.components))
-    probs[id] = a["vis_" + id]?.noul ?? 0;
+    probs[id] = Math.max(a["vis_" + id]?.noul ?? 0, ensure[id] ?? 0);
   probs["nav-rail"] = Math.max(probs["nav-rail"] ?? 0, latestText.trim() ? 0.6 : 0);  // 应用壳随内容常驻
   // 布局容量裁剪:非 pin 组件按概率排序放行前 N 个;pin 组件(alert/HUD)只过幽灵阈值
   const cap = {empty: 0, focus: 1, split: 4, dashboard: 9}[layoutMode] ?? 4;
   const limit = Math.min(cap, densityCap);
   const pinned = id => !!manifest.components[id].pin;
   const allowed = new Set(
-    Object.entries(probs).filter(([id, p]) => pinned(id) && p > GHOST_LO).map(([id]) => id));
+    Object.entries(probs).filter(([id, p]) => (pinned(id) || ensure[id] != null) && p > GHOST_LO).map(([id]) => id));
   Object.entries(probs).filter(([id]) => !pinned(id)).sort((x, y) => y[1] - x[1])
     .slice(0, limit).filter(([, p]) => p > GHOST_LO).forEach(([id]) => allowed.add(id));
   for (const [id, p] of Object.entries(probs)) {
-    // 已定:判定即裁决,p>=SOLID 才实体化,其余退场;未定:概率即透明度(幽灵层)
-    const want = allowed.has(id) && (!committed || p >= SOLID);
+    // 已定:判定即裁决,p>=组件门槛才实体化,其余退场;未定:概率即透明度(幽灵层)。打断级组件可有更低 solid 门槛
+    const gate = manifest.components[id].solid ?? SOLID;
+    const want = allowed.has(id) && (!committed || p >= gate);
     setTarget(id, p, want ? (committed ? 1 : p) : 0);
   }
   for (const [id, c] of Object.entries(manifest.components))

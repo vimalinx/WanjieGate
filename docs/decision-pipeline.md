@@ -39,11 +39,14 @@ textarea input 事件
 | `COMMIT_MARGIN_IN` | 0.30 | 意图头两名概率差 ≥0.30 → **已知意图**(committed) |
 | `COMMIT_MARGIN_OUT` | 0.15 | 滞后带:差距跌回 0.15 才退回未定 |
 | `GHOST_LO` | 0.15 | 显隐概率的入场门槛(幽灵态) |
-| `SOLID` | 0.55 | 已定时实体化的最低概率;也是幽灵/实体分界线 |
+| `SOLID` | 0.55 | 已定时实体化的最低概率;也是幽灵/实体分界线。组件可用 `solid` 字段自设门槛(alert-banner=0.40:4B 对打断级组件系统性保守) |
 | `MOUNT_P` | 0.03 | 挂载/卸载阈值 |
 | attach argmax | >0.3 | 附件题头名 >0.3 才显示;已定时退回场景预设 `scene.attach` |
+| `scene.ensure` | per-intent | **场景保底**:已定时该场景核心组件概率取 `max(model, floor)`,且绕过容量裁剪——预设页总是成型的 |
 
-**承诺语义**:未定 → `target = p`(概率即透明度,幽灵层);已定 → `p>=SOLID` 才 `target=1`,其余退场。`pin` 组件(nav-rail/intent-chip/alert-banner)绕过布局容量裁剪。nav-rail 另有壳保底 `p = max(model, 0.6)`。
+**承诺语义**:未定 → `target = p`(概率即透明度,幽灵层);已定 → `p>=组件门槛` 才 `target=1`,其余退场。`pin` 组件(nav-rail/intent-chip/alert-banner)与当前场景 `ensure` 组件绕过布局容量裁剪。nav-rail 另有壳保底 `p = max(model, 0.6)`。
+
+**4B 校准记录**(kev-4b + Qwen3.5-4B-Base,bf16,`KEV_CUDA_GRAPHS=0`,~950ms/帧):意图判别显著更强——"大家在干啥?"等口语社交输入全部判 check-social 并 commit(margin 0.27–0.61);但对显隐题整体保守(写作场景全部 vis<0.55),因此引入 `scene.ensure` 保底;alert-banner 全语境跨度 0.10–0.50,单列 0.40 门槛后正确分离。
 
 ## 5. 布局路径(pack,每次 dirty 重算)
 
