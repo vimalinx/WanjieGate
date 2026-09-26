@@ -58,15 +58,14 @@ header {
   position: relative; overflow: hidden; flex: 1;
   margin: 16px 26px 22px;
   border: 1px solid var(--hair); border-radius: 12px;
-  background: var(--hair);                       /* 区域缝隙透出 = 发丝分隔线 */
+  background: var(--panel);                       /* 一整块平面,分隔线由区域自己画出 */
   opacity: 1; transition: opacity .5s ease;
 }
 #app.idle #stage { opacity: 0; pointer-events: none; }
 
-/* ---------- 区域(原"卡片") ---------- */
+/* ---------- 区域:没有底色,边界线由 JS 按 materialize 逐帧拉出 ---------- */
 .card {
   position: absolute; left: 0; top: 0;
-  background: linear-gradient(165deg, var(--panel-2), var(--panel));
   padding: 14px 18px;
   overflow: hidden;
   will-change: transform, opacity, filter;
@@ -75,18 +74,10 @@ header {
     width      .48s cubic-bezier(.22,1.2,.3,1),
     height     .48s cubic-bezier(.22,1.2,.3,1),
     left       .48s cubic-bezier(.22,1.2,.3,1),
-    top        .48s cubic-bezier(.22,1.2,.3,1),
-    box-shadow .3s ease;
+    top        .48s cubic-bezier(.22,1.2,.3,1);
 }
-/* 幽灵态:区域还只是"被提议",虚线轮廓 + 透明底 */
-.card.ghost {
-  background: transparent;
-  outline: 1px dashed #33405e; outline-offset: -5px;
-}
-/* 强调区:发丝线变成 accent,内角微光 */
-.card.emph {
-  box-shadow: inset 0 0 0 1px var(--accent), inset 0 0 60px -40px var(--accent);
-}
+/* 字比线慢一点出现 */
+.card > * { opacity: var(--co, 1); }
 .card.emph .c-title { color: var(--accent); }
 
 .card .c-title { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
@@ -100,12 +91,8 @@ header {
 .chip .bar { width: 90px; height: 4px; background: var(--line); border-radius: 99px; overflow: hidden; }
 .chip .bar i { display: block; height: 100%; background: var(--accent); transition: width .3s; }
 
-/* 顶/底条带区域:内容垂直居中 */
-.banner {
-  background: linear-gradient(90deg, rgba(255,143,143,.13), rgba(255,143,143,.02) 70%);
-  box-shadow: inset 3px 0 0 var(--warn);
-  display: flex; align-items: center; gap: 10px;
-}
+/* 顶/底条带区域:内容垂直居中;无底色,警示靠左侧边线(JS 画) */
+.banner { display: flex; align-items: center; gap: 10px; }
 .banner .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 10px var(--warn); flex: none; }
 .banner > div { font-size: 14px; }
 

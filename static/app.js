@@ -203,12 +203,26 @@ function tick(now) {
       c.el.style.left = r.x + "px"; c.el.style.top = r.y + "px";
       c.el.style.width = r.w + "px"; c.el.style.height = r.h + "px";
     }
-    c.el.style.transform = `translateY(${(lift * 16).toFixed(1)}px) scale(${(0.97 + 0.03 * m).toFixed(4)})`;
-    c.el.style.opacity = Math.pow(m, 1.4).toFixed(3);
+    c.el.style.transform = `translateY(${(lift * 10).toFixed(1)}px)`;
+    c.el.style.opacity = m.toFixed(3);
+    c.el.style.setProperty("--co", Math.pow(m, 1.5).toFixed(3));   // 字比线慢一点出现
     c.el.style.filter = lift > 0.02 ? `blur(${(lift * 6).toFixed(1)}px)` : "none";
     c.el.style.zIndex = c.id === emphasis ? 5 : 1;
-    c.el.classList.toggle("ghost", m < SOLID);
-    c.el.classList.toggle("emph", c.id === emphasis && m >= SOLID);
+    const ghosting = m < SOLID;
+    c.el.classList.toggle("ghost", ghosting);
+    c.el.classList.toggle("emph", c.id === emphasis && !ghosting);
+    // 边界线随 m 拉出:幽灵=虚线轮廓;实体=发丝线(强调区用 accent)
+    if (ghosting) {
+      c.el.style.boxShadow = "none";
+      c.el.style.outline = `1px dashed rgba(120,140,190,${(m * 0.85).toFixed(3)})`;
+      c.el.style.outlineOffset = "-4px";
+    } else {
+      c.el.style.outline = "none";
+      const col = c.id === emphasis ? "94,234,212" : "120,140,180";
+      c.el.style.boxShadow =
+        `inset 0 0 0 1px rgba(${col},${(m * 0.75).toFixed(3)})` +
+        (c.id === "alert-banner" ? `, inset 3px 0 0 rgba(255,143,143,${(m * 0.9).toFixed(3)})` : "");
+    }
   }
   if (dirty.debug) { renderDebug(); dirty.debug = false; }
   requestAnimationFrame(tick);
