@@ -11,7 +11,7 @@ const MOCK = new URLSearchParams(location.search).has("mock");
 const DEBOUNCE_MS = 320;
 const TAU_IN = 0.16, TAU_OUT = 0.5;        // 进场快、退场慢(秒)
 const MOUNT_P = 0.03, GHOST_LO = 0.15, SOLID = 0.55;
-const STRIP_H = 58, DIV = 1;                  // 条带高度 / 分隔线宽
+const STRIP_H = 54;
 const EASE = "cubic-bezier(.22,1.2,.3,1)";
 
 let manifest = null;
@@ -135,7 +135,11 @@ function defaultBinding(id) {
   return b ? Object.keys(b.options)[0] : null;
 }
 
-/* ---------- 空间分划:舞台被切成条带 + 主区/侧栏,区域按权重填满 ---------- */
+/* ---------- 空间分划:留白 + 主附分区 ----------
+ * 顶/底条带与中部主区/侧栏之间留 16-20px 空白;组内区域间 10px;
+ * 每条边界都是独立的描边矩形,线不互相连接。
+ */
+const PAD = 20, GUT = 20, GAP = 14, GAP_IN = 10;
 function zoneOf(id) {
   if (id === "alert-banner") return "top";
   if (id === "action-bar") return "bottom";
@@ -153,34 +157,35 @@ function pack() {
   const bots  = vis.filter(c => zoneOf(c.id) === "bottom");
   const mains = vis.filter(c => zoneOf(c.id) === "main");
   const rails = vis.filter(c => zoneOf(c.id) === "rail");
+  const Wi = W - PAD * 2, Hi = H - PAD * 2;
 
-  let y = 0;
-  for (const c of tops) { c.rect = {x: 0, y, w: W, h: STRIP_H}; y += STRIP_H + DIV; }
-  let by = H;
-  for (const c of bots) { by -= STRIP_H; c.rect = {x: 0, y: by, w: W, h: STRIP_H}; by -= DIV; }
-  const midH = Math.max(0, by + DIV - y);
+  let y = PAD;
+  for (const c of tops) { c.rect = {x: PAD, y, w: Wi, h: STRIP_H}; y += STRIP_H + GAP; }
+  let by = H - PAD;
+  for (const c of bots) { by -= STRIP_H; c.rect = {x: PAD, y: by, w: Wi, h: STRIP_H}; by -= GAP; }
+  const midY = y, midH = Math.max(0, by - midY);   // 条带循环里已含间隔
 
-  const narrow = W < 720;
-  let mainW = W;
+  const narrow = Wi < 720;
+  let mainW = Wi;
   if (mains.length && rails.length && !narrow)
-    mainW = Math.round(W * (layoutMode === "split" ? 0.52 : 0.62));
+    mainW = Math.round(Wi * (layoutMode === "split" ? 0.52 : 0.60));
   else if (!mains.length) mainW = 0;
 
-  // 一列区域内按 minH 权重铺满,最后一个吃掉舍入余量
+  // 一列区域内按 minH 权重铺满,组内 10px 间隔,最后一个吃掉舍入余量
   const stack = (list, x0, w, y0, h) => {
     const tot = list.reduce((s, c) => s + (manifest.components[c.id].minH || 1), 0);
     let cy = y0;
     list.forEach((c, i) => {
       const ch = i === list.length - 1 ? y0 + h - Math.round(cy)
-        : Math.round((h - DIV * (list.length - 1)) * (manifest.components[c.id].minH || 1) / tot);
+        : Math.round((h - GAP_IN * (list.length - 1)) * (manifest.components[c.id].minH || 1) / tot);
       c.rect = {x: x0, y: Math.round(cy), w, h: Math.max(0, ch)};
-      cy += ch + DIV;
+      cy += ch + GAP_IN;
     });
   };
-  if (narrow) stack([...mains, ...rails], 0, W, y, midH);
+  if (narrow) stack([...mains, ...rails], PAD, Wi, midY, midH);
   else {
-    if (mains.length) stack(mains, 0, mainW, y, midH);
-    if (rails.length) stack(rails, mains.length ? mainW + DIV : 0, mains.length ? W - mainW - DIV : W, y, midH);
+    if (mains.length) stack(mains, PAD, mainW, midY, midH);
+    if (rails.length) stack(rails, mains.length ? PAD + mainW + GUT : PAD, mains.length ? Wi - mainW - GUT : Wi, midY, midH);
   }
 }
 
@@ -203,10 +208,19 @@ function tick(now) {
       c.el.style.left = r.x + "px"; c.el.style.top = r.y + "px";
       c.el.style.width = r.w + "px"; c.el.style.height = r.h + "px";
     }
-    c.el.style.transform = `translateY(${(lift * 10).toFixed(1)}px)`;
+    // 进场方式按组件声明:条带横向扫入,主区弹簧,其余缓升
+    const enter = manifest.components[c.id].enter;
+    if (enter === "wipe") c.el.style.clipPath = `inset(0 ${(lift * 100).toFixed(1)}% 0 0)`;
+    else c.el.style.clipPath = "none";
+    c.el.style.transform = enter === "wipe" ? "none"
+      : enter === "zoom" ? `scale(${(0.94 + 0.06 * m).toFixed(4)})`
+      : enter === "spring" ? `translateY(${(lift * 14).toFixed(1)}px) scale(${(0.97 + 0.03 * m).toFixed(4)})`
+      : `translateY(${(lift * 8).toFixed(1)}px)`;
     c.el.style.opacity = m.toFixed(3);
     c.el.style.setProperty("--co", Math.pow(m, 1.5).toFixed(3));   // 字比线慢一点出现
-    c.el.style.filter = lift > 0.02 ? `blur(${(lift * 6).toFixed(1)}px)` : "none";
+    // 模糊只属于"运动过程":静止(m≈target)必须全清晰
+    const motion = Math.abs(c.target - c.m);
+    c.el.style.filter = motion > 0.015 ? `blur(${Math.min(4, motion * 7).toFixed(1)}px)` : "none";
     c.el.style.zIndex = c.id === emphasis ? 5 : 1;
     const ghosting = m < SOLID;
     c.el.classList.toggle("ghost", ghosting);
