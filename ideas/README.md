@@ -52,3 +52,5 @@
 [提案](unknown/0004-vicinae-intent-bubbles.md) · [验收](../docs/acceptance-vicinae-bubbles.md)：用户指定 5174 画风并授权自主开发测试；Codex 在独立工作树完成万界门侧桥接和原生面板。未替换 Vicinae 主搜索框，未自动发帖。关联 IDEA-0001/0002，不推定双方共识。
 
 2026-09-27 用户补充：入口采用全局快捷键搜索浮层，随后明确去掉框外底板、只保留搜索框；已在 `integrations/vicinae/IntentPanel.swift` 和 `static/launcher.css` 实现透明承载、输入展开泡泡。原生视觉与 Esc 日志已检查；全局物理快捷键仍未实测，详见验收记录。作者归属保持 unknown。
+
+2026-09-27 后续：修复桥接漏掉 Vicinae 应用启动项的问题，“帮我打开微信”已真实返回启动泡泡；按用户反馈改为输入展开磨砂面板、提高泡泡对比度。代码与 85 用例回归范围见 [验收记录](../docs/acceptance-vicinae-bubbles.md)。实现 Codex，提案作者 unknown，保留前版视觉选择为历史。

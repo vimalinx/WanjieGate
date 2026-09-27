@@ -18,6 +18,9 @@ COMMANDS = {
     'wm:switch-windows': ('切换工作窗口', '找到并切换已打开的工作窗口', True),
 }
 
+def is_application(command):
+    return isinstance(command,str) and re.fullmatch(r'applications:[A-Za-z0-9][A-Za-z0-9._-]{0,255}',command) is not None
+
 class VicinaeBridge:
     def __init__(self, cli=None):
         bundle='/Applications/Vicinae.app/Contents/MacOS/vicinae-cli'
@@ -41,23 +44,35 @@ class VicinaeBridge:
         terms=re.findall(r'[“"「](.*?)[”"」]',text)
         if not terms:terms=re.findall(r'(?<![\w.])([\w-]+\.(?:pdf|md|docx|txt|pptx|xlsx|py|js|png|jpg))(?!\w)',text,re.I)
         query=terms[0] if terms else ''
-        return [{'id':'vicinae:'+r['id'],'kind':'action','title':COMMANDS[r['id']][0],
+        rows=self.catalog()
+        items=[{'id':'vicinae:'+r['id'],'kind':'action','title':COMMANDS[r['id']][0],
                  'description':COMMANDS[r['id']][1]+'；只打开界面，不自动取得内容',
                  'resource':{'action':'desktop','command':r['id'],'query':query if COMMANDS[r['id']][2] else ''}}
-                for r in self.catalog() if r['id'] in COMMANDS]
+                for r in rows if r['id'] in COMMANDS]
+        words=re.findall(r'[a-z][a-z0-9-]{3,}',text.lower())
+        for row in rows:
+            command,name=row['id'],row['name']
+            if not is_application(command):continue
+            named=name.strip() and name.casefold() in text.casefold()
+            alias=any(part.endswith(word) for part in command.lower().split('.') for word in words)
+            if named or alias:
+                items.append({'id':'vicinae:'+command,'kind':'action','title':'打开'+name,
+                    'description':'通过 Vicinae 启动或切换到本机应用 '+name+'；只打开应用，不读取内容、不发送消息',
+                    'resource':{'action':'desktop','command':command,'query':''}})
+        return items
 
     def status(self):
         try:
             rows=self.catalog()
-            return {'available':True,'loaded':len(rows),'supported':sum(r['id'] in COMMANDS for r in rows)}
+            return {'available':True,'loaded':len(rows),'supported':sum(r['id'] in COMMANDS or is_application(r['id']) for r in rows)}
         except ValueError as e:return {'available':False,'message':str(e)}
 
     def launch(self,command,query):
-        if command not in COMMANDS:raise ValueError('这个命令尚未接入万界门')
+        if command not in COMMANDS and not is_application(command):raise ValueError('这个命令尚未接入万界门')
         if not isinstance(query,str) or len(query)>1800 or '\x00' in query:raise ValueError('查询参数无效')
         if command not in {r['id'] for r in self.catalog(fresh=True)}:raise ValueError('该命令已不可用，请刷新候选')
         argv=[self.cli,'cmd','launch',command]
-        if query and COMMANDS[command][2]:argv+=['--query',query]
+        if query and command in COMMANDS and COMMANDS[command][2]:argv+=['--query',query]
         try:
             subprocess.run(argv,capture_output=True,text=True,timeout=6,check=True)
             status='handed_off'
@@ -69,7 +84,7 @@ class VicinaeBridge:
 def install_vicinae(kernel,bridge):
     from .runtime.capabilities import obj,string
     id_='vicinae.launch';module='builtin.'+id_
-    spec={'id':id_,'title':'打开 Vicinae 命令','module':module,'inputSchema':obj({'command':{'type':'string','enum':list(COMMANDS)},'query':string(1800)},['command','query']), 'outputSchema':{'type':'object'},'sideEffect':'L1','permissions':['desktop.launch'],'network':False,'cost':'none','reversible':True}
+    spec={'id':id_,'title':'打开 Vicinae 命令','module':module,'inputSchema':obj({'command':string(280),'query':string(1800)},['command','query']), 'outputSchema':{'type':'object'},'sideEffect':'L1','permissions':['desktop.launch'],'network':False,'cost':'none','reversible':True}
     manifest={'id':module,'version':'0.1.0','protocolVersion':'0.1','kind':'capability','title':spec['title'],'provides':[id_],'accepts':['command.capability.run'],'emits':['result.capability.result'],'requires_context':['intent'],'permissions':spec['permissions'],'side_effect':'L1','network':False,'cost':'none','reversible':True,'latency':'variable','trusted':True}
     def run(task,progress,cancel):
         if cancel():raise ValueError('执行已取消')

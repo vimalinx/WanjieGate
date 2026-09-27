@@ -24,6 +24,25 @@ class VicinaeTests(unittest.TestCase):
             named=m.VicinaeBridge('/fake/cli').candidates('查找“年度报告.pdf”')
         self.assertEqual(named[0]['resource']['query'],'年度报告.pdf')
 
+    def test_installed_application_is_a_candidate_and_launches_without_query(self):
+        m=self.module();calls=[]
+        rows=[{'id':'applications:com.tencent.xinWeChat','name':'微信'},
+              {'id':'applications:com.apple.Notes','name':'备忘录'},
+              {'id':'power:power-off','name':'关闭微信'}]
+        def run(argv,**kw):
+            calls.append(argv)
+            return subprocess.CompletedProcess(argv,0,json.dumps(rows) if 'ls' in argv else '', '')
+        with patch('subprocess.run',side_effect=run):
+            bridge=m.VicinaeBridge('/fake/cli')
+            for text in ['帮我打开微信','open WeChat']:
+                items=bridge.candidates(text)
+                self.assertEqual([x['resource']['command'] for x in items],['applications:com.tencent.xinWeChat'])
+                self.assertEqual(items[0]['title'],'打开微信')
+            result=bridge.launch('applications:com.tencent.xinWeChat','do not forward this')
+            self.assertEqual(result['status'],'handed_off')
+            self.assertEqual(calls[-1],['/fake/cli','cmd','launch','applications:com.tencent.xinWeChat'])
+            with self.assertRaises(ValueError):bridge.launch('applications:com.fake.Missing','')
+
     def test_query_is_passed_as_one_argument_not_shell_text(self):
         m=self.module();calls=[]
         def run(argv,**kw):

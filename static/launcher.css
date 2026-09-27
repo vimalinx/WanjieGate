@@ -60,3 +60,16 @@ html.native-root,html.native-root body.native-panel.intent-mode,
 .native-panel .capsule-caption,.native-panel .canvas-bottom{display:none}
 .native-panel .capsule-zone{margin-top:0!important}
 .native-panel .capsule,.native-panel .capsule:focus-within{background:#f9faffef;box-shadow:0 6px 24px #56658c15,inset 0 1px 0 #fff;backdrop-filter:blur(22px)}
+
+/* Reveal a quiet frosted stage only while the intent surface is expanded. */
+.native-panel.has-input #canvas::before{display:block;inset:0;border-radius:28px;background:linear-gradient(135deg,#d9d3ecb3,#e1e9f4a6 55%,#d6e5efb3);border:1px solid #ffffffb3;box-shadow:inset 0 1px 0 #ffffffe0;backdrop-filter:blur(30px) saturate(1.15)}
+.native-panel.has-input #glass-bubbles{filter:contrast(1.3) saturate(1.2)}
+.native-panel .bubble strong{font-size:12px;font-weight:600;line-height:1.5}
+.native-panel .bubble small{font-size:9px;opacity:.8}
+.native-panel .glass-ready .bubble{color:#354b70;text-shadow:0 1px 2px #ffffffb3}
+.native-panel .glass-ready .bubble.action{color:#624875}
+.native-panel .glass-ready .bubble.flow,.native-panel .glass-ready .bubble.collection{color:#474974}
+
+.native-panel.has-input .capsule-caption{display:flex;justify-content:center;color:#4c5976}
+.native-panel.has-input .capsule-caption #status{max-width:100%;padding:4px 12px;border-radius:14px;background:#f9faffb3;white-space:normal;text-align:center}
+.native-panel .capsule-caption .shortcut-hint{display:none}

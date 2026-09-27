@@ -10,6 +10,7 @@ final class IntentWindow: NSPanel {
 final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
     var window: IntentWindow!
     var web: WKWebView!
+    var frost: NSVisualEffectView!
     var hotKey: EventHotKeyRef?
     var expanded = false
     var keyMonitor: Any?
@@ -36,6 +37,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         surface.wantsLayer = true
         surface.layer?.backgroundColor = NSColor.clear.cgColor
         surface.autoresizingMask = [.width, .height]
+        frost = NSVisualEffectView(frame: surface.bounds)
+        frost.material = .hudWindow
+        frost.blendingMode = .behindWindow
+        frost.state = .active
+        frost.wantsLayer = true
+        frost.layer?.cornerRadius = 28
+        frost.layer?.masksToBounds = true
+        frost.autoresizingMask = [.width, .height]
+        frost.isHidden = true
+        surface.addSubview(frost)
         let config = WKWebViewConfiguration()
         config.userContentController.add(self, name: "layout")
         web = WKWebView(frame: surface.bounds, configuration: config)
@@ -95,6 +106,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
               let value = message.body as? [String: Any], let next = value["expanded"] as? Bool,
               next != expanded, window != nil else { return }
         expanded = next
+        frost.isHidden = !next
+        window.hasShadow = next
         let screen = window.screen?.visibleFrame ?? NSScreen.main!.visibleFrame
         let height: CGFloat = next ? min(560, screen.height - 60) : 144
         var frame = window.frame
