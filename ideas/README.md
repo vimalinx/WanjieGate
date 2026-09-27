@@ -9,7 +9,7 @@
 | IDEA-0001 | vimalinx | 架构、协议、Context、组合、权限 | accepted · 本地已实现，外部待接入 | [最小语义操作系统与 Intent Runtime](vimalinx/0001-intent-runtime.md) |
 | IDEA-0002 | vimalinx | 胶囊入口、渐进展开 | implemented | [前端保留胶囊入口](vimalinx/0002-capsule-interface.md) |
 | IDEA-0003 | vimalinx | 正交语义维度、DAG、流式输入 | accepted · 首个切片已验证 | [Semantic Control DAG](vimalinx/0003-semantic-control-dag.md) |
-| IDEA-0004 | vimalinx | 无模式生长、拖拽、内容反馈 | implemented · 最新交互待验收 | [生长工作集](vimalinx/0004-growing-workspace.md) |
+| IDEA-0004 | vimalinx | 无模式生长、拖拽、内容反馈 | implemented · 正文自动展开已实测，其他组合待验收 | [生长工作集](vimalinx/0004-growing-workspace.md) |
 | IDEA-0005 | vimalinx | 语义动效、扩展、批量 | implemented · 静态检查 | [动效与扩展](vimalinx/0005-semantic-motion-and-extension-standard.md) |
 | IDEA-0006 | vimalinx | 对象图、上下文角色、动态查询 | implemented · 静态检查 | [上下文对象图](vimalinx/0006-contextual-object-graph.md) |
 | 待提交 | kanemaverick | 待提交 | awaiting-submission | [协作者入口](kanemaverick/README.md) |

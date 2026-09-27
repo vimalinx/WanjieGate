@@ -15,7 +15,7 @@ def query_candidates(text):
 def add_questions(body):
     queries=query_candidates(body['state'].get('view',{}).get('selection') or body['state']['request'])
     body['state']['searchCandidates']=queries
-    body['questions']['support_editor']={'type':'noul','instructions':'Would a persistent editable document help now? Includes directly writing prose. This is independent of market, references and all other components. Do not remove existing content.'}
+    body['questions']['support_editor']={'type':'noul','instructions':'Is the user directly composing prose, a diary, a note, an article, a story, or asking to start one? The input field is also the document itself. A descriptive, reflective or narrative opening is strong evidence of authoring even when it is short or an unfinished sentence; do not require words like write, note, document or a click. A lyrical opening about the day or a personal feeling belongs in an editor. A greeting addressed to the assistant, a factual question, or a tool command alone is not authoring. Decide the activity, not whether a large document is already complete. Other reference and market components may coexist. Never rewrite the user text.'}
     body['questions']['support_market']={'type':'noul','instructions':'Would stock quotes or charts help the actual current request or selected passage? A passing mention alone is insufficient. Other components can coexist.'}
     from .extensions import enabled
     try:

@@ -8,16 +8,17 @@
   <button id="new-intent" class="new-intent">＋ 新的空间</button>
   <nav id="intent-list" aria-label="意图空间"></nav>
   <div id="empty" class="resume-list"><button id="start-intent">创建新的空间</button></div>
+  <div class="drawer-assistance"><label title="使用 JEV 理解输入，查找公开参考资料和行情，可能消耗额度；不会自动改写正文"><input id="assist-auto" type="checkbox" checked> 自动协助</label><span>理解输入 · 公开资料 · 行情</span></div>
+  <details class="drawer-controls"><summary>工具与设置</summary><nav id="surface-switch" aria-label="添加内容"><button data-surface="writing">＋ 文稿</button><button data-surface="market">＋ 行情</button></nav>      <div class="capsule-tools"><div class="quick-tools"><button id="import-data" class="icon-button" aria-label="导入数据" title="导入数据">＋</button><button id="save-note" title="存为本地笔记">存为笔记</button></div><label class="local-toggle"><input id="local-only" type="checkbox" checked>仅本地</label></div>  <nav id="surface-tools" aria-label="写作工具"><button data-helper="references">＋ 资料与引用</button><button data-helper="images">＋ 图片与截图</button><button data-helper="outline">＋ 写作结构</button></nav>      <details class="more-tools" open><summary>更多</summary><div class="composer-tools"><button id="save-memory">记为事实</button><button id="add-notification">记提醒</button><button id="observe">判断当前意图</button><button id="market">查看行情</button><button id="run-workflow">组合执行</button><button id="run-capability">更多能力</button><button id="motion-toggle" type="button" aria-pressed="true">动态效果</button><label><input id="auto-run" type="checkbox">自动内容</label><select id="generation-mode" aria-label="生成方式"><option value="scene">组合内容</option><option value="write">文稿</option><option value="plan">行动</option><option value="answer">回答</option></select></div></details></details>
   <div class="history-footer"><button id="modules-button">能力与模块</button><span id="connection" role="status">连接中</span></div>
 </dialog>
 <div id="ambient" class="ambient" aria-hidden="true"><div id="shutters" class="shutters"></div><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><span class="floating-mark mark-one">＋</span><span class="floating-mark mark-two">＋</span><i class="floating-dot dot-one"></i><i class="floating-dot dot-two"></i><i class="floating-dot dot-three"></i></div>
 <main class="page">
-  <div class="assist-setting"><label title="使用 JEV 理解输入，查找公开参考资料和行情，可能消耗额度；不会自动改写正文"><input id="assist-auto" type="checkbox"> 自动协助</label><span>理解输入 · 公开资料 · 行情</span></div>
-  <header id="surface-bar" hidden><button id="surface-history" aria-label="空间历史">◈ <span>WANJIE</span></button><nav id="surface-switch" aria-label="添加内容"><button data-surface="writing">＋ 文稿</button><button data-surface="market">＋ 行情</button></nav><span class="surface-hint">空间，随工作展开</span></header>
+  <header id="surface-bar" hidden><button id="surface-history" aria-label="空间历史">◈ <span>WANJIE</span></button></header>
   <div id="adaptive-grid">
   <aside class="growth-lane" data-lane="left" aria-label="左侧工具"></aside>
   <div class="growth-center">
-  <div id="writer-heading" hidden><div class="document-eyebrow">✧ &nbsp; 文稿 <span id="document-save" role="status">已保存</span></div><input id="document-title" aria-label="笔记标题" placeholder="未命名笔记"><div id="writer-format" hidden><button data-format="heading" title="添加标题">H₂</button><button data-format="bold" title="加粗">B</button><button data-format="quote" title="引用">❞</button><button data-format="check" title="待办">☑</button><button data-format="link" title="链接">↗</button><span></span><button id="writer-undo">撤销插入</button><button id="document-preview-toggle">阅读</button><button id="document-export">导出</button></div></div>
+  <div id="writer-heading" hidden><div class="document-eyebrow">✧ &nbsp; 文稿 <span id="document-save" role="status">已保存</span></div><input id="document-title" aria-label="笔记标题" placeholder="未命名笔记"><div id="writer-format" hidden><button data-format="heading" title="添加标题">H₂</button><button data-format="bold" title="加粗">B</button><button data-format="quote" title="引用">❞</button><button data-format="check" title="待办">☑</button><button data-format="link" title="链接">↗</button><span></span><button id="writer-undo" hidden>撤销插入</button><button id="document-preview-toggle">阅读</button><button id="document-export">导出</button></div></div>
   <section class="composer" aria-label="表达目的">
     <div class="capsule">
       <button id="history-open" class="icon-button" aria-label="打开历史" title="历史"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.5 7M3 5v6h6M12 7v5l3 2"/></svg></button>
@@ -25,13 +26,13 @@
       <button id="generate" class="icon-button send-button" aria-label="生成内容" title="生成内容 · Ctrl Enter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
     </div>
     <div id="capsule-context" class="capsule-context" hidden>
-      <div class="capsule-tools"><div class="quick-tools"><button id="import-data" class="icon-button" aria-label="导入数据" title="导入数据">＋</button><button id="save-note" title="存为本地笔记">存为笔记</button><span id="semantic-status" role="status"></span></div><label class="local-toggle"><input id="local-only" type="checkbox" checked>仅本地</label></div>
+      <span id="semantic-status" role="status"></span>
       <section id="suggestions" class="suggestions" aria-live="polite"></section>
-      <details class="more-tools"><summary>更多</summary><div class="composer-tools"><button id="save-memory">记为事实</button><button id="add-notification">记提醒</button><button id="observe">判断当前意图</button><button id="market">查看行情</button><button id="run-workflow">组合执行</button><button id="run-capability">更多能力</button><button id="motion-toggle" type="button" aria-pressed="true">动态效果</button><label><input id="auto-run" type="checkbox">自动内容</label><select id="generation-mode" aria-label="生成方式"><option value="scene">组合内容</option><option value="write">文稿</option><option value="plan">行动</option><option value="answer">回答</option></select></div></details>
+
     </div>
   </section>
   <article id="document-preview" class="markdown" hidden></article>
-  <nav id="surface-tools" hidden aria-label="写作工具"><button data-helper="references">＋ 资料与引用</button><button data-helper="images">＋ 图片与截图</button><button data-helper="outline">＋ 写作结构</button><span>材料可拖入正文 · 组件可拖到两侧</span></nav>
+
   <input id="image-import" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
   <div class="growth-lane growth-bottom" data-lane="bottom" aria-label="下方工作区"></div>
   </div><aside class="growth-lane" data-lane="right" aria-label="右侧材料"></aside>
