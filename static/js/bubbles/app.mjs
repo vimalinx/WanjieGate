@@ -1,9 +1,9 @@
-import {initialState,reduce,visibleBubbles,mergeRequest} from './state.mjs';
+import {initialState,reduce,visibleBubbles,mergeRequest,releaseDisposition,manualMergeOptions,validInteraction,layoutPositions} from './state.mjs';
 import {createClient} from './client.mjs';
 const $=s=>document.querySelector(s),client=createClient(),canvasEl=$('#canvas'),bubbleLayer=$('#bubbles');
 let state=initialState(),canvas=null,snapshot=null,intentId=null,enabled=false,composing=false,saveTimer,inputTimer,saveTail=Promise.resolve(),suggestBusy=false,suggestNext=null,detailsId=null,drag=null,trace=[],toastTimer;
 const labels={source:'资料',action:'动作',link:'外部入口',flow:'执行组合',collection:'资料集合'},symbols={source:'⌑',action:'✧',link:'↗',flow:'⌘',collection:'◫'};
-const anchors=[[.22,.31],[.5,.27],[.78,.31],[.22,.73],[.5,.80],[.78,.73],[.09,.46],[.91,.46],[.12,.82],[.88,.82],[.36,.86],[.65,.86]];
+const anchors=[[.22,.31],[.5,.31],[.78,.31],[.22,.73],[.5,.80],[.78,.73],[.09,.46],[.91,.46],[.12,.82],[.88,.82],[.36,.86],[.65,.86]];
 const terminal=t=>!['queued','running','submitting'].includes(t);
 function element(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
 function button(text,fn,cls='secondary'){const b=element('button',text,cls);b.onclick=()=>Promise.resolve(fn()).catch(error);return b}
@@ -17,8 +17,8 @@ function scheduleSave(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>save().
 function save(){clearTimeout(saveTimer);saveTail=saveTail.catch(()=>{}).then(async()=>{if(!canvas)return;const value=content();$('#save-status').textContent='保存中';try{const r=await client.command('artifact.update',{artifact:canvas.id,version:canvas.version,content:value});canvas=r.value;backup();$('#save-status').textContent='已保存'}catch(e){$('#save-status').textContent='保存失败 · 本机副本保留';throw e}});return saveTail}
 function render(){
  if(drag)return;
- const items=visibleBubbles(state);bubbleLayer.replaceChildren();$('#welcome').hidden=items.length>0;$('#undo').disabled=!state.undo;
- items.forEach((b,i)=>{const p=state.positions[b.id]||{x:anchors[i%anchors.length][0],y:anchors[i%anchors.length][1]};const node=element('button',undefined,'bubble '+b.kind+(b.selected?' selected':''));node.dataset.id=b.id;node.style.left=(p.x*100)+'%';node.style.top=(p.y*100)+'%';node.style.setProperty('--delay',(-i*1.23)+'s');node.setAttribute('aria-label',`${labels[b.kind]}：${b.title}`);append(node,element('span',symbols[b.kind]||'◌','symbol'),element('strong',b.title),element('small',b.members?`${b.members.length} 个连接 · ${labels[b.kind]}`:labels[b.kind]));if(b.pinned)node.append(element('span','·','fixed'));node.addEventListener('pointerdown',startDrag);node.onclick=()=>{if(!node.wasDragged)showDetails(b.id)};bubbleLayer.append(node)});
+ const items=visibleBubbles(state),layout=layoutPositions(state,anchors);bubbleLayer.replaceChildren();$('#welcome').hidden=items.length>0;$('#undo').disabled=!state.undo;
+ items.forEach((b,i)=>{const p=layout[b.id];const node=element('button',undefined,'bubble '+b.kind+(b.selected?' selected':''));node.dataset.id=b.id;node.style.left=(p.x*100)+'%';node.style.top=(p.y*100)+'%';node.style.setProperty('--delay',(-i*1.23)+'s');node.setAttribute('aria-label',`${labels[b.kind]}：${b.title}`);append(node,element('span',symbols[b.kind]||'◌','symbol'),element('strong',b.title),element('small',b.members?`${b.members.length} 个连接 · ${labels[b.kind]}`:labels[b.kind]));if(b.pinned)node.append(element('span','·','fixed'));node.addEventListener('pointerdown',startDrag);node.onclick=()=>{if(!node.wasDragged)showDetails(b.id)};bubbleLayer.append(node)});
 }
 function requestSuggestions(mode='initial'){if(composing||!state.input.trim())return;if(!enabled){$('#status').textContent='先在连接设置中启用 Jev';return}suggestNext={mode,text:state.input,revision:state.inputRevision};pumpSuggestions()}
 async function pumpSuggestions(){if(suggestBusy||!suggestNext)return;const req=suggestNext;suggestNext=null;suggestBusy=true;$('#status').textContent='Jev 正在寻找与你的想法相关的灵感…';$('#more').disabled=$('#refresh').disabled=true;try{const result=await client.capability('bubble.suggest',{text:req.text});record('候选判断',result.decision);emit({type:'suggestions',mode:req.mode,revision:req.revision,items:result.candidates});if(req.revision===state.inputRevision)$('#status').textContent=state.notice||`找到 ${result.candidates.length} 个相关方向 · 拖动泡泡试试`}
@@ -30,11 +30,40 @@ $('#more').onclick=()=>requestSuggestions('more');$('#refresh').onclick=()=>requ
 function startDrag(e){if(e.button!==0)return;const node=e.currentTarget,id=node.dataset.id;closeFusion();state=reduce(state,{type:'mergeCancel'});const box=node.getBoundingClientRect(),area=canvasEl.getBoundingClientRect();drag={id,node,startX:e.clientX,startY:e.clientY,x:box.left+box.width/2-area.left,y:box.top+box.height/2-area.top,area,old:state.positions[id],moved:false,target:null,request:null,result:null};node.setPointerCapture(e.pointerId);node.addEventListener('pointermove',moveDrag);node.addEventListener('pointerup',endDrag,{once:true});node.addEventListener('pointercancel',cancelDrag,{once:true});document.body.classList.add('drag-active')}
 function moveDrag(e){if(!drag)return;const d=drag,dx=e.clientX-d.startX,dy=e.clientY-d.startY;if(Math.hypot(dx,dy)<5&&!d.moved)return;d.moved=true;d.node.wasDragged=true;d.node.classList.add('dragging');const x=Math.max(48,Math.min(d.area.width-48,d.x+dx)),y=Math.max(160,Math.min(d.area.height-90,d.y+dy));d.pos={x:x/d.area.width,y:y/d.area.height};d.node.style.left=x+'px';d.node.style.top=y+'px';let closest=null,distance=90;for(const n of bubbleLayer.children){if(n===d.node)continue;const r=n.getBoundingClientRect();const v=Math.hypot(e.clientX-r.left-r.width/2,e.clientY-r.top-r.height/2);if(v<distance){distance=v;closest=n}}const id=closest?.dataset.id;if(id!==d.target){clearTimeout(d.timer);bubbleLayer.querySelectorAll('.target').forEach(n=>n.classList.remove('target'));state=reduce(state,{type:'mergeCancel'});d.target=id;d.request=null;d.result=null;if(closest){closest.classList.add('target');d.timer=setTimeout(()=>beginMerge(d.id,id,d),250)}}}
 function cleanupDrag(d){clearTimeout(d.timer);d.node.removeEventListener('pointermove',moveDrag);document.body.classList.remove('drag-active');bubbleLayer.querySelectorAll('.target').forEach(n=>n.classList.remove('target'));setTimeout(()=>d.node.wasDragged=false,50)}
-function endDrag(){if(!drag)return;const d=drag;drag=null;cleanupDrag(d);if(!d.moved)return;if(d.target){d.released=true;if(!d.request)beginMerge(d.id,d.target,d);else if(d.result)applyMerge(d);else showPending()}else emit({type:'pin',id:d.id,position:d.pos});}
+function endDrag() {
+ if(!drag)return;
+ const d=drag;drag=null;cleanupDrag(d);
+ if(!d.moved)return;
+ d.released=true;
+ switch(releaseDisposition(state,d)) {
+  case 'pin': emit({type:'pin',id:d.id,position:d.pos});break;
+  case 'start': beginMerge(d.id,d.target,d);break;
+  case 'apply': applyMerge(d);break;
+  case 'wait': render();showPending();break;
+  default: emit({type:'mergeCancel'},false);closeFusion();render();
+ }
+}
 function cancelDrag(){if(!drag)return;const d=drag;drag=null;cleanupDrag(d);emit({type:'mergeCancel'},false)}
 function groupObject(id){return visibleBubbles(state).find(b=>b.id===id)}
-async function beginMerge(leftId,rightId,session={released:true}){if(!enabled){toast('请先在连接设置中启用 Jev');render();return}const left=groupObject(leftId),right=groupObject(rightId);if(!left||!right)return;const req=mergeRequest(state,leftId,rightId);session.request=req;emit({type:'mergeStart',request:req},false);if(session.released)showPending();try{const result=await Promise.race([client.capability('bubble.merge',{text:state.input||'组织这些灵感',left,right}),new Promise((_,reject)=>setTimeout(()=>reject(new Error('判断超时，泡泡已保留，请重新组合')),14000))]);record('融合判断',result.decision);session.result=result.merge;if(session.released)applyMerge(session)}catch(e){if(state.pending?.interactionId===req.interactionId){emit({type:'mergeCancel'},false);closeFusion();error(e)}}}
-function applyMerge(session){if(!state.pending||state.pending.interactionId!==session.request.interactionId)return;emit({type:'mergeResult',request:session.request,result:session.result});if(state.pending?.status==='choice'){const box=$('#fusion-content');box.replaceChildren(element('p','Jev 认为有几种可能，请选择你想要的连接方式。','muted'));for(const o of state.pending.options)box.append(button(o.label+` · ${Math.round(o.probability*100)}%`,()=>{emit({type:'mergeChoice',operation:o.id});closeFusion();toast('已按你的选择建立组合') }));if(!state.pending.options.length)box.append(element('p','这些泡泡暂时没有可执行的组合，可以补充资料或换一个动作。','muted'));if(!$('#fusion').open)$('#fusion').showModal()}else{closeFusion();toast('灵感已连接，打开组合可查看和运行')}}
+async function beginMerge(leftId,rightId,session={released:true}) {
+ if(!enabled){toast('请先在连接设置中启用 Jev');render();return}
+ const left=groupObject(leftId),right=groupObject(rightId);if(!left||!right)return;
+ const req=mergeRequest(state,leftId,rightId);session.request=req;
+ emit({type:'mergeStart',request:req},false);if(session.released)showPending();
+ try {
+  const result=await Promise.race([
+   client.capability('bubble.merge',{text:state.input||'组织这些灵感',left,right}),
+   new Promise((_,reject)=>setTimeout(()=>reject(new Error('判断超时')),14000))
+  ]);
+  record('融合判断',result.decision);session.result=result.merge;
+  if(session.released)applyMerge(session);
+ } catch(e) {
+  if(state.pending?.interactionId!==req.interactionId||!validInteraction(state,req))return;
+  session.result={status:'choice',manual:true,error:e.message,options:manualMergeOptions(state,leftId,rightId)};
+  if(session.released)applyMerge(session);
+ }
+}
+function applyMerge(session){if(!state.pending||state.pending.interactionId!==session.request.interactionId||!validInteraction(state,session.request)){render();return;}const supported=manualMergeOptions(state,session.request.leftId,session.request.rightId);if(session.result.status==='clear'&&!supported.some(o=>o.id===session.result.operation))session.result={status:'choice',manual:true,error:'组合不满足当前约束或步骤上限',options:supported};emit({type:'mergeResult',request:session.request,result:session.result});if(state.pending?.status==='choice'){const box=$('#fusion-content');box.replaceChildren(element('p',session.result.manual?`${session.result.error}。泡泡已保留，你可以手动选择受支持的组合；这不是 Jev 的判断。`:'Jev 认为有几种可能，请选择你想要的连接方式。','muted'));for(const o of state.pending.options)box.append(button(o.label+(o.probability==null?' · 用户选择':` · ${Math.round(o.probability*100)}%`),()=>{emit({type:'mergeChoice',operation:o.id});closeFusion();toast('已按你的选择建立组合') }));if(!state.pending.options.length)box.append(element('p','这些泡泡暂时没有可执行的组合，可以补充资料或换一个动作。','muted'));if(!$('#fusion').open)$('#fusion').showModal()}else{closeFusion();toast('灵感已连接，打开组合可查看和运行')}}
 function showPending(){const box=$('#fusion-content');box.replaceChildren(element('p','Jev 正在判断两者的关系…','muted'),element('p','连接只整理泡泡，点击运行后才执行。','muted'));if(!$('#fusion').open)$('#fusion').showModal()}
 function closeFusion(){if($('#fusion').open)$('#fusion').close()}
 $('#cancel-fusion').onclick=()=>{emit({type:'mergeCancel'},false);closeFusion()};$('#fusion').addEventListener('cancel',()=>emit({type:'mergeCancel'},false));$('#fusion').addEventListener('close',()=>{if(state.pending)emit({type:'mergeCancel'},false)});
@@ -43,23 +72,37 @@ function closeDrawer(){$('#drawer').hidden=true;const n=[...bubbleLayer.children
 $('#close').onclick=closeDrawer;document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDrawer();if(drag)cancelDrag()}});
 function leaves(id){const b=[...state.bubbles,...state.groups].find(b=>b.id===id);return b?.members?b.members.flatMap(leaves):b?[b]:[]}
 function showDetails(id){const b=groupObject(id);if(!b)return;detailsId=id;const box=openDrawer();append(box,element('span',labels[b.kind],'tag'),element('h2',b.title),element('p',b.description||'组合保留每个成员，执行时会冻结本次输入和所选资料。','muted'));
- if(b.members){box.append(element('h3','连接成员'));for(const child of leaves(id)){const row=element('div',child.title,'member');row.append(element('small',labels[child.kind]));box.append(row)}box.append(button('拆开组合',()=>{emit({type:'split',id});closeDrawer()}))}
- else if(b.kind==='source'){const a=snapshot?.artifacts.find(a=>a.id===b.resource.artifact);if(a){box.append(element('p',typeof a.content.text==='string'?a.content.text:JSON.stringify(a.content,null,2),'source-text'))}else box.append(element('p',b.resource.url||b.resource.market||'尚未读取','source-text'));box.append(element('label','运行时读取范围'));const select=element('select',undefined,'field');[['full','完整内容'],['excerpt','原文片段（最多 1200 字符）'],['metadata','仅目录信息（不能用于写作）']].forEach(([v,t])=>{const o=element('option',t);o.value=v;select.append(o)});select.value=b.resource.detail||'full';select.onchange=()=>{state.bubbles=state.bubbles.map(x=>x.id===id?{...x,resource:{...x.resource,detail:select.value},version:(x.version||0)+1}:x);backup();scheduleSave();toast('读取范围已更新')};box.append(select);box.append(button(b.selected?'取消保留这个泡泡':'保留这个泡泡',()=>{emit({type:'select',id});showDetails(id)}))}
+ if(b.members){box.append(element('h3','连接成员'));for(const child of leaves(id)){const row=element('div',child.title,'member');row.append(element('small',labels[child.kind]));if(child.resource?.artifact)row.append(button('使用资料最新版本',()=>refreshSource(child.resource.artifact,id)));box.append(row)}box.append(button('拆开组合',()=>{emit({type:'split',id});closeDrawer()}))}
+ else if(b.kind==='source'){const a=snapshot?.artifacts.find(a=>a.id===b.resource.artifact);if(a){box.append(button('使用资料最新版本',()=>refreshSource(a.id,id)));box.append(element('p',typeof a.content.text==='string'?a.content.text:JSON.stringify(a.content,null,2),'source-text'))}else box.append(element('p',b.resource.url||b.resource.market||'尚未读取','source-text'));box.append(element('label','运行时读取范围'));const select=element('select',undefined,'field');[['full','完整内容'],['excerpt','原文片段（最多 1200 字符）'],['metadata','仅目录信息（不能用于写作）']].forEach(([v,t])=>{const o=element('option',t);o.value=v;select.append(o)});select.value=b.resource.detail||'full';select.onchange=()=>{state.bubbles=state.bubbles.map(x=>x.id===id?{...x,resource:{...x.resource,detail:select.value},version:(x.version||0)+1}:x);backup();scheduleSave();toast('读取范围已更新')};box.append(select);box.append(button(b.selected?'取消保留这个泡泡':'保留这个泡泡',()=>{emit({type:'select',id});showDetails(id)}))}
  if(b.kind==='link'){const a=element('a','在新标签中打开搜索','secondary');a.href=b.resource.url;a.target='_blank';a.rel='noopener noreferrer';box.append(a)}else{const select=element('select',undefined,'field');select.setAttribute('aria-label','选择另一个泡泡');for(const other of visibleBubbles(state).filter(x=>x.id!==id)){const o=element('option',other.title);o.value=other.id;select.append(o)}append(box,element('h3','与另一个泡泡连接'),select,button('让 Jev 判断组合',()=>{if(select.value){closeDrawer();beginMerge(id,select.value)} }));}
  if(b.members||b.kind==='action'){
  box.append(element('h3','执行前预览'));const sources=leaves(id).filter(x=>x.kind==='source');append(box,element('p',sources.length?sources.map((x,i)=>`[${i+1}] ${x.title} · ${x.resource.artifact?'已读取':x.resource.url?'执行时读取网页':'执行时查询行情'} · ${x.resource.detail||'full'}`).join('\n'):'尚未添加来源。空白文稿和行动清单可单独运行，写作请先连接资料。','source-text'),element('p','执行会使用当前输入与所选资料，可能产生 API 费用。最多 4 个步骤。','muted'));
- const run=state.runs[id];if(run){append(box,element('p',`任务：${run.status}${run.message?'\n'+run.message:''}`,'run-status'),button('核对这次运行',()=>reconcileRun(id)));if(run.taskId&&!terminal(run.status))box.append(button('停止执行',async()=>{await client.command('task.cancel',{task:run.taskId});toast('已请求停止；当前上游调用结束后不再执行后续步骤')}));if(['success','failure','cancelled','partial'].includes(run.status))box.append(button('再次运行（创建新任务）',()=>runGroup(id,true),'primary'));if(run.artifacts?.length)box.append(button('查看产物',showHistory));}else box.append(button('运行这个组合',()=>runGroup(id),'primary'));
+ const run=state.runs[id];if(run){append(box,element('p',`任务：${run.status}${run.message?'\n'+run.message:''}`,'run-status'),button('核对这次运行',()=>reconcileRun(id)));if(run.missing&&run.payload)box.append(button('重发本次运行（同一编号）',()=>reconcileRun(id,true)));if(run.taskId&&!terminal(run.status))box.append(button('停止执行',async()=>{await client.command('task.cancel',{task:run.taskId});toast('已请求停止；当前上游调用结束后不再执行后续步骤')}));if(['success','failure','cancelled','partial','interrupted'].includes(run.status))box.append(button('再次运行（创建新任务）',()=>runGroup(id,true),'primary'));if(run.artifacts?.length)box.append(button('查看产物',showHistory));}else box.append(button('运行这个组合',()=>runGroup(id),'primary'));
  }
 }
 async function runGroup(id,again=false){
- if(!enabled)return showSettings();if(state.runs[id]&&(!again||!['success','failure','cancelled','partial'].includes(state.runs[id].status)))return reconcileRun(id);
+ if(!enabled)return showSettings();if(state.runs[id]&&(!again||!['success','failure','cancelled','partial','interrupted'].includes(state.runs[id].status)))return reconcileRun(id);
  const runId=crypto.randomUUID();emit({type:again?'runAgain':'runStart',groupId:id,runId});let submitted=false;
  try{await save();const payload={runId,canvas:canvas.id,version:canvas.version,groupId:id,text:state.input||'按这个组合整理资料'};state.runs[id].payload=payload;backup();submitted=true;
  const r=await client.run(payload);emit({type:'runUpdate',groupId:id,value:{taskId:r.task.id,status:r.task.status}});showDetails(id);watchRun(id,r.task.id);
  }catch(e){emit({type:'runUpdate',groupId:id,value:{status:!submitted||e.confirmedFailure?'failure':'outcome_unknown',message:e.message}});showDetails(id);error(e)}
 }
 const watching=new Set();async function watchRun(id,taskId){if(watching.has(taskId))return;watching.add(taskId);try{const {task,snapshot:s}=await client.watch(taskId,{onUpdate:t=>{const run=state.runs[id];if(!run||run.taskId!==taskId)return;if(run.status!==t.status){emit({type:'runUpdate',groupId:id,value:{status:t.status}});if(detailsId===id)showDetails(id)}}});snapshot=s;emit({type:'runUpdate',groupId:id,value:{status:task.status,message:task.error?.message,artifacts:task.artifacts}});updateCounts();if(detailsId===id)showDetails(id);if(task.status==='success'){toast('执行完成，产物已经保存');showHistory()}else toast(task.error?.message||'执行已停止，阶段资料已保留')}catch(e){error(e)}finally{watching.delete(taskId)}}
-async function reconcileRun(id){const run=state.runs[id];if(!run)return;if(run.taskId)return watchRun(id,run.taskId);const found=await fetch('/api/runtime/commands/'+run.runId).then(r=>r.json());if(found.found){emit({type:'runUpdate',groupId:id,value:{taskId:found.response.task.id,status:found.response.task.status}});watchRun(id,found.response.task.id)}else toast('尚未查到受理记录。请稍后再次核对；不会自动新建收费任务。')}
+async function reconcileRun(id,resubmit=false) {
+ const run=state.runs[id];if(!run)return;
+ if(run.taskId)return watchRun(id,run.taskId);
+ try {
+  const found=await client.recover(run,{resubmit});
+  if(found.found){emit({type:'runUpdate',groupId:id,value:{taskId:found.response.task.id,status:found.response.task.status,missing:false}});showDetails(id);watchRun(id,found.response.task.id)}
+  else {emit({type:'runUpdate',groupId:id,value:{missing:true}});showDetails(id);toast('尚未查到受理记录。可以手动重发，继续使用同一个运行编号。')}
+ }catch(e){error(e)}
+}
+async function refreshSource(artifactId,detailId) {
+ snapshot=await client.snapshot();const artifact=snapshot.artifacts.find(a=>a.id===artifactId);
+ if(!artifact)throw new Error('资料已不可访问，请重新添加');
+ emit({type:'refreshSource',artifact});closeFusion();await save();showDetails(detailId);
+ toast(`已使用资料最新版本 v${artifact.version}；历史产物保持原有来源`);
+}
 function updateCounts(){$('#result-count').textContent=snapshot?.artifacts.filter(a=>a.kind==='document').length||0}
 async function showHistory(){snapshot=await client.snapshot();updateCounts();detailsId=null;const box=openDrawer('YOUR CREATIONS');append(box,element('h2','从灵感到作品'),element('p','每一次执行的资料与结果，都会留在这个空间。','muted'));const arts=snapshot.artifacts.filter(a=>a.kind!=='bubble-canvas').reverse();for(const a of arts){const b=button(a.title,()=>showArtifact(a),'result-row');b.append(element('small',`${a.kind==='document'?'文稿':'资料'} · ${a.source}`));box.append(b)}if(!arts.length)box.append(element('p','还没有产物。添加资料，连接一个动作，然后运行。','muted'))}
 function sourceLink(s,i){const row=element('div',`[${i+1}] ${s.title}`,'member');row.append(element('small',`${s.source} · ${s.detail} · v${s.version}`));try{const url=new URL(s.source);if(url.protocol==='https:'){const a=element('a','查看原始来源');a.href=url.href;a.target='_blank';a.rel='noopener noreferrer';row.append(a)}}catch{}return row}
