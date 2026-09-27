@@ -42,7 +42,7 @@ class ApiTests(unittest.TestCase):
         i=self.intent();self.command('intent.activate',intent=i)
         events=self.request('/api/runtime/messages/0/'+i)[1];self.assertTrue(events['messages'])
         self.assertEqual(self.request('/api/runtime/messages/'+str(events['cursor'])+'/'+i)[1]['messages'],[])
-        self.assertEqual(self.request('/api/runtime/schema/message')[1]['properties']['protocolVersion']['const'],'0.1')
+        self.assertEqual(self.request('/api/runtime/schema/message')[1]['properties']['protocolVersion']['enum'],['0.1','0.2'])
     def test_invalid_import_has_failed_task_no_artifact(self):
         i=self.intent();code,r=self.command('capability.run',{'capability':'data.import','input':{'text':'invalid'}},i)
         self.assertEqual(code,200)

@@ -10,6 +10,7 @@
   <div id="empty" class="resume-list"><button id="start-intent">创建新的空间</button></div>
   <div class="history-footer"><button id="modules-button">能力与模块</button><span id="connection" role="status">连接中</span></div>
 </dialog>
+<div id="ambient" class="ambient" aria-hidden="true"><div id="shutters" class="shutters"></div><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><span class="floating-mark mark-one">＋</span><span class="floating-mark mark-two">＋</span><i class="floating-dot dot-one"></i><i class="floating-dot dot-two"></i><i class="floating-dot dot-three"></i></div>
 <main class="page">
   <section class="composer" aria-label="表达目的">
     <div class="capsule">
@@ -20,7 +21,7 @@
     <div id="capsule-context" class="capsule-context" hidden>
       <div class="capsule-tools"><div class="quick-tools"><button id="import-data" class="icon-button" aria-label="导入数据" title="导入数据">＋</button><button id="save-note" title="存为本地笔记">存为笔记</button><span id="semantic-status" role="status"></span></div><label class="local-toggle"><input id="local-only" type="checkbox" checked>仅本地</label></div>
       <section id="suggestions" class="suggestions" aria-live="polite"></section>
-      <details class="more-tools"><summary>更多</summary><div class="composer-tools"><button id="save-memory">记为事实</button><button id="add-notification">记提醒</button><button id="observe">判断当前意图</button><button id="market">查看行情</button><button id="run-workflow">组合执行</button><button id="run-capability">更多能力</button><label><input id="auto-run" type="checkbox">自动内容</label><select id="generation-mode" aria-label="生成方式"><option value="scene">组合内容</option><option value="write">文稿</option><option value="plan">行动</option><option value="answer">回答</option></select></div></details>
+      <details class="more-tools"><summary>更多</summary><div class="composer-tools"><button id="save-memory">记为事实</button><button id="add-notification">记提醒</button><button id="observe">判断当前意图</button><button id="market">查看行情</button><button id="run-workflow">组合执行</button><button id="run-capability">更多能力</button><button id="motion-toggle" type="button" aria-pressed="true">动态效果</button><label><input id="auto-run" type="checkbox">自动内容</label><select id="generation-mode" aria-label="生成方式"><option value="scene">组合内容</option><option value="write">文稿</option><option value="plan">行动</option><option value="answer">回答</option></select></div></details>
     </div>
   </section>
   <section id="workspace" hidden>

@@ -1,4 +1,4 @@
-"""Small JSON Schema subset shared by the published v0.1 contracts and runtime."""
+"""Small JSON Schema subset shared by published contracts and the runtime."""
 import json
 import math
 import re
@@ -6,8 +6,8 @@ import time
 import uuid
 from pathlib import Path
 
-VERSION = '0.1'
-ROOT = Path(__file__).resolve().parents[2] / 'protocol' / 'v0.1'
+VERSION = '0.2'
+ROOT = Path(__file__).resolve().parents[2] / 'protocol' / 'v0.2'
 KINDS = ('event', 'signal', 'command', 'result')
 RELATIONS = ('belongs_to', 'references', 'produced_by', 'depends_on', 'supports', 'conflicts_with', 'derived_from')
 DIMENSIONS = ('thread', 'goal', 'domain', 'phase', 'target', 'attention', 'commitment', 'urgency')

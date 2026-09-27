@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.2:node-locate",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "stage": {
+      "const": "LOCATE"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "waiting",
+        "rejected",
+        "failed"
+      ]
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "candidates": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "candidates"
+      ],
+      "additionalProperties": false
+    },
+    "outputs": {
+      "type": "object",
+      "properties": {
+        "threads": {
+          "type": "array"
+        },
+        "targets": {
+          "type": "array"
+        },
+        "unresolved": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "threads",
+        "targets",
+        "unresolved"
+      ],
+      "additionalProperties": false
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "id",
+    "stage",
+    "status",
+    "inputs",
+    "outputs",
+    "timestamp"
+  ],
+  "additionalProperties": false
+}

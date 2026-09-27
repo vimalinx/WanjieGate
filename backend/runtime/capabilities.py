@@ -12,6 +12,7 @@ from pathlib import Path
 from .protocol import Fault, now, uid
 from .context import accessible
 from .policies import POLICIES
+from .control import contract as control_contract
 from ..composition import parse_dataset, analyze
 from ..live_runtime import parse_scene, SCENE_PROMPT
 from ..market import Market
@@ -77,7 +78,15 @@ class Semantic:
         return {'signals':signals,'artifacts':[]}
 
 def install(kernel,generator=None,market=None,semantic=None):
-    market=market or Market(); semantic=semantic or Semantic()
+    market=market or Market()
+    if semantic is None:
+        import os
+        provider=os.environ.get('WANJIE_SEMANTIC_PROVIDER','openrouter')
+        if provider=='openrouter':
+            from .semantic import OpenRouterSemantic
+            semantic=OpenRouterSemantic(kernel.store.path.parent/'receipts'/'semantic')
+        elif provider=='kev':semantic=Semantic()
+        else:raise Fault('invalid_provider','未知语义提供者')
     output={'type':'object','properties':{'artifacts':{'type':'array','maxItems':30,'items':obj({'kind':string(80),'title':string(200),'content':{},'source':string(300)},['kind','title','content','source'])}},'required':['artifacts']}
     def register(id_,title,inputs,handler,effect='L0',permissions=(),network=False,cost='none',kind='capability'):
         module='builtin.'+id_
@@ -130,10 +139,15 @@ def install(kernel,generator=None,market=None,semantic=None):
     register('web.read','读取公开网页',obj({'url':string(2000)},['url']),web_read,permissions=['network.web'],network=True)
 
     def semantic_observe(t,p,c):
-        ctx={**t['context'],'intentState':kernel.db.get(t['intent'],'intent')['state'],
+        ctx={**t['context'],'event':t['input'].get('event'),'intentState':kernel.db.get(t['intent'],'intent')['state'],
              'notifications':[{'id':n['id'],'title':n['title'],'text':n['text']} for n in kernel.db.list('notification',t['intent']) if n['status']!='read']}
+        with kernel.db.transaction() as tx:
+            ctx['intentCandidates']=[{'id':i['id'],'title':i['title'],'goal':i['state'].get('goal','')} for i in sorted(tx.list('intent'),key=lambda i:(i['id']!=t['intent'],-i['updated']))[:8]]
+            members={m['artifact']:m for m in tx.list('member',t['intent'])}
+            ctx['targetCandidates']=[{'artifact':a['id'],'title':a['title'],'kind':a['kind'],'tier':members.get(a['id'],{}).get('tier','WARM')} for a in accessible(tx,t['intent']).values()]
+        ctx['selectedArtifact']=(ctx.get('event') or {}).get('selectedArtifact','')
         return semantic.observe(t['input']['text'],ctx)
-    register('semantic.observe','语义判断',obj({'text':string()},['text']),semantic_observe,kind='operator')
+    register('semantic.observe','JEV 语义判断' if getattr(semantic,'network',False) else '语义判断',obj({'text':string(),'event':control_contract('raw-event')},['text']),semantic_observe,kind='operator',network=getattr(semantic,'network',False),cost=getattr(semantic,'cost','none'),permissions=['model.semantic'] if getattr(semantic,'network',False) else [])
 
     def retrieve(t,p,c):
         query=t['input']['query'].casefold();tokens=[x for x in re.split(r'\s+',query) if x]

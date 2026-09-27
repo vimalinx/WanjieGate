@@ -66,3 +66,7 @@
 - 2026-09-27：用户授权测试，新增5项回归并通过全套62项 Python/3组Node断言；浏览器复核读取范围恢复、切换与窄屏显示，修复跨意图残留状态提示。真实模型成功路径仍未验证。
 
 - 2026-09-27：vimalinx 明确要求前台保持原胶囊样式，已恢复居中胶囊与历史抽屉，管理功能按需打开；浏览器确认输入建空间、保存笔记、刷新与历史入口。见 [IDEA-0002](vimalinx/0002-capsule-interface.md)。
+
+## 2026-09-27 · v0.2 语义控制 DAG
+
+vimalinx 的 [IDEA-0003](vimalinx/0003-semantic-control-dag.md) 已采纳，作为下一阶段架构。已落地有限候选并行判断、IntentFrame、阶段契约、显式提交、事件去旧、生命周期和局部输出验证。真实百炼 ASR → OpenRouter JEV 及 Hyprland 单次观察通过；常驻观察、麦克风入口、多层候选扩展、后台 Resource Router、Reflection、通用目标验证尚待完成。真实延迟未达到 Fast Loop 目标。kanemaverick 意见仍未收到。

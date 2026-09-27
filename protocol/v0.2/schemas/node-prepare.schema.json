@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.2:node-prepare",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "stage": {
+      "const": "PREPARE"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "waiting",
+        "rejected",
+        "failed"
+      ]
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "frames": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "frames"
+      ],
+      "additionalProperties": false
+    },
+    "outputs": {
+      "type": "object",
+      "properties": {
+        "artifacts": {
+          "type": "array"
+        },
+        "capabilities": {
+          "type": "array"
+        },
+        "memoryWrite": {
+          "const": false
+        }
+      },
+      "required": [
+        "artifacts",
+        "capabilities",
+        "memoryWrite"
+      ],
+      "additionalProperties": false
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "id",
+    "stage",
+    "status",
+    "inputs",
+    "outputs",
+    "timestamp"
+  ],
+  "additionalProperties": false
+}

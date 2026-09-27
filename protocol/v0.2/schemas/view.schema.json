@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.2:view",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "type": {
+      "const": "view"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "intent": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "artifact": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "primitive": {
+      "type": "string",
+      "enum": [
+        "Text",
+        "Code",
+        "Terminal",
+        "Web",
+        "Media",
+        "Canvas",
+        "Timeline",
+        "Table",
+        "Conversation",
+        "Inspector"
+      ]
+    },
+    "placement": {
+      "type": "string",
+      "enum": [
+        "main",
+        "side",
+        "hidden"
+      ]
+    },
+    "state": {
+      "type": "object"
+    },
+    "created": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updated": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "version",
+    "intent",
+    "artifact",
+    "primitive",
+    "placement",
+    "state",
+    "created",
+    "updated"
+  ],
+  "additionalProperties": false
+}

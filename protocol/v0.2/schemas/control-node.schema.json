@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.2:control-node",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "stage": {
+      "type": "string",
+      "enum": [
+        "OBSERVE",
+        "ORIENT",
+        "LOCATE",
+        "INTERPRET",
+        "PREPARE",
+        "COMPOSE",
+        "COMMIT",
+        "EXECUTE",
+        "VERIFY",
+        "LEARN"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "waiting",
+        "rejected",
+        "failed"
+      ]
+    },
+    "inputs": {
+      "type": "object"
+    },
+    "outputs": {
+      "type": "object"
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "id",
+    "stage",
+    "status",
+    "inputs",
+    "outputs",
+    "timestamp"
+  ],
+  "additionalProperties": false
+}

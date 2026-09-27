@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.2:raw-event",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "input.text",
+        "asr.partial",
+        "asr.final",
+        "window.focus",
+        "artifact.opened",
+        "agent.result",
+        "notification.received",
+        "download.completed",
+        "terminal.error"
+      ]
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 12000
+    },
+    "final": {
+      "type": "boolean"
+    },
+    "stream": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "observedAt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "facts": {
+      "type": "object"
+    },
+    "selectedArtifact": {
+      "type": "string",
+      "maxLength": 160
+    }
+  },
+  "required": [
+    "type",
+    "source",
+    "text",
+    "final"
+  ],
+  "additionalProperties": false
+}

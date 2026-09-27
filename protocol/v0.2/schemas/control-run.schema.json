@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.2:control-run",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "semanticVersion": {
+      "const": "0.2"
+    },
+    "frames": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "type": {
+            "const": "frame"
+          },
+          "intent": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "semanticVersion": {
+            "const": "0.2"
+          },
+          "run": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "segment": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "maxLength": 12000
+              },
+              "start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "text",
+              "start",
+              "end"
+            ],
+            "additionalProperties": false
+          },
+          "threadRelation": {
+            "type": "string",
+            "enum": [
+              "CONTINUE",
+              "CORRECT",
+              "BRANCH",
+              "RETURN",
+              "NEW",
+              "MERGE",
+              "CLOSE"
+            ]
+          },
+          "thread": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "OBSERVE",
+              "RETRIEVE",
+              "CREATE",
+              "MODIFY",
+              "EXECUTE",
+              "COMMUNICATE",
+              "ORGANIZE",
+              "COMPARE",
+              "CONTROL"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "phase": {
+            "type": "string",
+            "enum": [
+              "EXPLORE",
+              "FORM",
+              "ACT",
+              "VERIFY",
+              "WAIT",
+              "HANDOFF"
+            ]
+          },
+          "attention": {
+            "type": "string",
+            "enum": [
+              "FOREGROUND",
+              "EDGE",
+              "BACKGROUND",
+              "PARKED",
+              "INTERRUPT"
+            ]
+          },
+          "commitment": {
+            "type": "string",
+            "enum": [
+              "HYPOTHESIS",
+              "PREPARED",
+              "PREVIEW",
+              "READY",
+              "COMMITTED"
+            ]
+          },
+          "confidence": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "basedOnRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "inputRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "unresolved": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 300
+            },
+            "maxItems": 100
+          },
+          "model": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "semantic",
+              "human",
+              "policy"
+            ]
+          },
+          "expiresAt": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 160
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "intent",
+          "semanticVersion",
+          "run",
+          "segment",
+          "threadRelation",
+          "thread",
+          "operation",
+          "target",
+          "phase",
+          "attention",
+          "commitment",
+          "confidence",
+          "basedOnRevision",
+          "inputRevision",
+          "unresolved",
+          "model",
+          "origin",
+          "expiresAt",
+          "evidence"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 4
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "OBSERVE",
+              "ORIENT",
+              "LOCATE",
+              "INTERPRET",
+              "PREPARE",
+              "COMPOSE",
+              "COMMIT",
+              "EXECUTE",
+              "VERIFY",
+              "LEARN"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "complete",
+              "waiting",
+              "rejected",
+              "failed"
+            ]
+          },
+          "inputs": {
+            "type": "object"
+          },
+          "outputs": {
+            "type": "object"
+          },
+          "timestamp": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "id",
+          "stage",
+          "status",
+          "inputs",
+          "outputs",
+          "timestamp"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 10
+    },
+    "compoundness": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  },
+  "required": [
+    "id",
+    "semanticVersion",
+    "frames",
+    "nodes",
+    "compoundness"
+  ],
+  "additionalProperties": false
+}

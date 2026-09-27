@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.2:artifact",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "type": {
+      "const": "artifact"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "content": {},
+    "intent": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "created": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "provenance": {
+      "type": "object"
+    },
+    "pinned": {
+      "type": "boolean"
+    },
+    "scope": {
+      "type": "string",
+      "enum": [
+        "intent",
+        "shared"
+      ]
+    },
+    "contentRef": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "version",
+    "kind",
+    "title",
+    "content",
+    "intent",
+    "created",
+    "updated",
+    "source",
+    "pinned",
+    "scope"
+  ],
+  "additionalProperties": false
+}

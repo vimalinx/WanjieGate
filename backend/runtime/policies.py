@@ -13,9 +13,19 @@ POLICIES=[
 def apply(kernel,tx,task,output):
     iid=task['intent'];intent=tx.get(iid,'intent');base=task['context']['revision']
     stale=base!=intent['version'] or tx.meta('semantic.latest:'+iid)!=task['command']['id']
+    stale=stale or tx.meta('control.input:'+iid) not in (None,task['command']['id'])
+    observed=task['input'].get('event',{})
+    if observed.get('stream'):
+        stale=stale or tx.meta('event.sequence:'+iid+':'+observed['stream'])!=observed.get('sequence',0)
     current=accessible(tx,iid)
     members={m['artifact']:m for m in tx.list('member',iid)}
     stale=stale or any(item['artifact'] not in current or current[item['artifact']]['version']!=item['version'] or members.get(item['artifact'],{}).get('detail','full')!=item.get('detail','full') for item in task['context']['items'])
+    if 'control' in output:
+        from .control import contract
+        validate(output['control'],contract('control-run'))
+        if not stale:
+            for frame in output['control']['frames']:tx.put(frame,create=True)
+        tx.emit('control.completed',{'run':output['control'],'stale':stale},iid,task['command'])
     for raw in output.get('signals',[]):
         s={**raw,'basedOnRevision':base,'expiresAt':now()+30000,'operator':task['provider'],'evidence':[task['command']['id']]}
         validate(s,schema('signal'))
@@ -28,9 +38,12 @@ def apply(kernel,tx,task,output):
         elif s['score']>=.8:
             if s['name']=='intent.phase':
                 if intent['fieldSources'].get('phase')=='human':d['reason']='explicit_user_value'
-                elif s['value'] in ('implementation','researching','planning','writing','exploring'):
+                elif s['value'] in ('implementation','researching','planning','writing','exploring','EXPLORE','FORM','ACT','VERIFY','WAIT','HANDOFF'):
                     if s['value']==intent['state']['phase']:d['reason']='already_current'
                     else:action='intent.update';payload={'state':{'phase':s['value']}};d['reason']='phase_match'
+            elif s['name']=='intent.frame':
+                frame=s['value']
+                d.update(action='preview_frame',reason='soft_state_only',frame=frame['id'])
             elif s['name']=='intent.continuity' and s['value']=='new':d.update(action='suggest_fork',reason='new_thread_candidate')
             elif s['name']=='capability.selection' and isinstance(s['value'],list):
                 d.update(action='suggest_capabilities',reason='semantic_rank',candidates=[v for v in s['value'] if isinstance(v,dict) and v.get('capability') in kernel.providers and isinstance(v.get('score'),(int,float)) and v['score']>=.58])
@@ -53,8 +66,8 @@ def apply(kernel,tx,task,output):
                     if n['status']=='read' or n.get('manual'):d['reason']='explicit_user_value'
                     else:
                         route='attach' if s['value'].get('relevant') else 'defer'
-                        if route=='attach' and s['value'].get('interruptible') and intent['state']['attention']=='foreground':route='interrupt'
-                        action='notification.resolve';payload={'notification':n['id'],'action':route};d['reason']='relevance_and_attention'
+                        if s['value'].get('urgent') is True:route='interrupt'
+                        action='notification.resolve';payload={'notification':n['id'],'action':route};d['reason']='relevance_and_independent_urgency'
                 except (Fault,KeyError):d['reason']='missing_notification'
         if action:
             d['action']=action
@@ -65,3 +78,7 @@ def apply(kernel,tx,task,output):
             tx.emit('command.completed',{'status':'success','value':result},iid,command,kind='result',source='builtin.policy')
             intent=tx.get(iid,'intent')
         tx.emit('policy.evaluated',d,iid,signal,source='builtin.policy')
+
+    if 'control' in output and not stale:
+        for frame in output['control']['frames']:
+            stored=tx.get(frame['id'],'frame');stored['acceptedRevision']=tx.get(iid,'intent')['version'];stored['acceptedInput']=task['command']['id'];tx.put(stored)

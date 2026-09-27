@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.2:capability",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "module": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "inputSchema": {
+      "type": "object"
+    },
+    "outputSchema": {
+      "type": "object"
+    },
+    "sideEffect": {
+      "type": "string",
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3"
+      ]
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "maxItems": 100
+    },
+    "network": {
+      "type": "boolean"
+    },
+    "cost": {
+      "type": "string",
+      "enum": [
+        "none",
+        "metered"
+      ]
+    },
+    "reversible": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "module",
+    "inputSchema",
+    "outputSchema",
+    "sideEffect",
+    "permissions",
+    "network",
+    "cost",
+    "reversible"
+  ],
+  "additionalProperties": false
+}

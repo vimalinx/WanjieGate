@@ -56,8 +56,8 @@ def projections(tx,intent_id):
         placement='main'
         if not a['pinned'] and not m.get('pinned'):
             if m.get('tier')=='COLD':placement='hidden'
-            elif phase=='researching' and a['kind'] in ('code','terminal'):placement='side'
-            elif phase=='implementation' and a['kind']=='web':placement='side'
+            elif phase in ('researching','EXPLORE') and a['kind'] in ('code','terminal'):placement='side'
+            elif phase in ('implementation','ACT','VERIFY') and a['kind']=='web':placement='side'
         view={'id':'view:'+a['id'],'artifact':a['id'],'primitive':PRIMITIVES.get(a['kind'],'Inspector'),
               'placement':placement,'state':{},**(override or {})}
         if not tx.get('builtin.view.'+view['primitive'],'module')['enabled']:

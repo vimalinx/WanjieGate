@@ -84,7 +84,7 @@ class Kernel:
     def _new_intent(self,tx,title,state,parent='',id_=None):
         explicit = set(state)
         state={**dict.fromkeys(DIMENSIONS,''),'phase':'exploring','attention':'background','commitment':'considering',**state}
-        e={'id':id_ or uid(),'type':'intent','title':title or '新的意图','state':state,'status':'warm','parent':parent,
+        e={'id':id_ or uid(),'type':'intent','title':title or '新的意图','state':state,'status':'warm','lifecycle':'WARM','parent':parent,
            'fieldSources':{k:('human' if k in explicit else 'default') for k,v in state.items() if v},'preferences':{'contextBudget':12000,'autoRun':False,'localOnly':True}}
         return tx.put(e,create=True)
 
@@ -148,7 +148,7 @@ class Kernel:
                     intent=tx.get(intent_id,'intent')
                     if 'expectedRevision' in command and intent['version']!=command['expectedRevision']:
                         raise Fault('revision_conflict','意图已更新，请刷新')
-                    if intent['status']=='archived' and type_!='intent.activate':raise Fault('intent_archived','请先恢复归档意图')
+                    if intent['status']=='archived' and type_ not in ('intent.activate','intent.transition'):raise Fault('intent_archived','请先恢复归档意图')
                 tx.append(command)
                 response,scheduled=self._dispatch(tx,command,principal)
                 if scheduled is None:
@@ -170,12 +170,38 @@ class Kernel:
         if t=='session.start':
             candidates=sorted((i for i in tx.list('intent') if i['status']!='archived'),key=lambda i:i['updated'],reverse=True)[:5]
             return {'active':tx.meta('activeIntent'),'candidates':candidates},None
+        if t=='event.observe':
+            tx.set_meta('control.input:'+iid,c['id'])
+            event=p['event'];stream=event.get('stream');sequence=event.get('sequence',0)
+            if stream:
+                previous=tx.meta('event.sequence:'+iid+':'+stream)
+                if previous is not None and sequence<=previous:raise Fault('stale_event','旧事件序列不能替代新输入')
+                tx.set_meta('event.sequence:'+iid+':'+stream,sequence)
+            if event.get('selectedArtifact') and event['selectedArtifact'] not in accessible(tx,iid):raise Fault('scope_denied','选择对象不在当前意图')
+            observation=tx.put({'id':uid(),'type':'observation','intent':iid,'event':event,'command':c['id']},create=True)
+            tx.emit('observation.recorded',{'observation':observation},iid,c)
+            if not p.get('analyze',False):return observation,None
+            tx.set_meta('semantic.latest:'+iid,c['id'])
+            return self._queue(tx,c,'semantic.observe',{'text':event['text'],'event':event},None,principal)
+        if t=='intent.transition':
+            i=tx.get(iid,'intent');lifecycle=p['lifecycle']
+            i['lifecycle']=lifecycle
+            i['status']={'DORMANT':'suspended','WARM':'warm','FOREGROUND':'active','BACKGROUND':'warm','PARKED':'suspended','CLOSED':'archived'}[lifecycle]
+            i['state']['attention']={'DORMANT':'PARKED','WARM':'EDGE','FOREGROUND':'FOREGROUND','BACKGROUND':'BACKGROUND','PARKED':'PARKED','CLOSED':'PARKED'}[lifecycle]
+            i['fieldSources']['attention']='human'
+            if lifecycle=='FOREGROUND':
+                for other in tx.list('intent'):
+                    if other['id']!=iid and other['status']=='active':
+                        other['status']='warm';other['lifecycle']='BACKGROUND';other['state']['attention']='BACKGROUND';tx.put(other)
+                tx.set_meta('activeIntent',iid)
+            elif tx.meta('activeIntent')==iid:tx.set_meta('activeIntent',None)
+            i=tx.put(i);tx.emit('intent.transitioned',{'intent':i},iid,c);return i,None
         if t.startswith('intent.'):
             i=tx.get(iid,'intent')
             if t=='intent.activate':
                 for other in tx.list('intent'):
                     if other['id']!=iid and other['status']=='active':
-                        other['status']='warm';other['state']['attention']='background';other=tx.put(other)
+                        other['status']='warm';other['lifecycle']='BACKGROUND';other['state']['attention']='background';other=tx.put(other)
                         tx.emit('intent.warmed',{'intent':other},other['id'],c)
                 i['status']='active';i['state']['attention']='foreground';tx.set_meta('activeIntent',iid)
             elif t=='intent.update':
@@ -187,6 +213,8 @@ class Kernel:
             else:
                 i['status']='suspended' if t=='intent.suspend' else 'archived';i['state']['attention']='background'
                 if tx.meta('activeIntent')==iid:tx.set_meta('activeIntent',None)
+            if t!='intent.update' or 'lifecycle' not in i:
+                i['lifecycle']={'active':'FOREGROUND','warm':'WARM','suspended':'PARKED','archived':'CLOSED'}[i['status']]
             i=tx.put(i);tx.emit({'intent.activate':'intent.activated','intent.update':'intent.updated',
                 'intent.suspend':'intent.suspended','intent.archive':'intent.archived','intent.warm':'intent.warmed'}[t],{'intent':i},iid,c)
             return i,None
@@ -248,10 +276,23 @@ class Kernel:
                 else:task=tx.put(task)
                 tx.emit('task.cancel.requested',{'task':task},iid,c)
             return task,None
+        if t=='frame.commit':
+            frame=tx.get(p['frame'],'frame');self._owned(frame,iid)
+            if frame['commitment']=='COMMITTED':raise Fault('frame_already_committed','候选已提交，请查看原任务')
+            if frame.get('acceptedInput') and frame['acceptedInput']!=tx.meta('control.input:'+iid):raise Fault('stale_frame','输入已变化，请重新判断')
+            if frame['expiresAt']<now():raise Fault('expired_frame','候选已过期，请重新判断')
+            if frame.get('acceptedRevision',frame['basedOnRevision'])!=tx.get(iid,'intent')['version']:raise Fault('stale_frame','状态已变化，请重新判断')
+            if frame['unresolved']:raise Fault('unresolved_frame','请先明确线程或目标')
+            if frame['threadRelation'] not in ('CONTINUE','CORRECT') or frame['thread']!=iid:raise Fault('thread_confirmation_required','请先明确切换或创建目标空间')
+            if frame['target']!='NONE' and frame['target'] not in accessible(tx,iid):raise Fault('scope_denied','目标已不可访问')
+            task,scheduled=self._queue(tx,c,p['capability'],p['input'],p.get('grant'),principal,p.get('provider'))
+            frame['commitment']='COMMITTED';frame['origin']='human';frame['evidence'].append(c['id']);tx.put(frame)
+            return task,scheduled
         if t in ('capability.run','semantic.observe'):
             cap=p['capability'] if t=='capability.run' else 'semantic.observe'
             inp=p['input'] if t=='capability.run' else p
             if cap == 'semantic.observe':
+                tx.set_meta('control.input:'+iid,c['id'])
                 tx.set_meta('semantic.latest:' + iid, c['id'])
             return self._queue(tx,c,cap,inp,p.get('grant'),principal,p.get('provider'))
         if t=='notification.receive':
@@ -296,7 +337,7 @@ class Kernel:
         grant=self._permission(tx,spec,c['intent'],inp,grant,principal)
         ctx=build(tx,c['intent']);fingerprint=hashlib.sha256(dump([cap,inp,[(i['artifact'],i['version']) for i in ctx['items']]]).encode()).hexdigest()
         task=tx.put({'id':uid(),'type':'task','intent':c['intent'],'capability':cap,'provider':spec['module'],'status':'queued',
-                     'command':c,'input':inp,'context':ctx,'grant':grant,'cancelRequested':False,'artifacts':[],'progress':[], 'fingerprint':fingerprint},create=True)
+                     'command':c,'input':inp,'context':ctx,'grant':grant,'cancelRequested':False,'artifacts':[],'progress':[], 'fingerprint':fingerprint,'commitment':'COMMITTED','frame':c['payload'].get('frame','')},create=True)
         validate(task,schema('task'));tx.emit('task.queued',{'task':task},c['intent'],c)
         return task,task['id']
 
@@ -331,6 +372,8 @@ class Kernel:
                     current['artifacts'].append(artifact['id'])
                     self._relation(tx,task['intent'],artifact['id'],'produced_by',key,task['command'])
                 failed = output.get('exitCode', 0) != 0
+                current['verification']={'status':'failed' if failed else 'passed','scope':'local-output','checks':['output_schema','artifact_persistence']+(['process_exit_code'] if 'exitCode' in output else []),'goalCompletion':'unknown'}
+                tx.emit('task.verified',{'task':key,'verification':current['verification']},task['intent'],task['command'])
                 self._finish(tx,current,'failure' if failed else 'success',output,
                              {'code':'process_failed','message':'进程返回非零退出码，输出已保留'} if failed else None)
         except Exception as exc:
@@ -375,7 +418,7 @@ class Kernel:
             if iid:
                 i=tx.get(iid,'intent')
                 result.update(intent=i,artifacts=list(accessible(tx,iid).values()),tasks=tx.list('task',iid),
-                              relations=tx.list('relation',iid),members=tx.list('member',iid),views=projections(tx,iid),
+                              relations=tx.list('relation',iid),frames=tx.list('frame',iid)[-20:],observations=tx.list('observation',iid)[-20:],members=tx.list('member',iid),views=projections(tx,iid),
                               context=build(tx,iid),grants=tx.list('grant',iid),notifications=tx.list('notification',iid))
             return result
 

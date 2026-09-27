@@ -2,7 +2,7 @@
 
 以胶囊条为入口，围绕持久 Intent 组织内容、能力、工作集和视图的本地工作台。输入后展开内容；历史、工作集和空间设置按需打开。前端通过类型化 Command 与 Runtime 通信；语义模型输出 Signal，Policy 决定状态变化，Capability 执行动作。
 
-[共同设计区](ideas/README.md) · [Intent Runtime Protocol v0.1](protocol/v0.1/README.md) · [本轮验收](docs/acceptance-runtime-v01.md)
+[共同设计区](ideas/README.md) · [Intent Runtime Protocol v0.2](protocol/v0.2/README.md) · [本轮验收](docs/acceptance-runtime-v02.md)
 
 ## 启动
 
@@ -11,7 +11,7 @@
 ./bin/kev-serve.sh                 # 可选：已有本机 KEV 启动入口
 ```
 
-Web/API 使用 Python 3 标准库，前端为原生 ES Modules，无打包步骤。只监听 loopback。KEV 默认地址为 `http://127.0.0.1:8208`，可通过 `WANJIE_KEV_URL` 设置既有服务；未连接时显示失败，不用规则冒充语义模型。
+Web/API 使用 Python 3 标准库，前端为原生 ES Modules，无打包步骤。只监听 loopback。语义判断默认使用 OpenRouter `typesafe/jev-1.13`，后端从既有 `OPENROUTER_API_KEY` 环境读取凭据，不进入浏览器或源码。缺少凭据或上游失败会明确报错。显式设置 `WANJIE_SEMANTIC_PROVIDER=kev` 才使用原本机 KEV（`WANJIE_KEV_URL`，默认 `http://127.0.0.1:8208`），没有静默回退。
 
 云端生成沿用 LocalRouter `lr exec`，默认 `llm7:minimax-m2.7`，可在启动前配置：
 
@@ -28,7 +28,7 @@ WANJIE_MODEL_PACK=llm7 WANJIE_MODEL=minimax-m2.7 ./bin/web-serve.sh
 - **Working Set**：HOT/WARM/COLD、字符预算、全文/原文片段/仅目录读取、选入/排除原因、固定与运行依赖保护。
 - **统一执行**：分析、生成、行情、公开网页读取、记忆检索、仓库搜索/读取、文件修改、Git diff、测试、隔离 Python 执行。
 - **组合与临时 worker**：有序依赖图、步骤产物绑定、阶段保存、失败保留、取消；`agent.run` 使用同一图执行协议。
-- **语义与策略**：KEV 相位/连续性/相关性/能力选择/通知判断，版本与最新输入检查；可替换 Operator。
+- **语义与策略**：JEV 批量输出正交 IntentFrame、相关性/能力建议/独立通知紧急度；DAG 阶段记录、显式 frame.commit、流式事件去旧。
 - **模块和权限**：统一 Manifest、提供者选择、启停、限时限次 Grant、撤销、网络与副作用独立检查。
 - **消息与追踪**：四种消息、原子状态/日志提交、游标读取、因果链、命令去重、响应丢失恢复、重启不重放。
 - **界面**：内容、工作集、关系、过程、授权，Artifact 编辑/固定/视图切换、提醒管理与 Markdown 导出。
@@ -39,7 +39,7 @@ Python 执行需要本机 `bubblewrap` 和 `prlimit`，在无网络、无用户�
 
 | 路径 | 责任 |
 |---|---|
-| `protocol/v0.1/` | Message/实体 Schema、命令/事件 payload、可验证生命周期样例 |
+| `protocol/v0.2/` | Message/实体 Schema、命令/事件 payload、可验证生命周期样例 |
 | `backend/runtime/kernel.py` | 命令受理、Intent、Registry、权限、Task 生命周期 |
 | `backend/runtime/storage.py` | SQLite 状态投影与消息日志 |
 | `backend/runtime/context.py` | 工作集与视图投影 |
@@ -73,4 +73,4 @@ python3 tools/selftest.py
 
 本轮交付是 WanjieGate 的本机单用户 Runtime。十种 View Primitive 有统一登记与投影状态，但并非十套完整桌面应用。网页显示只读摘录；代码视图和受控执行不等于完整 IDE；临时 worker 不宣称接入了外部自治 Agent。
 
-桌面窗口、系统通知源、日历、语音、远程设备及其他 VimalinxOS 项目的接入需要对应 owner 完成适配和验证，详见 [交接清单](docs/runtime-integration-handoff.md)。模型生成和真实行情的当前可用性不由离线测试证明。取消不能撤回已发送的上游请求；未知结果不自动重试。
+已增加百炼 ASR 文件流桥接和 Hyprland 当前窗口的只读观察工具；尚无常驻桌面观察与胶囊麦克风入口。系统通知源、日历、远程设备及其他 VimalinxOS 项目的接入需要对应 owner 完成适配和验证，详见 [交接清单](docs/runtime-integration-handoff.md)。模型生成和真实行情的当前可用性不由离线测试证明。取消不能撤回已发送的上游请求；未知结果不自动重试。
