@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 静态页面服务 (manifest + 前端,决策调用直连 kev :8008)
+# 同源工作台 API + 静态页面，数据保存在本项目 .data/
 set -euo pipefail
-cd "$(dirname "$0")/../static"
-exec python3 -m http.server 5173 --bind 127.0.0.1
+cd "$(dirname "$0")/.."
+exec python3 -m backend.server "$@"

@@ -1,545 +1,296 @@
-/* WanjieGate v1 — 决策模型驱动的自适应界面
- * 渲染循环(60fps) 与 决策循环(~3Hz) 解耦:KEV 只产出"目标态",
- * 每个组件的 materialize 标量 m 通过弹簧趋近目标,概率直接映射为透明度。
- */
-"use strict";
+import {api, workspacePath} from './js/api.js';
+import {infer, planFrom, selectComponents} from './js/composition.js';
+import {descriptors, renderComponent, updateChart, esc} from './js/components.js';
+import {icon, hydrateIcons} from './js/icons.js';
+import {LivePreview} from './js/live-preview.js';
+import {liveSurfaces, renderLiveSurface} from './js/live-surface.js';
+import {sceneSurfaces, sceneText} from './js/scene.js';
 
-const $ = s => document.querySelector(s);
-const stage = $("#stage"), input = $("#input"), conn = $("#conn"), pulse = $("#pulse"), debug = $("#debug"), composer = $("#composer");
-
-const MOCK = new URLSearchParams(location.search).has("mock");
-const DEBOUNCE_MS = 320;
-const TAU_IN = 0.16, TAU_OUT = 0.5;        // 进场快、退场慢(秒)
-const MOUNT_P = 0.03, GHOST_LO = 0.15, SOLID = 0.55;
-const STRIP_H = 54;
-const EASE = "cubic-bezier(.22,1.2,.3,1)";
-
-let manifest = null;
-let cards = new Map();      // id -> {el, m, target, prob, bound, rect, applied, delay}
-let layoutMode = "empty", densityCap = 1, emphasis = "none";
-let intent = {choice: "explore", confidence: 0};
-let committed = false;      // 意图已定:摘幽灵态,卡片直奔实体
-let sceneId = null;         // 当前已定场景的页面 id(= 已承诺意图)
-const COMMIT_MARGIN_IN = 0.30, COMMIT_MARGIN_OUT = 0.15;   // 意图判定走"头两名差距",比归一化置信度对小模型更稳
-let latestText = "", seq = 0, inflight = null;
-let dirty = {layout: true, debug: true};
-
-/* ---------- manifest -> question set ---------- */
-function buildQuestions() {
-  const q = {};
-  for (const [id, def] of Object.entries(manifest.questions))
-    q[id] = {type: def.type, instructions: def.instructions, criteria: def.criteria};
-  for (const [id, c] of Object.entries(manifest.components)) {
-    q["vis_" + id] = {type: "noul", instructions: c.ask};
-    if (c.bind) q["bind_" + id] = {type: "choice", instructions: c.bind.question, criteria: c.bind.options};
-  }
-  for (const [ctx, a] of Object.entries(manifest.attachments || {}))
-    q["att_" + ctx] = {type: "noul", instructions: a.cue};
-  return q;
+const $ = selector => document.querySelector(selector);
+const input = $('#input');
+const state = {registry:null, workspace:null, plan:null, scores:{}, override:null, previewIds:[], analysis:null, scene:null, sceneRevision:0, scenePoll:null, client:crypto.randomUUID(), composing:false, submitting:false, job:null, poll:null, view:'canvas', dirty:new Set(), routeSeq:0};
+const terminal = new Set(['complete','failed','cancelled','interrupted']);
+let toastTimer;
+const cacheKey = (kind,id) => `wanjie:${kind}:${id}`;
+function cached(kind,id) {try {return JSON.parse(sessionStorage.getItem(cacheKey(kind,id)) || 'null');} catch {return null;}}
+function cache(kind,id,value) {try {if (value === null) sessionStorage.removeItem(cacheKey(kind,id)); else sessionStorage.setItem(cacheKey(kind,id),JSON.stringify(value));} catch {}}
+function toast(message) {$('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true,5500);}
+function fail(error) {toast(error.message || String(error));}
+function busy() {return state.submitting || (state.job && !terminal.has(state.job.status));}
+function resizeInput() {input.style.height = 'auto'; input.style.height = Math.min(240,Math.max(28,input.scrollHeight))+'px';}
+const blankWorkspace = () => ({id:null,title:'新的空间',artifacts:[],messages:[],jobs:[],dataset:null});
+let creatingWorkspace = null;
+async function ensureWorkspace() {
+  if (state.workspace.id) return state.workspace.id;
+  if (!creatingWorkspace) creatingWorkspace = api('/workspaces',{}).then(w => {
+    state.workspace = w;
+    history.replaceState({},'','/w/'+w.id);
+    cache('draft',w.id,input.value);
+    return w.id;
+  }).finally(() => {creatingWorkspace = null;});
+  return creatingWorkspace;
 }
-
-function buildState() {
-  return {
-    role: "You are the layout engine of an adaptive UI canvas. Decide which interface elements fit the user's text.",
-    note: manifest.stateNote,
-    user_text_so_far: latestText,
-    currently_visible: [...cards.values()].filter(c => c.m > 0.5).map(c => c.id),
-  };
+function renderEntrance() {
+  const active = !!(input.value.trim() || state.workspace?.dataset || state.workspace?.artifacts.length || state.workspace?.messages.length || state.job);
+  document.body.classList.toggle('entered',active);
+  $('#composer-context').hidden = !active;
 }
-
-/* ---------- kev call ---------- */
-async function decide() {
-  const mySeq = ++seq;
-  inflight?.abort();
-  const ac = inflight = MOCK ? null : new AbortController();
-  pulse.classList.add("thinking"); $("#pulse-text").textContent = "thinking";
+for (let i=0;i<12;i++) {
+  const strip = document.createElement('div'); strip.className = 'shutter';
+  strip.style.setProperty('--i',i); strip.style.setProperty('--direction',i%2 ? 1 : -1);
+  const word = document.createElement('span'); word.textContent = 'WanJie'; strip.append(word);
+  $('#entrance').append(strip);
+}
+const livePreview = new LivePreview(
+  payload => api('/preview',payload),
+  result => {
+    state.scores = result.scores;
+    state.analysis = result.analysis || state.analysis;
+    state.scene = result.scene;
+    if (state.scene?.status === 'loading') pollScene(state.sceneRevision);
+    else scheduleSceneRefresh(state.sceneRevision);
+    $('#decision-status').textContent = result.decision.source.startsWith('kev') ? '实时理解' : '本地预览';
+    $('#decision-status').title = result.decision.reason || `KEV · ${result.decision.latency_ms} ms`;
+    renderPreview();
+  },
+  (label,error) => {$('#decision-status').textContent = label; if(error) {state.scene={status:'failed',title:'连接暂不可用',error:'无法获取新的界面内容，请稍后修改输入重试。'};renderLive();}}
+);
+function invalidatePreview() {livePreview.clear(); state.sceneRevision++; clearTimeout(state.scenePoll); state.scene=null;}
+function cancelScene() {api('/scenes/'+state.client+'/cancel',{revision:state.sceneRevision}).catch(()=>{});}
+function scheduleSceneRefresh(revision) {
+  clearTimeout(state.scenePoll);
+  if (state.scene?.status==='ready' && state.scene.route==='market') state.scenePoll=setTimeout(()=>{
+    if(revision===state.sceneRevision && input.value.trim()) onInput();
+  },30000);
+}
+async function pollScene(revision) {
+  clearTimeout(state.scenePoll);
   try {
-    let answers;
-    if (MOCK) ({answers} = await mockDecide());
-    else {
-      const res = await fetch(manifest.kev.baseUrl + "/v1/systemone", {
-        method: "POST", headers: {"content-type": "application/json"},
-        signal: ac.signal,
-        body: JSON.stringify({state: buildState(), model: manifest.kev.model, questions: buildQuestions()}),
-      });
-      if (!res.ok) throw new Error("kev " + res.status);
-      const body = await res.json();
-      answers = body.answers;
-      setConn("on", body.latency_ms);
-    }
-    if (mySeq !== seq) return;                 // 有更新的输入,丢弃旧决策帧
-    applyAnswers(answers);
-  } catch (e) {
-    if (e.name === "AbortError") return;
-    if (!MOCK) setConn("off");
-  } finally {
-    pulse.classList.remove("thinking"); $("#pulse-text").textContent = MOCK ? "mock" : "listening";
+    const scene=await api('/scenes/'+state.client+'/'+revision);
+    if(revision!==state.sceneRevision)return;
+    state.scene=scene;renderLive();
+    if(scene.status==='loading')state.scenePoll=setTimeout(()=>pollScene(revision),350);
+    else scheduleSceneRefresh(revision);
+  } catch(e) {
+    if(revision!==state.sceneRevision)return;
+    state.scene={status:'failed',title:'连接中断',error:'无法读取内容状态；不会重复发起生成。'};renderLive();
   }
 }
-
-function applyAnswers(a) {
-  if (a.intent) {
-    intent = a.intent;
-    const ps = Object.values(intent.probabilities || {}).sort((x, y) => y - x);
-    const margin = (ps[0] || 0) - (ps[1] || 0);
-    committed = intent.choice !== "explore" && margin >= (committed ? COMMIT_MARGIN_OUT : COMMIT_MARGIN_IN);
-    renderCard("intent-chip"); renderCard("action-bar"); renderCard("nav-rail");
+function renderLive() {
+  const el = $('#live-surface');
+  el.hidden = !input.value.trim() || !state.plan;
+  document.body.classList.toggle('scene-busy',!el.hidden && (!state.scene || state.scene.status==='loading'));
+  if (el.hidden) {el.replaceChildren(); return;}
+  if (state.scene?.route !== 'data') {renderLiveSurface(el,sceneSurfaces(state.scene)); return;}
+  const components = state.previewIds.map(id=>({id,...state.registry.components[id]}));
+  renderLiveSurface(el,liveSurfaces(state.plan,components,input.value,state.analysis));
+}
+async function refreshList() {
+  const {workspaces} = await api('/workspaces');
+  $('#space-count').textContent = workspaces.length;
+  $('#workspace-list').innerHTML = workspaces.map(w => `<a href="/w/${w.id}" class="workspace-link ${w.id === state.workspace?.id ? 'active' : ''}" data-workspace="${w.id}">${icon('space')}<span>${esc(w.title)}</span>${w.count ? `<small>${w.count}</small>` : ''}</a>`).join('');
+}
+function routePath() {return location.pathname.match(/^\/w\/([a-f0-9]{32})$/)?.[1];}
+async function openWorkspace(id,push = true) {
+  if (state.dirty.size) {toast('文稿还有未保存的修改，请先保存或放弃。'); return false;}
+  if (state.submitting || creatingWorkspace) {toast('正在发送，请稍候。'); return false;}
+  const routeSeq = ++state.routeSeq;
+  invalidatePreview(); cancelScene(); clearTimeout(state.poll);
+  const w = id ? await api(workspacePath(id)) : blankWorkspace();
+  if (routeSeq !== state.routeSeq) return false;
+  state.workspace = w; state.job = w.jobs?.[0] || null; state.override = null; state.plan = null; state.previewIds = []; state.analysis = null; $('#live-surface').replaceChildren();
+  input.value = w.id ? cached('draft',w.id) || '' : ''; $('#canvas').replaceChildren();
+  state.scores = infer(input.value,state.registry);
+  const pending = cached('pending',w.id);
+  if (pending) {const recovered = await api('/submissions/'+pending.request_id); if (routeSeq !== state.routeSeq) return false; if (recovered.job) {state.job = recovered.job; input.value = ''; cache('pending',w.id,null); cache('draft',w.id,null);}}
+  const path = w.id ? '/w/'+w.id : '/';
+  if (push) history.pushState({},'',path); else history.replaceState({},'',path);
+  setView('canvas'); $('#routing-details').open = false;
+  renderWorkspace(); renderPreview(); renderJob(); await refreshList();
+  $('#sidebar').close();
+  if (state.job && !terminal.has(state.job.status)) pollJob(state.job.id,w.id);
+  if(input.value.trim())onInput();
+  return true;
+}
+function renderWorkspace() {
+  const w = state.workspace;
+  const positions = new Map([...$('#canvas').children].map(el=>[el,el.getBoundingClientRect()]));
+  $('#workspace-title').textContent = w.title;
+  const hasWork = !!(w.artifacts.length || w.messages.length || state.job);
+  document.body.classList.toggle('has-work',hasWork);
+  $('#work-area').hidden = !hasWork; renderEntrance();
+  $('#export-button').disabled = !w.artifacts.length;
+  $('#attachments').innerHTML = w.dataset ? `<div class="attachment-chip">${icon('table')}<span>${esc(w.dataset.name)}</span><small>${w.dataset.rows.length} 行${w.dataset.demo ? ' · 演示数据' : ' · 本机'}</small><button class="icon-button" id="remove-data" aria-label="移除当前数据">${icon('close')}</button></div>` : '';
+  const wanted = new Set();
+  for (const d of descriptors(w.artifacts,state.registry)) {
+    wanted.add(d.key);
+    let card = [...$('#canvas').children].find(c => c.dataset.key === d.key);
+    if (!card) {card = document.createElement('article'); card.className = 'artifact-card '+d.component; card.dataset.key = d.key; card.dataset.artifact = d.artifact.id; card.style.setProperty('--span',d.spec.span); $('#canvas').append(card);}
+    const version = String(d.artifact.version);
+    if (card.dataset.version !== version && !state.dirty.has(d.artifact.id)) {card.innerHTML = renderComponent(d); card.dataset.version = version;}
+    card.classList.toggle('pinned',d.artifact.pinned);
+    card.style.order = d.artifact.pinned ? -1 : 0;
+    card.style.setProperty('--span', d.component === 'document' || (d.component === 'tasks' && !w.artifacts.some(a=>a.type==='analysis')) ? 12 : d.spec.span);
   }
-  if (a.layout) layoutMode = a.layout.choice;
-  if (a.density) densityCap = [0, 2, 4, 7, 10][Math.round(a.density.score)] ?? 4;
-  if (a.emphasis) emphasis = a.emphasis.choice;
-  const scene = manifest.scenes?.[intent.choice] || {};
-  { // 附件:模型 argmax (>0.3);未定时不兜底,已定时退回场景预设——每页都有成熟配套
-    let best = "none", bp = 0;
-    for (const ctx of Object.keys(manifest.attachments || {})) {
-      const p = a["att_" + ctx]?.noul ?? 0;
-      if (p > bp) { bp = p; best = ctx; }
+  for (const card of $('#canvas').children) if (!wanted.has(card.dataset.key)) card.remove();
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !state.dirty.size) for (const [el,old] of positions) {if (!el.isConnected) continue; const next=el.getBoundingClientRect(), dx=old.x-next.x, dy=old.y-next.y; if (dx || dy) el.animate([{transform:`translate(${dx}px,${dy}px)`},{transform:'none'}],{duration:320,easing:'cubic-bezier(.2,.7,.2,1)'});}
+  renderHistory(); resizeInput();
+}
+function renderHistory() {
+  const jobs = state.workspace.jobs || [];
+  $('#history').innerHTML = jobs.length ? jobs.map(j => `<article class="history-entry"><div><span>${icon('clock')}${new Date(j.created*1000).toLocaleString('zh-CN')}</span><b>${statusLabel(j.status)}</b></div><h3>${esc(j.text)}</h3><ol>${j.events.map(e => `<li class="event-${e.status}">${esc(e.text)}</li>`).join('')}</ol></article>`).join('') : '<p class="empty-message">发送一个想法，执行过程会留在这里。</p>';
+}
+function statusLabel(s) {return ({queued:'等待执行',running:'正在执行',complete:'已完成',failed:'未完成',cancelled:'已停止',interrupted:'已中断'})[s] || s;}
+function renderJob() {
+  const j = state.job, el = $('#job-banner'); el.hidden = !j;
+  if (j) {el.className = 'job-banner '+j.status; el.innerHTML = `<div><span class="job-indicator"></span><strong>${statusLabel(j.status)}</strong><span>${esc(j.error || j.events.at(-1)?.text || '')}</span></div>${!terminal.has(j.status) && !j.cancel_requested ? '<button class="quiet-button" id="cancel-job">停止</button>' : ''}<div class="execution-route">${j.plan.steps.map((s,i) => {const done=j.events.some(e=>e.status==='step-complete' && j.events.some(r=>r.step===s.id && r.seq===e.seq-1)); return `${i ? '<span>→</span>' : ''}<span class="${done ? 'done' : j.current===s.id ? 'current' : ''}">${done ? '✓ ' : ''}${esc(s.label)}</span>`;}).join('')}</div>`;}
+  $('#send-button').disabled = !input.value.trim() || busy() || !!state.plan?.needs_data || ($('#local-only').checked && state.plan?.cloud);
+  $('#send-button span:first-child').textContent = busy() ? '进行中' : '生成内容';
+}
+function renderPreview() {
+  const text = input.value.trim();
+  renderEntrance();
+  $('#composition').hidden = !text;
+  if (!text) {$('#send-scope').textContent = $('#local-only').checked ? '仅本地：计算与笔记，不发送到云端。' : '输入会自动获取或生成内容。'; $('#key-hint').textContent = 'Enter 换行 · Ctrl Enter 生成内容';}
+  if (!text) {state.plan = null; $('#decision-status').textContent = ''; $('#composer').dataset.mode = 'answer'; renderLive(); renderJob(); resizeInput(); return;}
+  state.plan = planFrom(state.scores,state.registry,!!state.workspace?.dataset,state.override);
+  const plan = state.plan;
+  $('#composer').dataset.mode = plan.mode;
+  $('#plan-steps').innerHTML = plan.steps.map((s,i) => `${i ? '<span class="step-arrow">→</span>' : ''}<button class="plan-step ${s.blocked ? 'blocked' : ''}" data-capability="${s.id}" title="点击移除此能力"><span class="step-number">0${i+1}</span>${esc(s.label)}<small>${s.cost === 'local' ? '本地' : '模型'}</small><span class="step-remove">×</span></button>`).join('')+`<button class="add-capability" id="add-capability" aria-label="添加能力">${icon('plus')}</button>`;
+  $('#plan-notice').hidden = true; // The live data surface owns the import action.
+  $('#plan-notice').textContent = plan.needs_data ? '＋ 添加要分析的数据' : '';
+  const components = selectComponents(plan,state.registry,state.previewIds);
+  state.previewIds = components.map(c => c.id);
+  const visibleComponents=state.scene?.route==='market' ? [{label:'行情'}] : components;
+  $('#component-preview').innerHTML = visibleComponents.map(c => `<span class="preview-token">${esc(c.label)}</span>`).join('<span class="preview-separator">·</span>');
+  $('#send-scope').textContent = $('#local-only').checked ? '仅本地：计算与笔记，不发送到云端。' : plan.cloud ? '输入与关联内容会自动交给模型生成界面内容。' : '这次在本机计算，不调用云端模型。';
+  $('#key-hint').textContent = 'Enter 换行 · Ctrl Enter 生成内容';
+  renderLive(); renderJob(); resizeInput();
+}
+function onInput() {
+  if (!state.registry || !state.workspace) return;
+  invalidatePreview(); state.override = null;
+  if (state.workspace.id) cache('draft',state.workspace.id,input.value);
+  state.scores = infer(input.value,state.registry); renderPreview();
+  if (!input.value.trim()) {cancelScene();return;}
+  if (state.composing) return;
+  // Dispatch immediately. While KEV is running, retain only the newest input.
+  livePreview.update({workspace:state.workspace.id,text:input.value,client:state.client,revision:state.sceneRevision,local_only:$('#local-only').checked});
+}
+
+async function submit() {
+  if (busy() || !input.value.trim()) return;
+  if (state.dirty.size) return toast('请先保存正在编辑的文稿，让新任务使用最新内容。');
+  if (state.plan?.needs_data) return toast('请先添加数据。');
+  if ($('#local-only').checked && state.plan?.cloud) return toast('仅本地模式不会调用云端模型。');
+  const text = input.value.trim();
+  const selected = state.plan.steps.map(s => s.id);
+  const payload = {text,selected,local_only:$('#local-only').checked};
+  invalidatePreview(); state.submitting = true; input.disabled = true; renderJob();
+  let workspace;
+  try {
+    workspace = await ensureWorkspace();
+    let attempt = cached('pending',workspace);
+    if (attempt && JSON.stringify(attempt.payload) !== JSON.stringify(payload)) return toast('上次发送状态待确认。请刷新恢复状态后再发送不同内容。');
+    if (!attempt) {attempt = {payload,request_id:crypto.randomUUID()}; cache('pending',workspace,attempt);}
+    const job = await api(workspacePath(workspace)+'/jobs',{...payload,request_id:attempt.request_id});
+    if (state.workspace.id !== workspace) return;
+    state.job = job; input.value = ''; state.override = null; cache('pending',workspace,null); cache('draft',workspace,null);
+    state.workspace = await api(workspacePath(workspace)); renderWorkspace(); renderPreview(); renderJob();
+    refreshList().catch(fail); pollJob(job.id,workspace);
+  } catch(e) {if (e.confirmedFailure) cache('pending',workspace,null); fail(e);} finally {state.submitting = false; input.disabled = false; renderJob();}
+}
+async function pollJob(id,workspace) {
+  clearTimeout(state.poll);
+  try {
+    const job = await api('/jobs/'+id);
+    if (state.workspace.id !== workspace) return;
+    const changed = state.job?.events.length !== job.events.length;
+    state.job = job; renderJob();
+    if (changed || terminal.has(job.status)) {
+      const w = await api(workspacePath(workspace));
+      if (state.workspace.id !== workspace) return;
+      state.workspace = w; renderWorkspace();
     }
-    setAttach(bp > 0.3 ? best : (committed ? scene.attach || "none" : "none"));
+    if (terminal.has(job.status)) {refreshList().catch(fail); return;}
+  } catch(e) {if (state.workspace.id !== workspace) return; $('#job-banner').textContent = '连接中断，正在恢复执行状态；不会重复发送。';}
+  state.poll = setTimeout(() => pollJob(id,workspace),800);
+}
+async function mutateArtifact(id,patch) {
+  const workspace = state.workspace.id, a = state.workspace.artifacts.find(a => a.id === id);
+  const w = await api(workspacePath(workspace)+'/artifacts/'+id,{version:a.version,...patch},{method:'PATCH'});
+  if (state.workspace.id !== workspace) return;
+  state.workspace = {...w,jobs:state.workspace.jobs}; renderWorkspace();
+}
+async function addData(text,name,demo = false) {
+  const workspace = await ensureWorkspace();
+  const w = await api(workspacePath(workspace)+'/dataset',{text,name,demo});
+  if (state.workspace.id !== workspace) return;
+  state.workspace = {...w,jobs:state.workspace.jobs}; state.analysis = null; renderWorkspace(); onInput();
+}
+function showInfo(title,html) {$('#info-title').textContent = title; $('#info-content').innerHTML = html; $('#info-dialog').showModal();}
+function setView(view) {state.view = view; $('#canvas').hidden = view !== 'canvas'; $('#history').hidden = view !== 'history'; $('#view-canvas').classList.toggle('active',view === 'canvas'); $('#view-history').classList.toggle('active',view === 'history');}
+
+hydrateIcons();
+input.addEventListener('input',onInput);
+input.addEventListener('compositionstart',() => {state.composing = true; invalidatePreview();});
+input.addEventListener('compositionend',() => {state.composing = false; onInput();});
+input.addEventListener('keydown',e => {if (e.key === 'Enter' && !e.isComposing && !state.composing && (e.ctrlKey || e.metaKey)) {e.preventDefault(); submit();}});
+$('#send-button').addEventListener('click',submit);
+$('#live-surface').addEventListener('click',async e => {
+  if (e.target.closest('[data-live=import]')) $('#attach-button').click();
+  const choice=e.target.closest('[data-scene-choice]');
+  if(choice){input.value=choice.dataset.sceneChoice; input.focus();onInput();}
+  if(e.target.closest('[data-scene-save]') && state.scene?.status==='ready') {
+    const text=sceneText(state.scene);
+    try {const workspace=await ensureWorkspace(); await api(workspacePath(workspace)+'/note',{text}); state.workspace=await api(workspacePath(workspace));renderWorkspace();refreshList().catch(fail);toast('内容已保存');} catch(error){fail(error);}
   }
-  { // 场景提示词逐层披露:未定只露第一条(幽灵),已定露下一条(更深引导)
-    const hints = scene.hints || [];
-    const hint = intent.choice === "explore" ? "" : (hints[committed ? 1 : 0] || hints[0] || "");
-    setHint(hint, !committed);
-  }
-  if (a.intent) {
-    $("#mode").textContent = committed ? intent.choice : "";
-    input.placeholder = (manifest.prompts || {})[intent.choice] || manifest.prompts?.explore || input.placeholder;
-    composer.dataset.cmode = intent.choice;   // 输入框本身也是状态,随意图头名即时变形
-  }
-  const probs = {};
-  const ensure = committed ? (scene.ensure || {}) : {};   // 已定时场景预设保底核心组件:页面总是成型的,模型只加强不缺席
-  for (const id of Object.keys(manifest.components))
-    probs[id] = Math.max(a["vis_" + id]?.noul ?? 0, ensure[id] ?? 0);
-  probs["nav-rail"] = Math.max(probs["nav-rail"] ?? 0, latestText.trim() ? 0.6 : 0);  // 应用壳随内容常驻
-  // 布局容量裁剪:非 pin 组件按概率排序放行前 N 个;pin 组件(alert/HUD)只过幽灵阈值
-  const cap = {empty: 0, focus: 1, split: 4, dashboard: 9}[layoutMode] ?? 4;
-  const limit = Math.min(cap, densityCap);
-  const pinned = id => !!manifest.components[id].pin;
-  const allowed = new Set(
-    Object.entries(probs).filter(([id, p]) => (pinned(id) || ensure[id] != null) && p > GHOST_LO).map(([id]) => id));
-  Object.entries(probs).filter(([id]) => !pinned(id)).sort((x, y) => y[1] - x[1])
-    .slice(0, limit).filter(([, p]) => p > GHOST_LO).forEach(([id]) => allowed.add(id));
-  for (const [id, p] of Object.entries(probs)) {
-    // 已定:判定即裁决,p>=组件门槛才实体化,其余退场;未定:概率即透明度(幽灵层)。打断级组件可有更低 solid 门槛
-    const gate = manifest.components[id].solid ?? SOLID;
-    const want = allowed.has(id) && (!committed || p >= gate);
-    setTarget(id, p, want ? (committed ? 1 : p) : 0);
-  }
-  for (const [id, c] of Object.entries(manifest.components))
-    if (c.bind && a["bind_" + id]) setBinding(id, a["bind_" + id].choice);
-  // 页面生命周期:已承诺意图切换 = 换页。旧场景卡片错峰退场,新场景错峰进场
-  const newScene = committed ? intent.choice : null;
-  if (newScene && newScene !== sceneId) {
-    let eo = 0, io = 0;
-    for (const c of cards.values()) {
-      if (c.target === 0 && c.m > 0.05) c.delay = (eo++) * 0.03;
-      else if (c.target > 0 && c.m < 0.5) c.delay = 0.14 + (io++) * 0.045;
-    }
-  }
-  sceneId = newScene;
-  dirty.layout = dirty.debug = true;
-}
-
-function setTarget(id, p, target) {
-  let c = cards.get(id);
-  if (!c && target > MOUNT_P) c = mount(id);
-  if (!c) return;
-  c.prob = p; c.target = target;
-  c.el.dataset.p = p.toFixed(3); c.el.dataset.target = target.toFixed(3);   // 供自测/debug 读
-}
-
-function setBinding(id, key) {
-  const c = cards.get(id);
-  if (c && c.bound !== key && manifest.datasets[key]) { c.bound = key; renderCard(id); }
-}
-
-/* ---------- 输入框的自适应附件 + 场景提示 ---------- */
-const attachEl = document.getElementById("attach"), hintEl = document.getElementById("hint");
-let attachCtx = "";
-function setHint(text, ghost) {
-  const on = !!text;
-  if ((hintEl.dataset.t || "") !== (text || ""))
-    hintEl.innerHTML = on ? `<b>hint</b><span>${esc(text)}</span>` : "";
-  hintEl.dataset.t = text || "";
-  hintEl.classList.toggle("on", on);
-  hintEl.style.opacity = on ? (ghost ? .45 : 1) : 0;
-}
-function setAttach(ctx) {
-  if (ctx === attachCtx) { attachEl.style.opacity = committed ? 1 : .5; return; }
-  attachCtx = ctx;
-  const on = ctx && ctx !== "none";
-  attachEl.innerHTML = on ? buildAttach(ctx) : "";
-  attachEl.classList.toggle("on", on);
-  attachEl.style.opacity = committed ? 1 : .5;
-}
-
-function buildAttach(ctx) {
-  const items = manifest.attachments?.[ctx]?.items;
-  const head = `<div class="a-head">${ctx}</div>`;
-  switch (ctx) {
-    case "photos":
-      return head + `<div class="a-photos">${(items || []).map(p =>
-        `<div class="a-ph" style="--h:${p.h}"><b>${p.time}</b><span>${esc(p.label)}</span></div>`).join("")}</div>`;
-    case "news":
-      return head + (items || []).map(n =>
-        `<div class="a-row"><i>${n.time}</i><b>${esc(n.src)}</b><span>${esc(n.title)}</span></div>`).join("");
-    case "logs":
-      return head + (items || []).map(l =>
-        `<div class="a-row"><i>${l.time}</i><b class="lv-${l.lvl}">${l.lvl}</b><span>${esc(l.msg)}</span></div>`).join("");
-    case "tasks": {
-      const d = manifest.datasets.tasks;
-      return head + d.rows.map(r =>
-        `<div class="a-row"><i class="tk ${r[1] === "完成" ? "done" : r[1] === "进行中" ? "doing" : ""}"></i><span>${esc(r[0])}</span><b>${r[1]}</b></div>`).join("");
-    }
-    case "datasets":
-      return head + `<div class="a-chips">${Object.keys(manifest.datasets).map(k =>
-        `<button class="a-chip" onclick="window.__rebind('${k}')">${k}</button>`).join("")}</div>`;
-    case "moments":
-      return head + (items || []).map(m =>
-        `<div class="a-row"><i>${m.time}</i><b class="who" style="--h:${m.hue}">${esc(m.who)}</b><span>${esc(m.text)}</span><b>${m.meta}</b></div>`).join("");
-    case "services":
-      return head + `<div class="a-chips">${(items || []).map(s =>
-        `<span class="a-svc ${s.ok ? "ok" : "bad"}"><i></i>${s.name}</span>`).join("")}</div>`;
-    default: return "";
-  }
-}
-window.__rebind = key => {
-  for (const [id] of cards) if (manifest.components[id].bind) setBinding(id, key);
-};
-
-/* ---------- DOM ---------- */
-function mount(id) {
-  const el = document.createElement("div");
-  el.className = "card"; el.dataset.id = id;
-  stage.appendChild(el);
-  const c = {id, el, m: 0, target: 0, prob: 0, bound: defaultBinding(id), rect: null, applied: "", delay: 0};
-  cards.set(id, c); renderCard(id);
-  dirty.layout = true;
-  return c;
-}
-
-function defaultBinding(id) {
-  const b = manifest.components[id].bind;
-  return b ? Object.keys(b.options)[0] : null;
-}
-
-/* ---------- 应用壳分栏:nav | main | side ----------
- * 固定三栏(X 式应用版面):左导航栏、中主列、右信息列;
- * 顶/底条带横贯全宽;栏内卡片按 minH 权重铺满;窄屏退回单列。
- */
-const PAD = 20, GAP = 14, GAP_IN = 12, COL_GAP = 26;
-const NAV_W = 200, SIDE_W = 292;
-function zoneOf(id) {
-  const z = manifest.components[id].zone;
-  if (z === "nav" || z === "top" || z === "bottom") return z;
-  if (id === emphasis) return "main";
-  return z || "main";
-}
-
-function pack() {
-  const W = stage.clientWidth, H = stage.clientHeight;
-  const order = Object.keys(manifest.components);
-  const vis = [...cards.values()].filter(c => c.target > 0 || c.m > MOUNT_P)
-    .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
-  const tops  = vis.filter(c => zoneOf(c.id) === "top");
-  const bots  = vis.filter(c => zoneOf(c.id) === "bottom");
-  const navs  = vis.filter(c => zoneOf(c.id) === "nav");
-  let mains   = vis.filter(c => zoneOf(c.id) === "main");
-  let sides   = vis.filter(c => zoneOf(c.id) === "side");
-  const Wi = W - PAD * 2;
-
-  let y = PAD;
-  for (const c of tops) { c.rect = {x: PAD, y, w: Wi, h: STRIP_H}; y += STRIP_H + GAP; }
-  let by = H - PAD;
-  for (const c of bots) { by -= STRIP_H; c.rect = {x: PAD, y: by, w: Wi, h: STRIP_H}; by -= GAP; }
-  const midY = y, midH = Math.max(0, by - midY);   // 条带循环里已含间隔
-
-  // 栏内卡片给"自然高"(minH*66)顶对齐堆叠,超出列高才按比例压缩;
-  // 剩余高度留白——卡片自己找位置,不被撑成比例失调的大块
-  const NAT = 66;
-  const stack = (list, x0, w, y0, h) => {
-    const hs = list.map(c => Math.max(52, (manifest.components[c.id].minH || 1) * NAT));
-    const gaps = GAP_IN * (list.length - 1);
-    const need = hs.reduce((s, v) => s + v, 0) + gaps;
-    const k = need > h ? (h - gaps) / Math.max(1, need - gaps) : 1;
-    let cy = y0;
-    list.forEach((c, i) => {
-      const ch = Math.round(hs[i] * k);
-      c.rect = {x: x0, y: Math.round(cy), w, h: Math.max(0, ch)};
-      cy += ch + GAP_IN;
-    });
-  };
-
-  const narrow = Wi < 980;
-  if (narrow) {                                     // 窄屏:导航变横条,侧列并入主列
-    for (const c of navs) { c.el.classList.add("flat"); c.rect = {x: PAD, y, w: Wi, h: 46}; y += 46 + GAP_IN; }
-    stack([...mains, ...sides], PAD, Wi, y, Math.max(0, by - y));
-    return;
-  }
-  for (const c of navs) c.el.classList.remove("flat");
-
-  let x = PAD;
-  if (navs.length) { navs[0].rect = {x, y: midY, w: NAV_W, h: midH}; x += NAV_W + COL_GAP; }
-  if (!mains.length) { mains = sides; sides = []; } // 主列空时侧列内容进主列
-  const sideW = sides.length ? SIDE_W : 0;
-  const mainW = Wi - (x - PAD) - sideW - (sides.length ? COL_GAP : 0);
-  if (mains.length) stack(mains, x, mainW, midY, midH);
-  if (sides.length) stack(sides, x + mainW + COL_GAP, sideW, midY, midH);
-}
-
-/* ---------- 渲染循环 ---------- */
-let last = performance.now();
-function tick(now) {
-  const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  if (dirty.layout) { pack(); dirty.layout = false; }
-  for (const c of [...cards.values()]) {
-    if (c.delay > 0) c.delay -= dt;                 // 场景切换的错峰调度
-    else {
-      const tau = c.target > c.m ? TAU_IN : TAU_OUT;
-      c.m += (c.target - c.m) * (1 - Math.exp(-dt / tau));
-    }
-    if (c.target === 0 && c.m < MOUNT_P) { c.el.remove(); cards.delete(c.id); dirty.layout = true; continue; }
-    const r = c.rect; if (!r) continue;
-    const m = c.m, lift = 1 - m;
-    // left/top/宽高走 CSS transition(布局变化平滑);transform 每帧直写(材料化进度)
-    const key = `${r.x}|${r.y}|${r.w}|${r.h}`;
-    if (c.applied !== key) {
-      c.applied = key;
-      c.el.style.transition = `left .48s ${EASE}, top .48s ${EASE}, width .48s ${EASE}, height .48s ${EASE}, box-shadow .3s, border-color .3s`;
-      c.el.style.left = r.x + "px"; c.el.style.top = r.y + "px";
-      c.el.style.width = r.w + "px"; c.el.style.height = r.h + "px";
-    }
-    // 进场方式按组件声明:条带横向扫入,主区弹簧,其余缓升
-    const enter = manifest.components[c.id].enter;
-    if (enter === "wipe") c.el.style.clipPath = `inset(0 ${(lift * 100).toFixed(1)}% 0 0)`;
-    else c.el.style.clipPath = "none";
-    c.el.style.transform = enter === "wipe" ? "none"
-      : enter === "zoom" ? `scale(${(0.94 + 0.06 * m).toFixed(4)})`
-      : enter === "spring" ? `translateY(${(lift * 14).toFixed(1)}px) scale(${(0.97 + 0.03 * m).toFixed(4)})`
-      : `translateY(${(lift * 8).toFixed(1)}px)`;
-    c.el.style.opacity = m.toFixed(3);
-    c.el.style.setProperty("--co", Math.pow(m, 1.5).toFixed(3));   // 字比线慢一点出现
-    // 模糊只属于"运动过程":静止(m≈target)必须全清晰
-    const motion = Math.abs(c.target - c.m);
-    c.el.style.filter = motion > 0.015 ? `blur(${Math.min(4, motion * 7).toFixed(1)}px)` : "none";
-    c.el.style.zIndex = c.id === emphasis ? 5 : 1;
-    const ghosting = m < SOLID;
-    c.el.classList.toggle("ghost", ghosting);
-    c.el.classList.toggle("emph", c.id === emphasis && !ghosting);
-    // 边界线随 m 拉出:幽灵=虚线轮廓;实体=发丝线(强调区用 accent)
-    if (c.id === "nav-rail") {                      // 导航栏是壳的一部分:只有右缘发丝线
-      c.el.style.outline = "none"; c.el.style.boxShadow = "none";
-      c.el.style.borderRight = `1px ${ghosting ? "dashed" : "solid"} rgba(120,140,180,${(m * (ghosting ? 0.55 : 0.45)).toFixed(3)})`;
-    } else if (ghosting) {
-      c.el.style.boxShadow = "none";
-      c.el.style.outline = `1px dashed rgba(120,140,190,${(m * 0.85).toFixed(3)})`;
-      c.el.style.outlineOffset = "-4px";
-    } else {
-      c.el.style.outline = "none";
-      const col = c.id === emphasis ? "94,234,212" : "120,140,180";
-      c.el.style.boxShadow =
-        `inset 0 0 0 1px rgba(${col},${(m * 0.75).toFixed(3)})` +
-        (c.id === "alert-banner" ? `, inset 3px 0 0 rgba(255,143,143,${(m * 0.9).toFixed(3)})` : "");
-    }
-  }
-  if (dirty.debug) { renderDebug(); dirty.debug = false; }
-  requestAnimationFrame(tick);
-}
-
-/* ---------- 卡片内容(FUI 骨架 + 数据细节) ---------- */
-function esc(s) { return s.replace(/[&<>"]/g, ch => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[ch])); }
-function ds(key) { return manifest.datasets[key] || manifest.datasets.sales; }
-
-function chrome(id, tag) {
-  return tag ? `<div class="fui-tag">${esc(tag)}</div>` : "";
-}
-
-function renderCard(id) {
-  const c = cards.get(id); if (!c) return;
-  const el = c.el, t = latestText;
-  const lines = t.split("\n").map(s => s.trim()).filter(Boolean);
-  const first = lines[0] || "", lastLine = lines[lines.length - 1] || "";
-  switch (id) {
-    case "nav-rail": {
-      const labels = manifest.questions.intent.labels || {};
-      const probs = intent.probabilities || {};
-      el.innerHTML = `<div class="nav-list">${Object.entries(labels).map(([k, zh]) =>
-        `<div class="ni ${k === intent.choice ? "on" : ""}"><i></i><span>${esc(zh)}</span><b>${Math.round((probs[k] || 0) * 100)}</b></div>`).join("")}
-        </div><div class="rail-foot">nav · kev</div>`;
-      break;
-    }
-    case "intent-chip": {
-      const seg = Array.from({length: 10}, (_, i) =>
-        `<i class="${i < Math.round(intent.confidence * 10) ? "on" : ""}"></i>`).join("");
-      el.innerHTML = chrome(id, "intent") + `<div class="c-title">detected intent</div>
-        <div class="chip"><span class="val">${esc(intent.choice || "—")}</span>
-        <span class="segbar">${seg}</span>
-        <span class="c-sub">${(intent.confidence * 100) | 0}%</span></div>`;
-      break;
-    }
-    case "summary-card": {
-      const zh = /[一-鿿]/.test(t), words = t.split(/\s+/).filter(Boolean).length;
-      el.innerHTML = chrome(id, "input") + `<div class="c-title">input summary</div>
-        <div class="kv"><span>chars</span><b>${t.length}</b></div>
-        <div class="kv"><span>lines</span><b>${lines.length}</b></div>
-        <div class="kv"><span>lang</span><b>${zh ? "zh-CN" : "latin"}</b></div>
-        <div class="kv"><span>words</span><b>${words}</b></div>`;
-      break;
-    }
-    case "metric-card": {
-      const d = ds(c.bound), s = d.series, mx = Math.max(...s), mn = Math.min(...s);
-      const sp = s.map((v, i) => `${(i / (s.length - 1)) * 100},${20 - ((v - mn) / (mx - mn || 1)) * 18}`).join(" ");
-      el.innerHTML = chrome(id, c.bound) + `<div class="c-title">${esc(d.title)}</div>
-        <div class="c-big">${d.unit}${d.latest}</div>
-        <div class="c-sub trend-${d.trend}">${d.trend === "up" ? "▲ 上升" : "▼ 下降"}</div>
-        <svg class="spark" viewBox="0 0 100 22" preserveAspectRatio="none">
-          <polyline points="${sp}" fill="none" stroke="var(--accent-2)" stroke-width="1" vector-effect="non-scaling-stroke"/></svg>`;
-      break;
-    }
-    case "chart-card": {
-      const d = ds(c.bound), s = d.series, max = Math.max(...s), min = Math.min(...s);
-      const pts = s.map((v, i) => `${(i / (s.length - 1)) * 100},${36 - ((v - min) / (max - min || 1)) * 32}`).join(" ");
-      const grid = [8, 16, 24, 32].map(y => `<line x1="0" x2="100" y1="${y}" y2="${y}" stroke="#1b2332" stroke-width="0.3"/>`).join("");
-      const ly = 36 - ((s[s.length - 1] - min) / (max - min || 1)) * 32;
-      el.innerHTML = chrome(id, c.bound) + `<div class="c-title">${esc(d.title)} · trend</div>
-        <svg viewBox="0 0 100 40" preserveAspectRatio="none" class="chart">
-          ${grid}<polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="1.4" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
-          <circle cx="100" cy="${ly}" r="1.8" fill="var(--accent)"/></svg>
-        <div class="fui-axis">${d.rows.map(r => `<span>${esc(String(r[0]))}</span>`).join("")}</div>`;
-      break;
-    }
-    case "table-card": {
-      const d = ds(c.bound);
-      el.innerHTML = chrome(id, c.bound) + `<div class="c-title">${esc(d.title)} · detail</div>
-        <table class="rows"><tr class="th"><td>seq</td><td>item</td><td>val</td></tr>
-        ${d.rows.map((r, i) => `<tr><td class="seq">${String(i + 1).padStart(2, "0")}</td><td>${esc(String(r[0]))}</td><td>${esc(String(r[1]))}</td></tr>`).join("")}</table>`;
-      break;
-    }
-    case "alert-banner": {
-      el.classList.add("banner");
-      const ts = new Date().toLocaleTimeString("en-GB");
-      el.innerHTML = `<span class="dot"></span><div class="btxt">${esc(first || "需要关注")}</div><div class="fui-tag">alrt · ${ts}</div>`;
-      break;
-    }
-    case "action-bar": {
-      const acts = {"analyze-data": ["导出报表", "下钻明细"], "report-issue": ["创建工单", "通知值班"], "plan-work": ["生成看板", "排期"], "write-document": ["润色", "归档"], "monitor-status": ["全屏监控", "设告警"], "explore": ["继续"]}[intent.choice] || ["继续"];
-      el.innerHTML = chrome(id, "exec") + `<div class="actions"><span class="fui-lbl">exec</span>${acts.map((a, i) => `<button class="btn${i === 0 ? " primary" : ""}">${a}</button>`).join("")}<button class="btn">更多…</button></div>`;
-      break;
-    }
-    case "timeline-card": {
-      const steps = lines.filter(l => /^[-*\d•·]/.test(l)).map(l => l.replace(/^[-*\d•·.\s]+/, ""));
-      const show = steps.length ? steps : ["起草", "细化", "评审", "发布"];
-      el.innerHTML = chrome(id, "seq") + `<div class="c-title">timeline</div><div class="tl">${show.slice(0, 6).map((s, i) => `<div class="step"><em>${String(i + 1).padStart(2, "0")}</em><i></i><span>${esc(s)}</span></div>`).join("")}</div>`;
-      break;
-    }
-    case "note-card":
-      el.innerHTML = chrome(id, "note") + `<div class="c-title">note</div><div class="note">${esc(lastLine || first || "…")}</div>`;
-      break;
-    case "feed-card": {
-      const items = manifest.attachments?.moments?.items || [];
-      el.innerHTML = chrome(id, "feed") + `<div class="c-title">moments · feed</div>` +
-        items.map(m => `<div class="feed-row"><i class="av" style="--h:${m.hue}">${esc(m.who[0])}</i>
-          <div class="fbody"><div class="fhead"><b>${esc(m.who)}</b><i>${m.time}</i></div>
-          <div class="ftext">${esc(m.text)}</div></div><b class="fmeta">${m.meta}</b></div>`).join("");
-      break;
-    }
-    case "hero-stat": {
-      const d = ds(c.bound);
-      el.innerHTML = chrome(id, c.bound) + `<div class="c-title">${esc(d.title)}</div>
-        <div class="hero-wrap"><i class="hl"></i><div class="hero-num">${d.unit}${d.latest}</div><i class="hl"></i></div>`;
-      break;
-    }
-    case "progress-card": {
-      const d = manifest.datasets.tasks, done = d.rows.filter(r => r[1] === "完成").length, pc = Math.round(done / d.rows.length * 100);
-      el.innerHTML = chrome(id, "tasks") + `<div class="c-title">progress</div><div class="c-big">${pc}<span class="c-sub">%</span></div>
-        <div class="c-sub">${done}/${d.rows.length} 完成</div><div class="prog"><i style="width:${pc}%"></i></div>`;
-      break;
-    }
-  }
-}
-
-/* ---------- mock 决策源(无 GPU 时调手感) ---------- */
-const MOCK_KW = {
-  "metric-card": /指标|metric|kpi|数字|number|营收|sales/i,
-  "chart-card": /图|chart|趋势|trend|走势|曲线/i,
-  "table-card": /表|table|明细|列表|rows/i,
-  "alert-banner": /警告|alert|error|错误|故障|挂了|紧急/i,
-  "action-bar": /操作|action|button|执行|导出/i,
-  "timeline-card": /时间线|timeline|步骤|计划|plan|流程/i,
-  "note-card": /备注|note|记住|quote|记一下/i,
-  "hero-stat": /hero|大字|总数|一共/i,
-  "progress-card": /进度|progress|完成度/i,
-  "summary-card": /总结|summary|统计/i,
-  "feed-card": /朋友|大家|社交|feed|moments|朋友圈/i,
-  "intent-chip": /./,
-};
-async function mockDecide() {
-  await new Promise(r => setTimeout(r, 120 + Math.random() * 80));
-  const answers = {};
-  for (const [id, kw] of Object.entries(MOCK_KW)) {
-    const hit = kw.test(latestText);
-    const noise = 0.25 + (hit ? 0.55 : 0) + Math.random() * 0.15;
-    answers["vis_" + id] = {type: "noul", noul: Math.min(0.98, latestText.length > 2 ? noise : noise * 0.4)};
-  }
-  const intentMap = [["analyze-data", /数据|指标|销售|营收|data|metric/i], ["report-issue", /错误|故障|bug|挂了|alert/i], ["plan-work", /计划|任务|步骤|plan|todo/i], ["monitor-status", /监控|状态|monitor|latency/i], ["write-document", /写|文章|文档|note|draft/i], ["check-social", /朋友|大家|谁.*咋样|friend|social/i]];
-  const top = intentMap.find(([, kw]) => kw.test(latestText));
-  const ip = {}; for (const [k] of intentMap) ip[k] = 0.05; ip.explore = 0.1;
-  if (top) ip[top[0]] = 0.7; else ip.explore = 0.6;
-  answers.intent = {type: "choice", choice: top ? top[0] : "explore", confidence: top ? 0.7 : 0.3, probabilities: ip};
-  const ctxMap = [["photos", /日记|照片|今天.*拍|journal|diary/i], ["news", /文章|新闻|报道|article|news|essay/i], ["logs", /错误|日志|bug|报错|log/i], ["tasks", /任务|计划|安排|todo|task/i], ["datasets", /数据|营收|sales|traffic|chart/i], ["services", /服务|监控|status|service/i], ["moments", /朋友|大家|谁.*咋样|friend|social|朋友圈/i]];
-  for (const [ctx, kw] of ctxMap) answers["att_" + ctx] = {type: "noul", noul: kw.test(latestText) ? 0.8 : 0.15};
-  answers.layout = {type: "choice", choice: latestText.length < 4 ? "empty" : (Object.values(answers).filter(a => a.noul > SOLID).length > 3 ? "dashboard" : "split"), probabilities: {}};
-  answers.density = {type: "score", score: latestText.length < 4 ? 0 : 3, probabilities: {}, legend: {}};
-  answers.emphasis = {type: "choice", choice: "none", probabilities: {}};
-  for (const [id, c] of Object.entries(manifest.components))
-    if (c.bind) answers["bind_" + id] = {type: "choice", choice: /延迟|latency/.test(latestText) ? "latency" : /错误|error/.test(latestText) ? "errors" : "sales", probabilities: {}};
-  return {answers};
-}
-
-/* ---------- 状态徽标 & debug ---------- */
-function setConn(st, latency) {
-  conn.className = "conn " + (MOCK ? "conn-mock" : st === "on" ? "conn-on" : "conn-off");
-  conn.textContent = MOCK ? `kev · mock` : st === "on" ? `kev · ${Math.round(latency)}ms` : "kev · offline";
-}
-function renderDebug() {
-  const rows = [`<div class="d-row"><b>layout</b><b>${layoutMode} · cap ${densityCap}</b></div>`,
-    `<div class="d-row"><b>intent</b><b>${intent.choice} ${(intent.confidence * 100) | 0}% ${committed ? "· COMMITTED" : ""}</b></div>`];
-  for (const [id, c] of [...cards.entries()].sort((a, b) => b[1].prob - a[1].prob))
-    rows.push(`<div class="d-row"><span>${id}</span><b>${c.prob.toFixed(2)} → m ${c.m.toFixed(2)}</b></div><div class="d-bar"><i style="width:${c.prob * 100}%"></i></div>`);
-  debug.innerHTML = rows.join("");
-}
-
-function clearScene() {
-  committed = false; layoutMode = "empty"; sceneId = null;
-  intent = {choice: "explore", confidence: 0};
-  setAttach("none"); attachCtx = "";
-  setHint("");
-  attachEl.innerHTML = ""; attachEl.classList.remove("on");
-  $("#mode").textContent = "";
-  input.placeholder = manifest.prompts?.explore || "";
-  composer.dataset.cmode = "";
-  for (const c of cards.values()) { c.prob = 0; c.target = 0; c.el.dataset.p = "0"; c.el.dataset.target = "0"; }
-  dirty.layout = dirty.debug = true;
-}
-
-/* ---------- 事件 ---------- */
-let timer = null;
-input.addEventListener("input", () => {
-  latestText = input.value;
-  const empty = latestText.trim() === "";
-  document.getElementById("app").classList.toggle("idle", empty);
-  if (empty) { clearTimeout(timer); clearScene(); return; }   // 清空 → 收回舞台,不再问模型
-  for (const id of ["summary-card", "note-card", "timeline-card", "alert-banner"]) renderCard(id); // 本地派生属性即时刷新
-  clearTimeout(timer); timer = setTimeout(decide, DEBOUNCE_MS);
 });
-addEventListener("keydown", e => { if (e.key === "`") debug.classList.toggle("hidden"); });
-addEventListener("resize", () => { dirty.layout = true; });
-
-/* ---------- boot ---------- */
-(async () => {
-  manifest = await (await fetch("manifest.json")).json();
-  document.getElementById("app").classList.add("idle");
-  setConn(MOCK ? "mock" : "off");
-  requestAnimationFrame(tick);
-})();
+$('#live-surface').addEventListener('change',e => {
+  if (e.target.dataset.action === 'chart-column' && state.analysis) updateChart(e.target.closest('.live-card'),state.analysis,Number(e.target.value));
+});
+$('#new-space').addEventListener('click',() => openWorkspace().catch(fail));
+$('#menu-button').addEventListener('click',() => {refreshList().catch(fail); $('#sidebar').showModal();});
+$('#sidebar').addEventListener('click',e => {if (e.target === $('#sidebar')) {const r=e.target.getBoundingClientRect(); if (e.clientX<r.left || e.clientX>r.right || e.clientY<r.top || e.clientY>r.bottom) e.target.close();}});
+$('#plan-notice').addEventListener('click',() => $('#attach-button').click());
+$('#local-only').addEventListener('change',onInput);
+$('#attach-button').addEventListener('click',() => {$('#data-error').textContent = ''; $('#data-dialog').showModal();});
+$('#import-button').addEventListener('click',async () => {try {await addData($('#data-text').value,$('#data-name').value); $('#data-dialog').close(); toast('数据已添加到本机空间');} catch(e) {$('#data-error').textContent = e.message;}});
+$('#data-file').addEventListener('change',async e => {const file = e.target.files[0]; if (!file) return; if (file.size > 100000) {$('#data-error').textContent = '文件需小于 100 KB'; return;} $('#data-text').value = await file.text(); $('#data-name').value = file.name;});
+$('#note-button').addEventListener('click',async () => {if (!input.value.trim()) return toast('先写一点内容，再存为笔记。'); try {const workspace = await ensureWorkspace(); await api(workspacePath(workspace)+'/note',{text:input.value}); if (state.workspace.id !== workspace) return; input.value = ''; cache('draft',workspace,null); state.workspace = await api(workspacePath(workspace)); renderWorkspace(); onInput(); refreshList().catch(fail); toast('笔记已保存在本机');} catch(e) {fail(e);}});
+$('#export-button').addEventListener('click',async () => {if (state.dirty.size) return toast('请先保存文稿修改，再导出。'); try {const data = await api(workspacePath(state.workspace.id)+'/export'); const url = URL.createObjectURL(new Blob([data.text],{type:'text/markdown;charset=utf-8'})); const a = document.createElement('a'); a.href = url; a.download = data.filename; a.click(); setTimeout(() => URL.revokeObjectURL(url),1000);} catch(e) {fail(e);}});
+$('#view-canvas').addEventListener('click',() => setView('canvas'));
+$('#view-history').addEventListener('click',() => setView('history'));
+$('#status-button').addEventListener('click',async () => {try {const s = await api('/status'); showInfo('连接与执行',`<p class="dialog-desc">只有实际调用成功，才标记为已验证。模型请求失败时保留回执，不自动重试。</p><dl class="connection-list"><dt>本地工作区</dt><dd>已连接 · SQLite 持久保存</dd><dt>意图判断 · KEV</dt><dd>${esc(s.kev.state)}${s.kev.latency_ms ? ' · '+s.kev.latency_ms+' ms' : ''}</dd><dt>内容生成</dt><dd>${esc(s.generator.pack)} / ${esc(s.generator.model)}<br>${esc(s.generator.state)}${s.generator.latency_ms ? ' · '+s.generator.latency_ms+' ms' : ''}</dd><dt>执行队列</dt><dd>${s.active_jobs} 个任务 · 最多 2 个并发</dd></dl>`);} catch(e) {fail(e);}});
+document.addEventListener('click',async e => {
+  const link = e.target.closest('[data-workspace]');
+  if (link) {e.preventDefault(); try {await openWorkspace(link.dataset.workspace);} catch(e) {fail(e);} return;}
+  const cap = e.target.closest('[data-capability]');
+  if (cap) {state.override = state.plan.steps.map(s => s.id).filter(k => k !== cap.dataset.capability); renderPreview(); return;}
+  if (e.target.closest('#add-capability')) {showInfo('加入一个能力',`<div class="capability-picker">${Object.entries(state.registry.capabilities).map(([k,c]) => `<button data-add-capability="${k}">${esc(c.label)}<span>${c.cost === 'local' ? '本地' : '云端'} ＋</span></button>`).join('')}</div>`); return;}
+  const add = e.target.closest('[data-add-capability]'); if (add) {state.override = [...new Set([...state.plan.steps.map(s => s.id),add.dataset.addCapability])]; $('#info-dialog').close(); renderPreview(); return;}
+  if (e.target.closest('#cancel-job')) {try {state.job = await api('/jobs/'+state.job.id+'/cancel',{}); renderJob();} catch(e) {fail(e);} return;}
+  if (e.target.closest('#remove-data')) {try {const w = await api(workspacePath(state.workspace.id)+'/dataset',{remove:true}); state.workspace = {...w,jobs:state.workspace.jobs}; state.analysis = null; renderWorkspace(); onInput();} catch(e) {fail(e);} return;}
+  const button = e.target.closest('[data-action]'), card = button?.closest('.artifact-card');
+  if (!button || !card) return;
+  const id = card.dataset.artifact, artifact = state.workspace.artifacts.find(a => a.id === id);
+  try {
+    if (button.dataset.action === 'pin') {if (state.dirty.has(id)) return toast('请先保存文稿。'); await mutateArtifact(id,{pinned:!artifact.pinned});}
+    if (button.dataset.action === 'edit') {state.dirty.add(id); card.querySelector('.document-body').hidden = true; card.querySelector('.document-editor').hidden = false; card.querySelector('[data-action="edit"]').hidden = true; card.querySelector('[data-action="save"]').hidden = false; card.querySelector('[data-action="discard"]').hidden = false; card.querySelector('.document-editor').focus();}
+    if (button.dataset.action === 'save') {button.disabled = true; const text = card.querySelector('.document-editor').value; await mutateArtifact(id,{text}); state.dirty.delete(id); card.dataset.version = ''; renderWorkspace(); toast('修改已保存');}
+    if (button.dataset.action === 'discard') {state.dirty.delete(id); card.dataset.version = ''; renderWorkspace();}
+  } catch(e) {fail(e);} finally {button.disabled = false;}
+});
+$('#canvas').addEventListener('change',async e => {
+  const card = e.target.closest('.artifact-card'); if (!card) return;
+  const a = state.workspace.artifacts.find(a => a.id === card.dataset.artifact);
+  if (e.target.dataset.action === 'chart-column') updateChart(card,a.data,Number(e.target.value));
+  if (e.target.dataset.action === 'task') {e.target.disabled = true; try {await mutateArtifact(a.id,{task_id:e.target.dataset.task,done:e.target.checked});} catch(error) {e.target.checked = !e.target.checked; fail(error);} finally {e.target.disabled = false;}}
+});
+window.addEventListener('popstate',() => {if (state.dirty.size) {history.pushState({},'','/w/'+state.workspace.id); toast('先保存或放弃文稿修改，再切换空间。');} else openWorkspace(routePath(),false).catch(fail);});
+window.addEventListener('beforeunload',e => {if (state.dirty.size) {e.preventDefault(); e.returnValue = '';}});
+async function boot() {
+  try {state.registry = await (await fetch('/registry.json')).json(); await openWorkspace(routePath(),false); input.focus();}
+  catch(e) {$('#runtime-status').textContent = '连接暂不可用'; toast('无法打开工作区：'+e.message);}
+}
+boot();

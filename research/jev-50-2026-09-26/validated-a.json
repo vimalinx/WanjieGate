@@ -1,0 +1,873 @@
+[
+  {
+    "rank": 1,
+    "slug": "downloads-folder-sorter",
+    "primary_url": "https://x.com/marcelpociot/status/2100906882365788167",
+    "fetch": {
+      "fetch_id": "f-117",
+      "content_path": "cache/d-47360328200fe2bb.md",
+      "chars": 136557,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "下载文件按内容归档并重命名",
+    "combination": "文件事件→语义判断→确定性文件操作",
+    "maturity": "作者演示",
+    "caveats": "演示未复跑；改名和移动逻辑由应用执行",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/downloads-folder-sorter",
+    "directory_rank": 1,
+    "popularity": {
+      "likes": "1.1K",
+      "reposts": "48",
+      "replies": "73",
+      "views": "139.1K",
+      "source_url": "https://x.com/marcelpociot/status/2100906882365788167",
+      "fetch_id": "f-117",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 2,
+    "slug": "500-emails-3-cents",
+    "primary_url": "https://x.com/rileybrown/status/2100404532119269426",
+    "fetch": {
+      "fetch_id": "f-115",
+      "content_path": "cache/d-6be9d16ff70962e2.md",
+      "chars": 135645,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "批量邮件分类",
+    "combination": "文档内容→类别",
+    "maturity": "作者演示",
+    "caveats": "只研究公开演示，未访问用户邮箱；速度和成本为作者报告",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/500-emails-3-cents",
+    "directory_rank": 2,
+    "popularity": {
+      "likes": "3.8K",
+      "reposts": "98",
+      "replies": "125",
+      "views": "296.5K",
+      "source_url": "https://x.com/rileybrown/status/2100404532119269426",
+      "fetch_id": "f-115",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 3,
+    "slug": "competitor-ad-teardown",
+    "primary_url": "https://x.com/TheMattBerman/status/2100654891756589230",
+    "fetch": {
+      "fetch_id": "f-118",
+      "content_path": "cache/d-f6f1ac7c8ac2e548.md",
+      "chars": 150524,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "拆解竞品广告和落地页不一致",
+    "combination": "素材预处理→多维判断→汇总",
+    "maturity": "作者演示，称即将接入产品",
+    "caveats": "非Jev直接读视频；全流程预处理成本未知",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/competitor-ad-teardown",
+    "directory_rank": 3,
+    "popularity": {
+      "likes": "6.8K",
+      "reposts": "455",
+      "replies": "192",
+      "views": "1M",
+      "source_url": "https://x.com/TheMattBerman/status/2100654891756589230",
+      "fetch_id": "f-118",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 4,
+    "slug": "browser-use-flights",
+    "primary_url": "https://x.com/gregpr07/status/2100411066966749359",
+    "fetch": {
+      "fetch_id": "f-119",
+      "content_path": "cache/d-e290c8b55f34bc60.md",
+      "chars": 161008,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "repo": {
+      "url": "https://github.com/browser-use/jev-ultrafast",
+      "fetch_id": "f-195",
+      "content_path": "cache/d-aa3b468163b54e46.md",
+      "chars": 307443,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "浏览器搜索符合条件的机票",
+    "combination": "DOM→合法动作候选→Jev选择→浏览器执行，文本由小模型生成",
+    "maturity": "开源原型",
+    "caveats": "搜索不订票；3次同任务测试不是泛化成功率；MVP不支持iframe/canvas/uploads",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/browser-use-flights",
+    "directory_rank": 4,
+    "popularity": {
+      "likes": "9K",
+      "reposts": "656",
+      "replies": "291",
+      "views": "3.1M",
+      "source_url": "https://x.com/gregpr07/status/2100411066966749359",
+      "fetch_id": "f-119",
+      "kind": "primary X rendered counters; rounded"
+    },
+    "github_stars": {
+      "display": "20.4k",
+      "url": "https://github.com/browser-use/jev-ultrafast",
+      "fetch_id": "f-195",
+      "date": "2026-09-26"
+    },
+    "repository_text": "Repository files navigation README MIT license More items Jev Ultrafast ⚡ Important The Browser Use Cloud waitlist is open. Get early access to ultrafast browser agents in the cloud. Join the waitlist → A browser agent with a dynamic, indexed action space. Give it one goal. TypeSafe's Jev picks an operation and an element. A small LLM writes text only when the operation is TYPE_TEXT . Zürich → London on Google Flights in 7.1 seconds. One natural-language goal, actual text generation, and loading waits included. Watch the MP4 · Measurements · Read the loop The action space Every observation produces a new element table: [1] button    Change ticket type · Round trip\n[2] combobox  Where from?        · San Francisco\n[3] combobox  Where to?          · empty\n[4] textbox   Departure          · empty\n... The operations are CLICK , TYPE_TEXT , SELECT , SCROLL_UP , SCROLL_DOWN , WAIT , DONE , and BLOCKED . Only supported operations and targets are offered. one TypeSafe request\n                     ┌───────────────────────────┐\npage → element table → operation                 │\n                     │ click_target              │\n                     │ type_text_target          │\n                     │ select_target, if present │\n                     └─────────────┬─────────────┘\n                         use the matching target\n                                   │\n                    CLICK [7] ─────┤──→ browser\n                TYPE_TEXT [3] ─────┘\n                          ↓\n                   small LLM → text → browser Target questions are speculative. If the operation is CLICK , only click_target can execute. Two decisions, one network round trip . Each target head contains only compatible elements. Native dropdown choices carry an observed element/option index. There are no site-specific action scripts or prepared field strings in the policy. The Flights example supplies a goal and independently verifies the outcome. The screenshot renderer adds labels afterward; it does not drive the browser. Try it git clone https://github.com/browser-use/jev-ultrafast.git cd jev-ultrafast\nuv sync\ncp .env.example .env # Add TYPESAFE_API_KEY and TEXT_MODEL_API_KEY. uv run jev Open http://127.0.0.1:8766 and click Start demo → Run automatically . The inspector shows numbered elements, operation probabilities, target probabilities, and executed actions. Choose next pauses before execution. Chrome connects through Browser Harness , installed by uv sync . Run uv run browser-harness --doctor if it needs connecting. Allow remote debugging in Chrome when prompted. TEXT_MODEL_API_KEY is an OpenRouter key in the example configuration. The current demo uses inception/mercury-2.5 with reasoning disabled. Gemini, GLM, and DeepSeek can also use the OpenAI-compatible text helper; configure the appropriate model, endpoint, and reasoning setting. Use the library from jev_ultrafast import Agent with Agent ( \"https://www.google.com/travel/flights?hl=en\" , \"Find one-way flights from Zurich to London on September 20, 2026, \" \"for one adult in economy. Stop when matching flight options are visible.\" ,\n) as agent : for state in agent . run (): print ( state [ \"elapsed_ms\" ], state [ \"status\" ]) Run with uv run --env-file .env python your_script.py . The same policy can run a different task: uv run --env-file .env python examples/run.py \\\n  --url https://en.wikipedia.org/wiki/Main_Page \\\n  --goal ' Find and open the Wikipedia article about Gödel’s incompleteness theorems. ' uv run --env-file .env python examples/flights.py --keep-open performs the flight search, checks the actual route/date/results, and saves its trace. It does not select or book a flight. Why it moves One request per decision cycle. Operation and target heads share the same observed state. No screenshots in the default agent loop. Jev consumes structured state. The inspector opts into screenshots; the video uses a separate continuous screencast. One browser call per snapshot. Read visible controls, their names, values, and text atomically. Keep references to the actual DOM nodes. Validate the selected target. Clicks check the document, form values, target, and nearby context. Animation alone does not force another prediction. Resolve current geometry and reject covered controls before input. Wait for useful state. After typing into a combobox, wait for visible suggestions, capped at 200 ms. Other interactions get at most two animation frames or 50 ms. These reads happen after execution is logged. Keep hidden tabs rendering. Focus emulation prevents background animation throttling without switching Chrome's visible tab. Send visible text. Offscreen article bodies and footers do not fill the model context. Reuse an interrupted text request. A generated value survives a stale-page retry only if the entire text-helper input is unchanged. Every executed target is resolved from an observed node. The executor rechecks page freshness and click occlusion. Model output never becomes selectors, coordinates, shell commands, or executable JavaScript. Text-helper output must parse as a small JSON object before typing. Small enough to read File Job agent.py The complete loop and text-helper handoff snapshot.js Atomic DOM snapshot, indexed controls, freshness guards browser.py Browser connection, current geometry, execution model.py Dynamic operation/target heads and text generation questions.py Model instructions demo.py Local inspector Evidence and limits The current video is a 7,073 ms Google Flights run. Timing starts after initial page observation and includes model calls, generated text, browser work, stale decisions, and loading waits. A fresh independent check verifies the one-way setting, Zürich, London, September 20, 2026, and visible flight options. The video plays at 1×, with no opening hold and a 0.5-second final hold. In six alternating runs with identical models and settings, both versions passed 3/3 . Median task time went from 9.450 s → 7.092 s , a 25% reduction ; median browser protocol calls went from 1,092 → 101 . This is three repeats of one task on one browser profile, not a general reliability benchmark. The same policy opened the requested Wikipedia article in 2.798 s and passed a local hotel search/filter task in 1.896 s . Runs, failures, source hashes, and measurement boundaries are in performance.md . A DONE choice still requires independent outcome verification. The DOM reader handles common HTML and ARIA controls, not the full accessible-name specification. Shadow roots, frames, canvas, uploads, pop-up tabs, nested scrolling, and arbitrary keyboard widgets remain outside this MVP. Owned tabs share the existing Chrome profile. Development uv run ruff check . uv run pytest\nnode --check jev_ultrafast/static/app.js\nnode --check jev_ultrafast/snapshot.js\nuv build Tests are offline. uv run python scripts/check_guards.py checks real controls in a local browser without model calls. Live examples and recording scripts make paid API calls. scripts/record_flights.py <new-folder> captures original browser timestamps; scripts/render_demo.py <recording-folder> renders that verified run at 1× and crops out the Google account strip. Credentials and raw traces stay ignored. Browser Use · Browser Harness · TypeSafe speculative fan-out About Fastest and cheapest web agent browser-use.com Resources Readme MIT license Activity Custom properties Stars 20.4k stars Watchers 53 watching Forks 1.4k forks Report repository Releases Packages Used by Contributors Languages Footer © 2026 GitHub, Inc. Footer navigation Terms Privacy Security Status Community Docs Contact Manage cookies Do not share my personal information You can’t perform that action at this time."
+  },
+  {
+    "rank": 5,
+    "slug": "x-post-firewall",
+    "primary_url": "https://x.com/marcelpociot/status/2100520134481735729",
+    "fetch": {
+      "fetch_id": "f-116",
+      "content_path": "cache/d-576378e2b9780f9f.md",
+      "chars": 162544,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "按自然语言规则过滤社交帖子",
+    "combination": "信息流→语义判定→隐藏或折叠",
+    "maturity": "作者演示",
+    "caveats": "未验证误拦率或实际长期延迟",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/x-post-firewall",
+    "directory_rank": 5,
+    "popularity": {
+      "likes": "1.1K",
+      "reposts": "42",
+      "replies": "65",
+      "views": "86.2K",
+      "source_url": "https://x.com/marcelpociot/status/2100520134481735729",
+      "fetch_id": "f-116",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 6,
+    "slug": "youtube-sponsor-skipper",
+    "primary_url": "https://github.com/trungdq88/youtube-sponsor-detection",
+    "fetch": {
+      "fetch_id": "f-120",
+      "content_path": "cache/d-5ec98f344ac61e06.md",
+      "chars": 301033,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "supplemental": {
+      "url": "https://x.com/tdinh_me/status/2100793777103466615",
+      "fetch_id": "f-193",
+      "content_path": "cache/d-6a36db91f10c9160.md",
+      "chars": 152987,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "识别并跳过YouTube赞助片段",
+    "combination": "字幕/转录→片段边界判断→时间跳转",
+    "maturity": "开源原型",
+    "caveats": "音频模式另用Deepgram；Listen模式最后一次跳转可能越过正常内容",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/youtube-sponsor-skipper",
+    "directory_rank": 6,
+    "popularity": {
+      "likes": "1K",
+      "reposts": "40",
+      "replies": "85",
+      "views": "82.6K",
+      "source_url": "https://x.com/tdinh_me/status/2100793777103466615",
+      "fetch_id": "f-193",
+      "kind": "primary X rendered counters; rounded"
+    },
+    "github_stars": {
+      "display": "103",
+      "url": "https://github.com/trungdq88/youtube-sponsor-detection",
+      "fetch_id": "f-120",
+      "date": "2026-09-26"
+    }
+  },
+  {
+    "rank": 7,
+    "slug": "zillow-listing-search",
+    "primary_url": "https://x.com/venturetwins/status/2101341075684434245",
+    "fetch": {
+      "fetch_id": "f-122",
+      "content_path": "cache/d-03435f3ca0f3c950.md",
+      "chars": 154136,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "按网站没有的语义条件筛选房源",
+    "combination": "已有房源描述→维度分类→筛选",
+    "maturity": "作者演示",
+    "caveats": "对获取到的候选房源筛选，未证明可搜遍Zillow全部库存",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/zillow-listing-search",
+    "directory_rank": 7,
+    "popularity": {
+      "likes": "958",
+      "reposts": "42",
+      "replies": "51",
+      "views": "108.6K",
+      "source_url": "https://x.com/venturetwins/status/2101341075684434245",
+      "fetch_id": "f-122",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 8,
+    "slug": "drape-virtual-try-on",
+    "primary_url": "https://x.com/nailthy62/status/2101388186916454439",
+    "fetch": {
+      "fetch_id": "f-121",
+      "content_path": "cache/d-587320f2a13fa731.md",
+      "chars": 184396,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "对话驱动换装选择",
+    "combination": "语音转录+衣橱状态→服饰选择→外部试衣呈现",
+    "maturity": "实验演示",
+    "caveats": "620ms和成本指决策，不等于图像生成全流程；视频未独立复现",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/drape-virtual-try-on",
+    "directory_rank": 8,
+    "popularity": {
+      "likes": "4.3K",
+      "reposts": "311",
+      "replies": "174",
+      "views": "555.2K",
+      "source_url": "https://x.com/nailthy62/status/2101388186916454439",
+      "fetch_id": "f-121",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 9,
+    "slug": "minecraft-ender-dragon",
+    "primary_url": "https://x.com/rronak_/status/2101544156757950697",
+    "fetch": {
+      "fetch_id": "f-124",
+      "content_path": "cache/d-6078a4cdc10c3e2a.md",
+      "chars": 179682,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "repo": {
+      "url": "https://github.com/rmalde/minecraft-agent",
+      "fetch_id": "f-198",
+      "content_path": "cache/d-4f6ce716883fd94a.md",
+      "chars": 445422,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "游戏规划器与快速动作选择协作",
+    "combination": "Astra规划→Jev选有界动作→Mineflayer执行",
+    "maturity": "开源实验",
+    "caveats": "Peaceful难度、预选天然激活末地门seed、固定勘察路线；非截图逐键通关",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/minecraft-ender-dragon",
+    "directory_rank": 9,
+    "popularity": {
+      "likes": "7.9K",
+      "reposts": "521",
+      "replies": "254",
+      "views": "2M",
+      "source_url": "https://x.com/rronak_/status/2101544156757950697",
+      "fetch_id": "f-124",
+      "kind": "primary X rendered counters; rounded"
+    },
+    "github_stars": {
+      "display": "553",
+      "url": "https://github.com/rmalde/minecraft-agent",
+      "fetch_id": "f-198",
+      "date": "2026-09-26"
+    },
+    "repository_text": "Repository files navigation README More items Astra and JEV Minecraft agent This project uses GPT-6 Astra or GPT-5.6 Sol to plan and JEV to select player actions in Minecraft Java 1.16.5. It uses the official vanilla server and Mineflayer. A read-only Java sensor can report the exact dragon head position. It does not change game rules or entity state. Each selected action is sent to the game through the normal player protocol. Latest verified result The latest run, nether-final-08 , completed in 8 minutes 43.300 seconds . The previous video took 14 minutes 31.800 seconds. The new run was 40% shorter. The End combat stage took 152 seconds instead of 332 seconds. Dragon flight and landing times can vary between runs. The agent started with an empty inventory in a fresh Survival/Peaceful world. Astra planned and JEV selected the actions. It used the Nether for travel, killed the dragon with six bed explosions on the first landing, and reached the exit with full health and no deaths. There was no restart, source change, or operator repair during the run. The run used 131 JEV decisions and 35 Astra calls. All 17 run checks, eight route/camera/screen checks, and 29 local tests passed. The full earlier video and action log were reviewed before the local tests and new recording. Camera control uses continuous turns, with a limit of 240 degrees per second on each axis and acceleration of 960 degrees per second squared. A hidden native Minecraft client renders the game without desktop input. The capture includes health, hunger, hotbar, held items, inventory, crafting, and native animations. The video is 960 × 540 at 20 frames per second, without audio. A translucent full-width top banner uses Menlo and shows the model names, elapsed time in milliseconds, XYZ coordinates, planner objective, and selected action. These labels use recorded responses and game events. Recordings and generated evidence remain local and are excluded from Git. The local video is runs/nether-final-08/full-playthrough-banner.mp4 . Its verification, timing comparison, and action log are in the same run directory. This repository contains the code, tests, build scripts, and route data. It does not include Minecraft binaries, downloaded runtimes, saved worlds, or credentials. Credentials Model calls obtain the OpenRouter key from Google Secret Manager and keep it in process memory. The current scripts refer to the original deployment's project and secret name; these names are not credentials. Configure those references for your own project in model-relay.mjs and models.mjs . For the relay, authenticate with Google application default credentials, grant access to the secret, and set MODEL_RELAY=http://127.0.0.1:3099 when starting the agent. Do not place keys in source files or run logs. The native renderer and launch scripts were developed on macOS. Runtime paths and local server settings must be configured for another machine. Historical review notes describe earlier versions; use the current code and the result above for the latest behavior. Game settings Seed: 8398967436125155523 Mode: Survival Difficulty: Peaceful for this recording Verified active End portal center: -1130, 34, 856 Main server: 127.0.0.1:25576 Native display: hidden read-only Minecraft client Status: http://127.0.0.1:3078 The selected seed has a village, three supply chests with 21 obsidian, and a naturally active End portal. The route uses the Nether as a travel shortcut and requires entry and exit before combat. It does not need blaze rods. This is a useful speedrun seed, not proof of the easiest possible seed. The route was surveyed in a separate test world. Final-run placements and movement use normal player interactions. Model roles The planner sets the current objective, item targets, and a travel waypoint. JEV selects one available action from current game observations. Actions include travel, mining one block, collecting a drop, crafting, opening a chest, eating, sleeping, and combat interactions. Mineflayer handles the movement path and game protocol. This is structured-state control, not control from screenshots or individual key presses. The models can see blocks in loaded chunks. Known seed coordinates are supplied. Model IDs: openai/gpt-6-astra (default) or openai/gpt-5.6-sol ( PLANNER_MODEL ), through /api/v1/chat/completions typesafe/jev-1.13 , through /api/alpha/decisions The key is loaded into process memory from Google Secret Manager. The general OPENROUTER_API_KEY environment variable is ignored to prevent use of an unrelated key. The key is not written to run logs. Files and evidence runs/<run>/events.jsonl stores the requests, model responses, selected actions, game results, and completion events. status.json stores current progress. A victory.json file requires dragon-death evidence and the exit-portal event. Death evidence is either the kill advancement or server-supplied zero health with the dragon dying phase. The Java 1.16.5 exit event uses numeric reason 4. Final review must also check the world DragonFight state and the video. Bed kills can omit the kill advancement. New recordings use the official Minecraft Java 1.16.5 client. A read-only local protocol mirror sends the game state to this client. The video includes native entity models, textures, movement, digging and hand animations, the hotbar, held item, health, hunger, air, and dragon health. Capture is 960 × 540 at 20 frames per second, without audio. The window is hidden; focus and cursor control are disabled. Capture reads the game frame buffer, not the desktop. The older recorded-06 video used Prismarine Viewer and a custom HUD. The combat-lab directory is a separate test server. It can use prepared items and positions to test combat code. A combat-lab result does not qualify as a full Survival run. Start a run Install dependencies with npm install . Start server/server.jar from the server directory with a compatible Java runtime. The installed Minecraft Java runtime works for this server. Use ./start-server.sh to start the main server with its read-only sensor. For a fresh recording, first choose an unused world name in server/server.properties . Use a new log directory with the same name. Start the agent from this directory: node optimization/nether/freeze-run.mjs NEW_RUN\nPLANNER_MODEL=openai/gpt-6-astra RUN_ID=NEW_RUN \\\nNATIVE_VIEW=1 WAIT_NATIVE=1 NATIVE_RECORD=1 \\\nDRAGON_SENSOR_URL=http://127.0.0.1:3093 node nether-agent.mjs When the local mirror is listening on port 25578, start python3 native-client/launch.py . The agent waits for the hidden client and recorder before the first action. The native client uses an isolated game directory. It does not change the user's Minecraft settings. The recorder stops after the exit portal event. To stop a test at an action boundary, create runs/NEW_RUN/stop . Wait for full-playthrough.mp4.finished.json before closing the native client. The native client dependencies are installed with python3 native-client/install.py ; build the display and capture adapter with ./native-client/build.sh . The supplied launch script uses its local Java 17 runtime. Model access requires available OpenRouter credit. A new log directory alone does not reset the world. Stop the server, choose a new unused level-name , and start it again with the same seed. Keep the old world as evidence. Run node --test evidence.test.mjs native-mirror.test.mjs optimization/*.test.mjs optimization/pass-2/policy.test.mjs optimization/nether/*.test.mjs to check completion events, native packets, action policy, and pathfinder cancellation. Live server tests remain necessary for movement, crafting, combat, and recording. Sources Official TypeSafe introduction and Doom demo : structured game state, typed decisions, and a real-time action loop. JEV Minecraft demo : the author describes JEV choices through Mineflayer. Minecraft demo source : both bounded direct actions and earlier batch actions are documented. Mario example : structured observations and a small legal action set. StarCraft example : bounded actions, recorded model probabilities, and explicit victory checks. StarCraft Twitter post : found through the public JEV project index; direct retrieval was blocked by Twitter. TypeSafe launch Twitter post : direct retrieval was blocked. New seed human speedrun . Previous seed report : Java 1.16 seed and portal coordinates. One-cycle guide : bed support, cover, and timing. Mineflayer , Pathfinder , and Prismarine Viewer . Official Astra model documentation . Combat implementation end-combat.mjs offers one bounded bed attack. JEV chooses the action. The action places one bed, aims at it, and waits for the observed head to enter the attack window before one use command. It aborts if the player loses cover or breath enters cover. The local test improved from 11 to 46 damage per bed after aiming first and tightening the window. A later prepared test used seven beds to kill the dragon and ended with 13 health, without damage protection. Its evidence is combat-lab/eight-bed-test-03.jsonl . This test used a local test driver, prepared items, and a prepared dragon approach. The first full sequence with Sol and JEV succeeded in practice-02 . observer/DragonObserver.java adds a read-only observation call to the server dragon tick. Its HTTP endpoint is local only. Build it with ./build-observer.sh . No part of this sensor grants items, moves the player, changes health, or changes the dragon AI. combat-probe.mjs is a local test driver hardcoded to port 25577. It does not call either model and must never be presented as a model-controlled run. The combat-lab files include prepared positions, items, and other test changes. The bed timing research also used AltoClef's bed-combat source . The action implementation in this project is separate. Recording and control limits The final route is fixed in optimization/nether/config.json . Astra receives game state and route observations; JEV selects bounded actions. Mineflayer performs pathfinding and timed block interactions. This is not screenshot-only or individual-key control. The native view mirrors the bot state. Its camera uses small turns, and its inventory screens show the current item and cursor state. The final run used no live operator guidance or repairs. A recording can contain several capture files if the agent needs a code update. Preserve all active gameplay. Mark each update pause in the combined video. Report deaths and pauses; do not describe such a recording as a deathless or uninterrupted run. The new native video is one continuous capture. Add the information strip with node overlay.mjs nether-final-02 . Check it with node verify-run.mjs nether-final-02 nether-final-02 full-playthrough-overlay.mp4 . To rebuild the older viewer video, run node assemble-video.mjs recorded-06 ; check it with node verify-run.mjs recorded-06 . The raw capture files, action log, video manifest, and world are preserved. The older viewer manifest records its development pauses; those do not apply to the new continuous recording. The overlay marks the exit event as complete. The current code prevents another game action after victory. A test in the separate lab showed that a long fall into an End portal can carry fall damage into the End. That proposed action was rejected. The recorded player used short, checked downward mining steps instead. About Astra planner and JEV controller for Minecraft, with native recording, tested routes, and run verification. Resources Readme Activity Stars 553 stars Watchers 2 watching Forks 55 forks Report repository Releases Packages Contributors Languages Footer © 2026 GitHub, Inc. Footer navigation Terms Privacy Security Status Community Docs Contact Manage cookies Do not share my personal information You can’t perform that action at this time."
+  },
+  {
+    "rank": 10,
+    "slug": "lead-outreach-scoring",
+    "primary_url": "https://x.com/romanbuildsaas/status/2100891604735099103",
+    "fetch": {
+      "fetch_id": "f-127",
+      "content_path": "cache/d-49efa95b494292cf.md",
+      "chars": 149474,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "筛出潜客与外联文案的不匹配",
+    "combination": "潜客+文案→匹配/意向/评分",
+    "maturity": "作者演示，称即将接入产品",
+    "caveats": "模型评分不等于真实转化率；无业务A/B结果",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/lead-outreach-scoring",
+    "directory_rank": 10,
+    "popularity": {
+      "likes": "3.4K",
+      "reposts": "226",
+      "replies": "398",
+      "views": "480.6K",
+      "source_url": "https://x.com/romanbuildsaas/status/2100891604735099103",
+      "fetch_id": "f-127",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 11,
+    "slug": "sales-copilot",
+    "primary_url": "https://x.com/moritzkremb/status/2102537239662096658",
+    "fetch": {
+      "fetch_id": "f-123",
+      "content_path": "cache/d-6f001a5b6531bf8e.md",
+      "chars": 151931,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "销售通话阶段与异议信号提示",
+    "combination": "转录→阶段/异议识别→提示组件",
+    "maturity": "录音演示",
+    "caveats": "使用录好的销售通话演示；成交概率未经校准验证",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/sales-copilot",
+    "directory_rank": 11,
+    "popularity": {
+      "likes": "198",
+      "reposts": "10",
+      "replies": "24",
+      "views": "20.7K",
+      "source_url": "https://x.com/moritzkremb/status/2102537239662096658",
+      "fetch_id": "f-123",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 12,
+    "slug": "jev-plays-mario",
+    "primary_url": "https://x.com/faadilhshaik/status/2100086301894881578",
+    "fetch": {
+      "fetch_id": "f-125",
+      "content_path": "cache/d-ef6de2a29eeedd42.md",
+      "chars": 132209,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "实时马里奥动作选择",
+    "combination": "游戏状态→离散动作",
+    "maturity": "作者演示",
+    "caveats": "未核实完整通关率或源码",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/jev-plays-mario",
+    "directory_rank": 12,
+    "popularity": {
+      "likes": "2.9K",
+      "reposts": "253",
+      "replies": "94",
+      "views": "611.3K",
+      "source_url": "https://x.com/faadilhshaik/status/2100086301894881578",
+      "fetch_id": "f-125",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 13,
+    "slug": "1kpapers",
+    "primary_url": "https://www.1kpapers.com/",
+    "fetch": {
+      "fetch_id": "f-126",
+      "content_path": "cache/d-754aab3f4f17b408.md",
+      "chars": 116243,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "supplemental": {
+      "url": "https://x.com/nutlope/status/2100426999546184123",
+      "fetch_id": "f-192",
+      "content_path": "cache/d-e8177d4e51e206bc.md",
+      "chars": 161041,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "给论文库批量分配主题",
+    "combination": "DeepSeek摘要→Jev从24主题分类→站点浏览",
+    "maturity": "分类实验+已上线论文站",
+    "caveats": "作者原帖明确仍在评估Jev分类、尚未替换站点现有分类；$0.08不含$3.99摘要费",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/1kpapers",
+    "directory_rank": 13,
+    "popularity": {
+      "likes": "1.9K",
+      "reposts": "143",
+      "replies": "122",
+      "views": "334.5K",
+      "source_url": "https://x.com/nutlope/status/2100426999546184123",
+      "fetch_id": "f-192",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 15,
+    "slug": "stagehand-remote-browser",
+    "primary_url": "https://x.com/kylejeong/status/2100622054945095934",
+    "fetch": {
+      "fetch_id": "f-129",
+      "content_path": "cache/d-2c3850f153dd28f5.md",
+      "chars": 196643,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "远程浏览器的元素/动作选择",
+    "combination": "无障碍树→类型化动作判断→Stagehand执行",
+    "maturity": "作者演示",
+    "caveats": "决策层非完整自主代理；速度成本为作者报告",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/stagehand-remote-browser",
+    "directory_rank": 15,
+    "popularity": {
+      "likes": "773",
+      "reposts": "44",
+      "replies": "32",
+      "views": "70.1K",
+      "source_url": "https://x.com/kylejeong/status/2100622054945095934",
+      "fetch_id": "f-129",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 17,
+    "slug": "cute-x",
+    "primary_url": "https://x.com/hedachi/status/2101952056768770247",
+    "fetch": {
+      "fetch_id": "f-128",
+      "content_path": "cache/d-f41bd0c126062845.md",
+      "chars": 125373,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "把社交信息流重排为更可爱的界面",
+    "combination": "帖子状态→展示选择→界面变换",
+    "maturity": "短视频演示",
+    "caveats": "原帖仅极短日文说明，未核实逐字响应或具体架构",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/cute-x",
+    "directory_rank": 17,
+    "popularity": {
+      "likes": "461",
+      "reposts": "37",
+      "replies": "10",
+      "views": "30.8K",
+      "source_url": "https://x.com/hedachi/status/2101952056768770247",
+      "fetch_id": "f-128",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 18,
+    "slug": "internal-link-tool",
+    "primary_url": "https://ian.is/tools/internal-links",
+    "fetch": {
+      "fetch_id": "f-133",
+      "content_path": "cache/d-63857a06da7ff099.md",
+      "chars": 57755,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "supplemental": {
+      "url": "https://x.com/iannuttall/status/2102443273339994558",
+      "fetch_id": "f-194",
+      "content_path": "cache/d-8bf0e9d21659197c.md",
+      "chars": 154077,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "找站内值得相互链接的网页",
+    "combination": "抓取网页→类型/关系判定→链接建议导出",
+    "maturity": "可访问工具",
+    "caveats": "未提交付费或API任务；实际执行由使用者或其他模型完成",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/internal-link-tool",
+    "directory_rank": 18,
+    "popularity": {
+      "likes": "280",
+      "reposts": "13",
+      "replies": "34",
+      "views": "49.6K",
+      "source_url": "https://x.com/iannuttall/status/2102443273339994558",
+      "fetch_id": "f-194",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 19,
+    "slug": "on-device-audio-pipeline",
+    "primary_url": "https://x.com/desertantlabs/status/2102423007494889785",
+    "fetch": {
+      "fetch_id": "f-130",
+      "content_path": "cache/d-1c7f10b008171536.md",
+      "chars": 169957,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "把音频按任务路由至不同本地模型",
+    "combination": "语言检测/转录/脱敏→Jev多判断→本地工具链",
+    "maturity": "作者演示",
+    "caveats": "部分模型在设备端不等于整个Jev决策链完全离线",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/on-device-audio-pipeline",
+    "directory_rank": 19,
+    "popularity": {
+      "likes": "157",
+      "reposts": "22",
+      "replies": "16",
+      "views": "7,554",
+      "source_url": "https://x.com/desertantlabs/status/2102423007494889785",
+      "fetch_id": "f-130",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 20,
+    "slug": "ghostfeed-reaction-library",
+    "primary_url": "https://x.com/meetshukla_/status/2102272479674642554",
+    "fetch": {
+      "fetch_id": "f-131",
+      "content_path": "cache/d-8b963fe2e7f690f3.md",
+      "chars": 170858,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "按反应与镜头结构搜索视频素材",
+    "combination": "Gemini描述+Jev标签→素材搜索",
+    "maturity": "作者称产品素材库",
+    "caveats": "未访问受限素材库；Jev不是视频理解/生成的全部",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/ghostfeed-reaction-library",
+    "directory_rank": 20,
+    "popularity": {
+      "likes": "110",
+      "reposts": "8",
+      "replies": "48",
+      "views": "16.7K",
+      "source_url": "https://x.com/meetshukla_/status/2102272479674642554",
+      "fetch_id": "f-131",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 21,
+    "slug": "jev-auto-tagging",
+    "primary_url": "https://x.com/designgurra/status/2102726891153338374",
+    "fetch": {
+      "fetch_id": "f-132",
+      "content_path": "cache/d-81bcde3cd68f5008.md",
+      "chars": 144877,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "输入时自动选标签",
+    "combination": "输入文本→标签判断→界面标签",
+    "maturity": "短视频演示",
+    "caveats": "原帖仅auto-tagging描述，逐字触发细节主要来自目录；未检查视频",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/jev-auto-tagging",
+    "directory_rank": 21,
+    "popularity": {
+      "likes": "239",
+      "reposts": "11",
+      "replies": "11",
+      "views": "15.6K",
+      "source_url": "https://x.com/designgurra/status/2102726891153338374",
+      "fetch_id": "f-132",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 22,
+    "slug": "jevpilot",
+    "primary_url": "https://github.com/standardagents/jevpilot",
+    "fetch": {
+      "fetch_id": "f-135",
+      "content_path": "cache/d-11ffa8ef61dece44.md",
+      "chars": 281851,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "supplemental": {
+      "url": "https://x.com/jpschroeder/status/2100347770867458384",
+      "fetch_id": "f-197",
+      "content_path": "cache/d-86df0ac1fe75ea2e.md",
+      "chars": 141994,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "驾驶模拟中的轨迹选择",
+    "combination": "局部几何生成合法轨迹→Jev选择→渲染",
+    "maturity": "开源Three.js模拟器",
+    "caveats": "不是现实自动驾驶；碰撞刹车和几何控制由代码负责",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/jevpilot",
+    "directory_rank": 22,
+    "popularity": {
+      "likes": "4.8K",
+      "reposts": "271",
+      "replies": "221",
+      "views": "734.9K",
+      "source_url": "https://x.com/jpschroeder/status/2100347770867458384",
+      "fetch_id": "f-197",
+      "kind": "primary X rendered counters; rounded"
+    },
+    "github_stars": {
+      "display": "186",
+      "url": "https://github.com/standardagents/jevpilot",
+      "fetch_id": "f-135",
+      "date": "2026-09-26"
+    }
+  },
+  {
+    "rank": 23,
+    "slug": "superx-post-scoring",
+    "primary_url": "https://x.com/robj3d3/status/2100722975645598191",
+    "fetch": {
+      "fetch_id": "f-136",
+      "content_path": "cache/d-ea8625720ddf5e5f.md",
+      "chars": 231640,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "写作时评估帖子特征并循环修改",
+    "combination": "61个并行判断→加权评分→生成模型改写",
+    "maturity": "作者称已集成产品/API",
+    "caveats": "评分预测不是必然传播效果；和Riley实时草稿分析同类但不同实现",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/superx-post-scoring",
+    "directory_rank": 23,
+    "popularity": {
+      "likes": "1.3K",
+      "reposts": "65",
+      "replies": "84",
+      "views": "239.2K",
+      "source_url": "https://x.com/robj3d3/status/2100722975645598191",
+      "fetch_id": "f-136",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 24,
+    "slug": "ai-slop-detector",
+    "primary_url": "https://madewithjev.com/free-tools/ai-slop-detector",
+    "fetch": {
+      "fetch_id": "f-134",
+      "content_path": "cache/d-79997f034be24002.md",
+      "chars": 272568,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "supplemental": {
+      "url": "https://x.com/kraayenJon/status/2101157548346794059",
+      "fetch_id": "f-196",
+      "content_path": "cache/d-91d2cdba17afb13c.md",
+      "chars": 183273,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "识别网站模板化风格信号",
+    "combination": "浏览器样式测量+视觉描述→35项判断→模型简评",
+    "maturity": "可访问工具",
+    "caveats": "只能作风格体检，不证明作者是否用AI；原帖仅2赞不能称高热",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/ai-slop-detector",
+    "directory_rank": 24,
+    "popularity": {
+      "likes": "2",
+      "reposts": "",
+      "replies": "3",
+      "views": "784",
+      "source_url": "https://x.com/kraayenJon/status/2101157548346794059",
+      "fetch_id": "f-196",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 25,
+    "slug": "x-post-analysis",
+    "primary_url": "https://x.com/iannuttall/status/2100668908227162567",
+    "fetch": {
+      "fetch_id": "f-137",
+      "content_path": "cache/d-cc3c824ed0e13d05.md",
+      "chars": 154235,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "给历史帖子分类并分析内容规律",
+    "combination": "帖子档案→8维判断→聚合统计",
+    "maturity": "作者单次分析",
+    "caveats": "相关性不是增长因果；不含数据获取成本",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/x-post-analysis",
+    "directory_rank": 25,
+    "popularity": {
+      "likes": "749",
+      "reposts": "34",
+      "replies": "62",
+      "views": "87.9K",
+      "source_url": "https://x.com/iannuttall/status/2100668908227162567",
+      "fetch_id": "f-137",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 27,
+    "slug": "live-viral-post-analyzer",
+    "primary_url": "https://x.com/rileybrown/status/2100425868053008758",
+    "fetch": {
+      "fetch_id": "f-138",
+      "content_path": "cache/d-08453229f88d6af9.md",
+      "chars": 169711,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "写草稿时即时显示类别与潜力评分",
+    "combination": "停键0.5秒→分类+评分→反馈",
+    "maturity": "实验原型",
+    "caveats": "作者自述仍在试验、需要训练数据；不是每个字立即请求",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/live-viral-post-analyzer",
+    "directory_rank": 27,
+    "popularity": {
+      "likes": "924",
+      "reposts": "30",
+      "replies": "55",
+      "views": "55.1K",
+      "source_url": "https://x.com/rileybrown/status/2100425868053008758",
+      "fetch_id": "f-138",
+      "kind": "primary X rendered counters; rounded"
+    }
+  },
+  {
+    "rank": 28,
+    "slug": "jev-plays-doom",
+    "primary_url": "https://x.com/CompleteSkeptic/status/2099925687465570372",
+    "fetch": {
+      "fetch_id": "f-139",
+      "content_path": "cache/d-10042eb5ee454569.md",
+      "chars": 242903,
+      "cached": false,
+      "cost_cr": 0.0,
+      "error": null,
+      "http_status": 200
+    },
+    "purpose_zh": "Doom快速动作选择",
+    "combination": "结构化游戏状态→下一动作→游戏引擎",
+    "maturity": "官方演示",
+    "caveats": "非直接视觉理解；约10次/秒与$7/小时为作者报告",
+    "primary_accessible": true,
+    "checked_date": "2026-09-26",
+    "directory_url": "https://madewithjev.com/builds/jev-plays-doom",
+    "directory_rank": 28,
+    "popularity": {
+      "likes": "5K",
+      "reposts": "249",
+      "replies": "98",
+      "views": "1.2M",
+      "source_url": "https://x.com/CompleteSkeptic/status/2099925687465570372",
+      "fetch_id": "f-139",
+      "kind": "primary X rendered counters; rounded"
+    }
+  }
+]

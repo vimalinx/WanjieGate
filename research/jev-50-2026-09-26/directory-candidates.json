@@ -1,0 +1,590 @@
+[
+  {
+    "rank": 1,
+    "slug": "downloads-folder-sorter",
+    "title": "A Downloads folder that sorts itself",
+    "url": "https://madewithjev.com/builds/downloads-folder-sorter",
+    "text": "Marcel Pociot 🧪 @ marcelpociot Jev unlocks SO many awesome new ideas.\n\nI built a macOS app that monitors my Downloads folder along with a customisable set of rules.\n\nIs the downloaded file an invoice? Move it to a special folder with the correct filename.\n\nNo other LLM calls involved - just Jev! X · Tools and apps A Downloads folder that sorts itself"
+  },
+  {
+    "rank": 2,
+    "slug": "500-emails-3-cents",
+    "title": "500 emails for 3.5 cents",
+    "url": "https://madewithjev.com/builds/500-emails-3-cents",
+    "text": "Riley Brown @ rileybrown Yeah Jev by @typesafeai is very cool. It classified 500 emails in seconds. And it costed 3.5 cents. X · Inbox and support 500 emails for 3.5 cents Emails 500 Cost 3.5 cents"
+  },
+  {
+    "rank": 3,
+    "slug": "competitor-ad-teardown",
+    "title": "724 competitor ads, broken down",
+    "url": "https://madewithjev.com/builds/competitor-ad-teardown",
+    "text": "Matthew Berman @ TheMattBerman jev is INSANE.\n\nin 40 seconds it broke down 724 live ads from 37 brands.\n\nevery hook. every format. offer. cta. awareness stage. landing page mismatch. used 9 cents of tokens. \n(will be avail in @stealads + mcp) X · Ads and marketing 724 competitor ads, broken down Ads 724 from 37 brands Run time ~40 s Cost ~$0.09"
+  },
+  {
+    "rank": 4,
+    "slug": "browser-use-flights",
+    "title": "Flight search with Browser Use",
+    "url": "https://madewithjev.com/builds/browser-use-flights",
+    "text": "Gregor Zunic @ gregpr07 Breaking: Browser Use + Jev = Ultrafast ⚡\n\nFindings flights took 7s and cost only $0.0039 🤯\n\n> new action space every step\n> DOM state space\n> small LLM fallback to type\n\n(this video is at 1x speed btw)\n\nBuilt a tiny open source browser agent. try it below ↓ X · Search Pick Flight search with Browser Use Run time ~7 s Cost ~$0.004"
+  },
+  {
+    "rank": 5,
+    "slug": "x-post-firewall",
+    "title": "Hide posts on X in plain language",
+    "url": "https://madewithjev.com/builds/x-post-firewall",
+    "text": "Marcel Pociot 🧪 @ marcelpociot I built a browser extension with Jev @typesafeai that can hide/collapse posts on X based on natural language.\n\nIt's so fast that it's not noticeable and insanely cheap...this must be the future of \"ad blockers\" and content firewalls. X · Social feeds Hide posts on X in plain language"
+  },
+  {
+    "rank": 6,
+    "slug": "youtube-sponsor-skipper",
+    "title": "YouTube sponsor skipper",
+    "url": "https://madewithjev.com/builds/youtube-sponsor-skipper",
+    "text": "Tony Dinh @ tdinh_me Just trying out Jev, I made a Chrome extension that:\n\n- Listens to your YouTube audio (optional)\n- Detects if it gets to a sponsor segment\n- Skips it ➡️➡️➡️\n- All in real-time while costing ~$0.005 per video\n\nPrototype project, BYOK, open-source:\n\ngithub.com/trungdq88/yout… GitHub · Tools and apps YouTube sponsor skipper Cost per video ~$0.005"
+  },
+  {
+    "rank": 7,
+    "slug": "zillow-listing-search",
+    "title": "Natural-language search over Zillow",
+    "url": "https://madewithjev.com/builds/zillow-listing-search",
+    "text": "Justine Moore @ venturetwins Jev can serve as better natural language search on websites.\n\nIt can scan thousands of Zillow listings and classify properties by things you can't normally filter for - e.g. architecture, renovation status, proximity to freeways.\n\nThis was done in <20 sec and costs $0.18 👇 X · Search Natural-language search over Zillow Time <20 s Cost $0.18"
+  },
+  {
+    "rank": 8,
+    "slug": "drape-virtual-try-on",
+    "title": "Realtime virtual try-on",
+    "url": "https://madewithjev.com/builds/drape-virtual-try-on",
+    "text": "Nailthy Tang @ nailthy62 jev is insane 🫣\n\nit makes realtime virtual try-on hauls possible.\nbuilt this experiment for Drape with @typesafeai \n\n> i talk\n> jev reads transcript + what i'm wearing\n> picks from my closet\n> changes my outfit in realtime\n\ncost: $0.0011 per decision\ntime: ~620ms per decision\n\nimagine getting ready like this: X · Games and real time Pick Realtime virtual try-on Cost per decision ~$0.0011 Time ~620 ms"
+  },
+  {
+    "rank": 9,
+    "slug": "minecraft-ender-dragon",
+    "title": "Beating the Ender Dragon in Minecraft",
+    "url": "https://madewithjev.com/builds/minecraft-ender-dragon",
+    "text": "Ronak Malde @ rronak_ Jev + Astra beats the Ender Dragon in Minecraft in 8 minutes 43 seconds! ⏱️\n\nCost less than $1 ($0.01 Jev, $0.96 Astra)\n\nI open sourced the code and explain the harness setup below. This type of movement is only possible with Jev's near instant decisionmaking, and some continually learning skills from Astra. X · Games and real time Pick Beating the Ender Dragon in Minecraft Run 8m 43s Cost $0.97"
+  },
+  {
+    "rank": 10,
+    "slug": "lead-outreach-scoring",
+    "title": "700 leads scored in 40 seconds",
+    "url": "https://madewithjev.com/builds/lead-outreach-scoring",
+    "text": "Romàn @ romanbuildsaas JEV is INSANE.\n\nWe gave it 700 high-intent leads and personalised outreach messages.\n\nIn 40 seconds, it predicted how each message would perform, assigned a confidence score and detected lead-message mismatches.\n\nAll for just $0.09.\n\nJEV can also score leads, analyse buying signals, match each prospect with the best message and identify the campaigns most likely to perform based on data. \n\nComing soon to @GojiberryAI+ MCP.\n\nComment “JEV” for early access. X · Sales and leads 700 leads scored in 40 seconds Leads 700 Time 40 s Cost $0.09"
+  },
+  {
+    "rank": 11,
+    "slug": "sales-copilot",
+    "title": "Sales Copilot",
+    "url": "https://madewithjev.com/builds/sales-copilot",
+    "text": "Moritz Kremb @ moritzkremb I built a Sales Copilot using Jev\n\n→ Listens to sales call live\n→ Tells you what to say next\n→ Helps you follow the script and handle objections\n→ Shows you what stage of the call you're in\n→ Gives you live signals and probability of closing\n\nDemo below on a recorded sales call: X · Sales and leads Sales Copilot"
+  },
+  {
+    "rank": 12,
+    "slug": "jev-plays-mario",
+    "title": "Jev plays Super Mario Bros.",
+    "url": "https://madewithjev.com/builds/jev-plays-mario",
+    "text": "Faadil Shaik @ faadilhshaik got @typesafeai’s new model Jev to play Super Mario Bros.\n\nfast inference + structured outputs makes it surprisingly good for real time use cases.\n\nI'm excited to see what can be done with these new models! X · Games and real time Jev plays Super Mario Bros."
+  },
+  {
+    "rank": 13,
+    "slug": "1kpapers",
+    "title": "1kpapers",
+    "url": "https://madewithjev.com/builds/1kpapers",
+    "text": "Hassan @ nutlope I used Jev to classify 1,018 AI research papers.\n\nThe result: $0.08 total cost and 256ms median end-to-end latency per paper.\n\nThe pipeline was:\n\n1. Summarize each paper with DeepSeek V4 Flash\n2. Send the title + summary + 24 possible topics to Jev\n3. Use Jev to classify each paper\n4. Visualize everything on http://1kpapers.com\n\nThe summaries cost $3.99 on @togethercompute. The classifications cost $0.08 on @typesafeai.\n\nSo for just over $4 of inference, I ended up with a pretty useful way to explore the top AI research papers from the past year.\n\nI think this is where things are heading: different models for different parts of the workflow, instead of using one model for everything.\n\nI’m running evals on the Jev classifications before replacing the current ones, but the site is already live: http://1kpapers.com Live site · Documents and OCR 1kpapers Documents 1,018 papers Total cost $0.08 Median latency 256 ms"
+  },
+  {
+    "rank": 14,
+    "slug": "jev-ultrafast",
+    "title": "jev-ultrafast",
+    "url": "https://madewithjev.com/builds/jev-ultrafast",
+    "text": "GitHub · Agents and browsers Pick jev-ultrafast Browser Use’s browser agent, with Jev choosing each next step. BU Browser Use 17.3k"
+  },
+  {
+    "rank": 15,
+    "slug": "stagehand-remote-browser",
+    "title": "Stagehand on a remote browser",
+    "url": "https://madewithjev.com/builds/stagehand-remote-browser",
+    "text": "Kyle Jeong @ kylejeong we built blazing fast computer/browser use with Jev + @Stagehanddev.\n\nthis task cost $0.001 and executed at near instant speed (in a remote browser btw)\n\nthe loop: observe the page, send a11y tree as state + actions as questions, Jev decides the next action, then Stagehand executes it. X · Agents and browsers Stagehand on a remote browser Cost per task ~$0.001"
+  },
+  {
+    "rank": 16,
+    "slug": "typesafe-skills",
+    "title": "TypeSafe agent skills",
+    "url": "https://madewithjev.com/builds/typesafe-skills",
+    "text": "Skill · Agents and browsers TypeSafe agent skills The official skill for building with Jev, installable with one command. TA TypeSafe AI 1.7k"
+  },
+  {
+    "rank": 17,
+    "slug": "cute-x",
+    "title": "X, made cute",
+    "url": "https://madewithjev.com/builds/cute-x",
+    "text": "Takayuki Fukuda @ hedachi Jevで𝕏をかわいくしてみた X · UI Pick X, made cute"
+  },
+  {
+    "rank": 18,
+    "slug": "internal-link-tool",
+    "title": "Internal linking tool",
+    "url": "https://madewithjev.com/builds/internal-link-tool",
+    "text": "Ian Nuttall @ iannuttall I built a free internal linking tool using @typesafeai Jev for classifying and selecting the links.\n\nBYOK or pay $1 to use mine. It works for up to 500 pages and gives you a CSV or JSON to pass to an LLM to implement.\n\nian.is/tools/internal… Live site · SEO and GEO Pick Internal linking tool Pages up to 500 Price BYOK or $1"
+  },
+  {
+    "rank": 19,
+    "slug": "on-device-audio-pipeline",
+    "title": "On-device audio, no LLM in the loop",
+    "url": "https://madewithjev.com/builds/on-device-audio-pipeline",
+    "text": "Desert Ant Labs @ desertantlabs Jev + on-device models = results in seconds with no LLM in the loop.\n\nQuick demo app to show the possibilities. Drop in an audio file: Ear detects the language, Voz transcribes it and Redact removes PII.\n\nThen @typesafeai's Jev makes about 20 decisions in one call in milliseconds, and picks which of our on-device models to run. Voice memo to to-do list. Meeting to redacted transcript. Podcast to clips. X · Routing and model choice Pick On-device audio, no LLM in the loop Decisions ~20 per call"
+  },
+  {
+    "rank": 20,
+    "slug": "ghostfeed-reaction-library",
+    "title": "1,066 reaction videos, searchable",
+    "url": "https://madewithjev.com/builds/ghostfeed-reaction-library",
+    "text": "Meet Shukla @ meetshukla_ i’m probably going to regret this.\n\n10,000+ videos were imported by our users into Ghostfeed in last 6 months.\n\nthis weekend, we picked 1,066 reaction videos and analysed all of them with JEV + GEMINI.\n\nnow you can search by structure, reaction, and who’s on camera.\n\nopening the library today which has been our months of data gathering, clone all videos to mass publish them on instagram, tiktok and youtube.\n\ncomment \"reactions\" if you want the access to the library. X · Search 1,066 reaction videos, searchable Videos analysed 1,066"
+  },
+  {
+    "rank": 21,
+    "slug": "jev-auto-tagging",
+    "title": "Auto-tagging in the interface",
+    "url": "https://madewithjev.com/builds/jev-auto-tagging",
+    "text": "Gustav Ekerot @ designgurra more magical UI with JEV: auto-tagging X · UI Auto-tagging in the interface"
+  },
+  {
+    "rank": 22,
+    "slug": "jevpilot",
+    "title": "JevPilot",
+    "url": "https://madewithjev.com/builds/jevpilot",
+    "text": "Justin Schroeder @ jpschroeder I rebuilt Tesla Full Self Driving with Jev in less than an hour.\n\nThis model is a total unlock. GitHub · Games and real time Pick JevPilot Peak rate 4/s Built in <1 hour"
+  },
+  {
+    "rank": 23,
+    "slug": "superx-post-scoring",
+    "title": "Post scoring with SuperX",
+    "url": "https://madewithjev.com/builds/superx-post-scoring",
+    "text": "Rob Hallam @ robj3d3 Jev + SuperX = virality solved ✅\n\nEvery post gets 61 questions in ~1s for $0.0004 🤯\n\n> fitted on 9,481 real posts from 207 creators\n> picks the viral post 2 in 3 times\n> never rewards reply bait\n\nSo: write, score, rewrite, stop when it peaks.\n\nFree, no signup. try it below ↓ X · Social feeds Post scoring with SuperX Questions per draft 61 Latency ~1 s Cost $0.0004"
+  },
+  {
+    "rank": 24,
+    "slug": "ai-slop-detector",
+    "title": "AI slop detector",
+    "url": "https://madewithjev.com/builds/ai-slop-detector",
+    "text": "Jon Kraayenbrink @ kraayenJon jev is INSANE.\n\nin 243 ms it checked a website for 35 tells of ai slop.\n\npurple gradients. emoji headers. \"seamlessly\". fake testimonials. bento grids. the works. used $0.00015 of tokens.\n\npaste any url, get a slop score. free:\nmadewithjev.com/free-tools/ai-… Live site · Social feeds AI slop detector Check time 243 ms Tells checked 35 Cost $0.00015"
+  },
+  {
+    "rank": 25,
+    "slug": "x-post-analysis",
+    "title": "3,282 posts, eight questions each",
+    "url": "https://madewithjev.com/builds/x-post-analysis",
+    "text": "Ian Nuttall @ iannuttall I gave Jev 3,282 of my X posts across 100M views and asked it to find what actually works for growth.\n\n4,252,330 tokens $0.1282 for the full 8m 34s run!\n\nEach post got 8 questions about the topic, hook, tone, whether it teaches something, etc.\n\nHow-to posts got 150 median likes vs the average median of 44.\n\nAI and coding was a 1.9x multiplier topic compared and SEO, despite recent posts, was right at base median 1.0x - surprisingly.\n\nThe recommended topic + angle + voice formula was:\n\nAI coding + teach something + provocative X · Social feeds 3,282 posts, eight questions each Posts 3,282 Cost $0.1282 Run time 8 m 34 s"
+  },
+  {
+    "rank": 26,
+    "slug": "trending-jev-repos",
+    "title": "Eleven trending Jev repos",
+    "url": "https://madewithjev.com/builds/trending-jev-repos",
+    "text": "Jon Kraayenbrink @ kraayenJon Jev repos blowing up right now.\n\nI made a list of the repos people are using to build with jev.\n\n👇 X · Open source Pick Eleven trending Jev repos Repositories 11"
+  },
+  {
+    "rank": 27,
+    "slug": "live-viral-post-analyzer",
+    "title": "Live viral post analyzer",
+    "url": "https://madewithjev.com/builds/live-viral-post-analyzer",
+    "text": "Riley Brown @ rileybrown Just created this with Jev by @typesafeai. A live viral post analyzer. As soon as you stop typing for .5 seconds it analyzes the viral potential. \n\nGoing to try and actually make this good, will need to scrape a lot of twitter data...\n\nNotice how it also categorizes the tweet live... I could have it surface similar tweets on the right side for inspiration... idk just experimenting. X · Social feeds Live viral post analyzer"
+  },
+  {
+    "rank": 28,
+    "slug": "jev-plays-doom",
+    "title": "Jev plays Doom",
+    "url": "https://madewithjev.com/builds/jev-plays-doom",
+    "text": "Diogo Almeida @ CompleteSkeptic We love how this doomo doomonstrates real-time intelligence and what can be doone with code + AI!\n\n~10 calls/sec = ~$7/hour X · Games and real time Pick Jev plays Doom Rate ~10 queries/s Cost ~$7/hour"
+  },
+  {
+    "rank": 29,
+    "slug": "jev-trader",
+    "title": "jev-trader",
+    "url": "https://madewithjev.com/builds/jev-trader",
+    "text": "Jarrod Watts @ jarrodwatts I built a trading bot with Jev!\n\nJev decides if it should \"buy\" or \"sell\", given the price feed of an asset pair, and executes real trades.\n\nIt uses Monad to place the orders on Kuru's on-chain order book in every 300ms block.\n\nDemo link → jev-trader.vercel.app GitHub · Trading and markets Pick jev-trader Decision window 300 ms blocks"
+  },
+  {
+    "rank": 30,
+    "slug": "instant-compaction",
+    "title": "Instant compaction for Claude",
+    "url": "https://madewithjev.com/builds/instant-compaction",
+    "text": "tamara @ tamarajtran found the perfect use case for @typesafeai Jev: \n\ninstant compaction\n\nin 2026, why is compaction still a summarization prompt?\n\nJev can make it instant by scoring every tool call and dropping what’s irrelevant X · Context and memory Pick Instant compaction for Claude"
+  },
+  {
+    "rank": 31,
+    "slug": "fraud-detection-jev-kimi",
+    "title": "Fraud detection with Jev and Kimi K3",
+    "url": "https://madewithjev.com/builds/fraud-detection-jev-kimi",
+    "text": "Hassan @ nutlope Jev + Kimi K3 for fraud detection!\n\nTLDR: Jev classified 100 emails in 1.42 seconds, then I routed the uncertain cases to Kimi K3. The full pipeline got 96/100 correct for only ~$0.07.\n\nVideo is not sped up, check out the live run!\n\nHere was my process:\n\nI gave Jev 100 emails to classify (a mix of 50 legit & 50 fraudelent emails). It classified all of them in 1.42 seconds.\n\nAn underrated feature about Jev is it will give you the confidence score for a classification, so I routed any prediction under 95% confidence to Kimi K3 to be fully sure.\n\n31 emails fell below that threshold. After routing those to Kimi K3, the combined pipeline reached 96% accuracy.\n\nThe full run took 16 seconds & ~$0.07 in inference costs:\n\n- $0.068 from Kimi K3 on @togethercompute\n- $0.003 (1/3 of a cent) from Jev on @typesafeai.\n\nI think this is a really interesting pattern: use a fast specialized model like Jev for the narrow task, then route the uncertain cases to a larger LLM.\n\nI feel like this kind of approach could be a game changer for use cases like fraud or anything realtime. You can use the speed & low cost of Jev while having a larger LLM as a fallback to ensure high accuracy. X · Security and abuse Pick Fraud detection with Jev and Kimi K3 Emails 100 in 1.42 s Correct 96/100 Cost ~$0.07"
+  },
+  {
+    "rank": 32,
+    "slug": "postgres-jev-function",
+    "title": "jev() for PostgreSQL",
+    "url": "https://madewithjev.com/builds/postgres-jev-function",
+    "text": "Zachi @ iam_zachi I think I just cooked something 🔥\n\njev(): a PostgreSQL extension that searches your whole database in natural language. No index, no embeddings, just one function.\n\nWHERE jev(people, 'could work from home')\nor \nWHERE jev(people, 'name sounds european')\n\n129 rows judged in ~1s for $0.0009. Second run: 6ms from cache. X · Search jev() for PostgreSQL Rows judged 129 in ~1 s"
+  },
+  {
+    "rank": 33,
+    "slug": "computer-use-without-screenshots",
+    "title": "Computer use without screenshots",
+    "url": "https://madewithjev.com/builds/computer-use-without-screenshots",
+    "text": "Milind S @ milindlabs Okay so Jev can actually do computer use really well\n\nWithout any screenshots, or LLMs and no Pixels leave my mac \n\nI dont even read the Dom elements\n\nA local CoreML model segments every button and UI element on screen. \n\nOn-device OCR reads the labels. That text is all Jev gets.\n\nIt returns a probability across those elements and tells me the best one to click.\n\nThen it clicks, re-runs detection, and decides again. In a loop until the goal is done.\n\n~90ms per decision. Faster than any LLM computer use I've tried.\n\nBlazing fast computer use, without any latency\n\n@typesafeai is building something really interesting X · Agents and browsers Computer use without screenshots"
+  },
+  {
+    "rank": 34,
+    "slug": "bot-chief-of-staff",
+    "title": "A chief of staff for bots",
+    "url": "https://madewithjev.com/builds/bot-chief-of-staff",
+    "text": "Milind S @ milindlabs got @typesafeai's new model Jev as a chief of staff for bots\n\nJev reads the task, wakes the right teammates off the bench\n\nand gives each one the right model \n\nIt is possible on OpenMausBot as it supports all the LLMs from your existing subscriptions\n\nJev as a decision engine is great X · Routing and model choice A chief of staff for bots"
+  },
+  {
+    "rank": 35,
+    "slug": "subway-surfers",
+    "title": "Jev plays Subway Surfers",
+    "url": "https://madewithjev.com/builds/subway-surfers",
+    "text": "Max Blade @ _MaxBlade jev is insane  🤯\n\nHere is Jev playing subway surfers at super human speed, and also playing 50 games at once. \n\ncost less than a cent to do this run.\n\nJev does not replace llms like astra or fable, but opens up an entirely new world of capabilities. X · Games and real time Jev plays Subway Surfers Cost <$0.01"
+  },
+  {
+    "rank": 36,
+    "slug": "smash-bros",
+    "title": "Jev plays Smash Bros. against itself",
+    "url": "https://madewithjev.com/builds/smash-bros",
+    "text": "Mau Baron @ maubaron jev is insane 🤯\n\nhere is jev playing smash bros against itself \nhe is controlling all 4 different characters.\n\nand literally deciding whats the best\nmove to play against itself\n\nall within a fraction of a second\n\ni used over 22 million tokens to play this match\nand it only cost me a couple of cents...\n\njev does not replace gpt6 astra\nbut the possibilities with its instant response time\n\nare endless X · Games and real time Jev plays Smash Bros. against itself Tokens >22M Cost a couple of cents"
+  },
+  {
+    "rank": 37,
+    "slug": "realtime-ad-blocker",
+    "title": "A real-time ad blocker",
+    "url": "https://madewithjev.com/builds/realtime-ad-blocker",
+    "text": "Zachi @ iam_zachi I build an undetectable realtime adblocker extension with typesafe\n\nIt checks every dom element and classifies as ad/non-ad and removes it if true\n\nExtremely fun to work with, expecting an incredible shift in how AI is being used in the future X · Tools and apps A real-time ad blocker"
+  },
+  {
+    "rank": 38,
+    "slug": "invoice-finder",
+    "title": "One-click invoice finder",
+    "url": "https://madewithjev.com/builds/invoice-finder",
+    "text": "Farouq Aldori @ FarouqAldori Jev is fun! One-click invoice finder for any website 🧾\n\n- Automatically finds billing pages using @typesafeai's Jev\n- List/download all invoices with 1 click\n- Works with Stripe billing portals too\n- Remembers where invoices live for next time\n\nShould I open-source it? X · Ecommerce One-click invoice finder"
+  },
+  {
+    "rank": 39,
+    "slug": "job-match-prediction",
+    "title": "400 companies matched to one candidate",
+    "url": "https://madewithjev.com/builds/job-match-prediction",
+    "text": "Sarvagya Kulshreshtha @ sarvagya_kul JEV is INSANE.  \n\nWe gave it 400 companies and one candidate profile.  \n\nIn 12 seconds, it predicted which jobs the candidate had the highest chance of getting, assigned a confidence score and detected job-candidate mismatches.  \n\nAll for just $0.0005  It can also score companies, analyse your experience, match you with the right roles and identify the opportunities you’re most likely to get based on your profile. \n\nComing soon to @textbackdoor\n\nComment “JEV” for early access. X · Sales and leads 400 companies matched to one candidate Companies 400 Time 12 s Cost $0.0005"
+  },
+  {
+    "rank": 40,
+    "slug": "realtime-game-levels",
+    "title": "Game levels generated in real time",
+    "url": "https://madewithjev.com/builds/realtime-game-levels",
+    "text": "Hugo Duprez @ HugoDuprez Jev can generate game levels in real time.\n\nFaster and cheaper structured output could be a big deal for game dev! X · Games and real time Game levels generated in real time"
+  },
+  {
+    "rank": 41,
+    "slug": "diffjury",
+    "title": "DiffJury",
+    "url": "https://madewithjev.com/builds/diffjury",
+    "text": "Raihan Khan @ raihankhan_rk I got access to Jev by @typesafeai today morning and I built a cool use case for it \n\nIntroducing DiffJury - simply paste any public PR link and Jev tells you immediately if it's safe to merge or does it require review ✅\n\n🔗 Feel free to try it out here - http://diffjury.up.railway.app \n\nImagine Jev being able to tell you if you should merge a PR with grounded context of your codebase. that's what we're building at @graphify 👀\n\nIt's fascinating how insanely fast Jev is... the model architecture in itself is quite interesting and this has opened up a plethora of new use cases and I'm sure the internet will pick up on it sooner than anyone'd expect Live site · Coding and code review DiffJury"
+  },
+  {
+    "rank": 42,
+    "slug": "is-malicious",
+    "title": "is-malicious",
+    "url": "https://madewithjev.com/builds/is-malicious",
+    "text": "GitHub · Security and abuse is-malicious A codebase scanner that helps you not run malicious code. P Paul 22"
+  },
+  {
+    "rank": 43,
+    "slug": "skillbox",
+    "title": "skillbox",
+    "url": "https://madewithjev.com/builds/skillbox",
+    "text": "Skill · Open source skillbox A self-hosted skills library, with optional Jev recommendations. K Kitze 226"
+  },
+  {
+    "rank": 44,
+    "slug": "kev",
+    "title": "kev",
+    "url": "https://madewithjev.com/builds/kev",
+    "text": "GitHub · Open source kev A tiny Jev-like model on Qwen2.5-0.5B that trains and runs on a MacBook. JP Jared Palmer 3k ~160 ms"
+  },
+  {
+    "rank": 45,
+    "slug": "smart-copy-paste",
+    "title": "Copy and paste, with a decision in between",
+    "url": "https://madewithjev.com/builds/smart-copy-paste",
+    "text": "Marcus Lowe @ marcus_lowe what if copy/paste was smart?\n\npowered by @typesafeai jev\n\nit feels like every computer interaction will get rewritten X · Tools and apps Copy and paste, with a decision in between"
+  },
+  {
+    "rank": 46,
+    "slug": "jev-studio-v020",
+    "title": "jev-studio v0.2.0",
+    "url": "https://madewithjev.com/builds/jev-studio-v020",
+    "text": "Utkarsh Upadhyay ⚒️ @ utk2103 just shipped jev-studio v0.2.0\n\n@typesafeai Jev in one pip install\n\n- MCP tools for Choice / Noul / Score\n- `jev` CLI now with dry-run provenance \n- ready-made prompt libraries + slash commands for every cookbook\n- Claude Code + Codex plugin manifests\n\npip install jev-studio X · SDKs and integrations jev-studio v0.2.0"
+  },
+  {
+    "rank": 47,
+    "slug": "stuntd",
+    "title": "stuntd",
+    "url": "https://madewithjev.com/builds/stuntd",
+    "text": "GitHub · Open source stuntd A local proxy that answers typed LLM decisions with a Laya head. B bladedevoff"
+  },
+  {
+    "rank": 48,
+    "slug": "skill-picker",
+    "title": "skill-picker",
+    "url": "https://madewithjev.com/builds/skill-picker",
+    "text": "Muskan Paliwal @ PaliwalMuskan19 built this skill-picker for myself because apparently having 30+ agent skills also means remembering which one does what 😭\njev (@typesafeai), being the god that it is, ranks them for a given task and tells me  and my agents which skills are actually worth using\n\nphew. one less thing for my brain to cache.\n\nhttps://github.com/MuskanPaliwal/skill-picker GitHub · Routing and model choice skill-picker"
+  },
+  {
+    "rank": 49,
+    "slug": "meta-ads-landing-teardown",
+    "title": "Tearing down Meta ads and their landing pages",
+    "url": "https://madewithjev.com/builds/meta-ads-landing-teardown",
+    "text": "Chris Brownridge @ chrisbrownridge another @treg_ai /Jev demo to analyze data SUPER fast\n\nused treg to pull meta ads and then Jev to teardown the landing pages so you can understand where brands are sending traffic to\n\ncategorizes the type of page, offers they're using and language used to sell\n\nalso shows ad creative launch velocity, creative mix\n\ntakes a few seconds to do it all end to end. X · Ads and marketing Tearing down Meta ads and their landing pages"
+  },
+  {
+    "rank": 50,
+    "slug": "frevana-ad-research",
+    "title": "Frevana decodes a category's ads in 20 seconds",
+    "url": "https://madewithjev.com/builds/frevana-ad-research",
+    "text": "frevana @ frevana_ai Jev made competitor ad research 30x faster and ~90% cheaper.\n\nTyped “game” as the category.\n20 seconds later: 294 top TikTok ads across 68 brands analyzed.\n\nJev:\n1/ pulled the top ads from the past 180 days\n\n2/ scored every ad on stop-scroll, hook, format + trust\n\n3/ clustered them into creative patterns\n\n4/ classified winners, watches + dogs\n\n5/ built a leaderboard of what’s winning\n\n6/ recommended what to make next\n\n20 sec · ~$0.02\n\nFor gaming:\nWinning hooks: offer/promo, challenge accepted\nWinning format: gameplay + UGC\n\nThis is what we’re building at @frevana_ai with Jev:\ndecode your category’s ads → know what to make next, in seconds.\n\nTry it free. Link in the first comment 👇 X · Ads and marketing Frevana decodes a category's ads in 20 seconds Ads analysed 294 Brands 68 Run time ~20 s Cost ~$0.02"
+  },
+  {
+    "rank": 51,
+    "slug": "how-to-give-jev-eyes",
+    "title": "How to Give JEV Eyes",
+    "url": "https://madewithjev.com/builds/how-to-give-jev-eyes",
+    "text": "keno @ kenonews JEV can’t see images. So how do you give it eyes?\n\nWhat’s possible? What can run locally? How far can you get for free?\n\nThe answers (and the catches) are in the full breakdown below: X · Documents and OCR How to Give JEV Eyes"
+  },
+  {
+    "rank": 52,
+    "slug": "jev-por-que-ha-revolucionado-todo",
+    "title": "JEV, por qué ha revolucionado todo",
+    "url": "https://madewithjev.com/builds/jev-por-que-ha-revolucionado-todo",
+    "text": "Article · Benchmarks and evals JEV, por qué ha revolucionado todo A Spanish guide to what Jev is and how to try it. AD Alex dc 193x"
+  },
+  {
+    "rank": 53,
+    "slug": "tev1-local-classifier",
+    "title": "Tev1 0.8B",
+    "url": "https://madewithjev.com/builds/tev1-local-classifier",
+    "text": "Hassan @ nutlope Just trained Tev1 0.8B, a tiny Jev-like classifier.\n\nHere it is running completely locally on my mac with @ollama & classifying some tasks.\n\nIt's extremely fast: only ~50ms E2E latency. Video is not sped up!\n\nReleasing weights & benchmarks very soon so you can try it yourself :) X · Open source Tev1 0.8B Parameters 0.8B Latency ~50 ms"
+  },
+  {
+    "rank": 54,
+    "slug": "docjev",
+    "title": "DocJev",
+    "url": "https://madewithjev.com/builds/docjev",
+    "text": "Jerry Liu @ jerryjliu0 DocJev is the fastest way to classify and split complex document packets ⚡️. (and the default is fully free and OSS!) \n\nI made a sick teaser video below. TY Opus 5.5 🙏\n\ncheck it out: github.com/jerryjliu/docj… GitHub · Documents and OCR Pick DocJev Speed 6x vs gpt-5.6-luna"
+  },
+  {
+    "rank": 55,
+    "slug": "designer-jev",
+    "title": "When a designer gets access to Jev",
+    "url": "https://madewithjev.com/builds/designer-jev",
+    "text": "Stefan @ heystefan_ when a designer gets access to Jev X · UI Pick When a designer gets access to Jev"
+  },
+  {
+    "rank": 56,
+    "slug": "openrouter-ori-eval",
+    "title": "OpenRouter’s Ori Eval",
+    "url": "https://madewithjev.com/builds/openrouter-ori-eval",
+    "text": "OpenRouter @ OpenRouter 1/ Jev, a decision model by @typesafeai, sparked a burst of projects and discussion. We tested it using Ori Eval against popular LLMs on OpenRouter at judging.\n\nJev was >5x faster than the next fastest model, and even its slowest requests beat every other model's median. X · Benchmarks and evals OpenRouter’s Ori Eval Speed >5× the next fastest"
+  },
+  {
+    "rank": 57,
+    "slug": "cline-jev-browser",
+    "title": "jev-browser in Cline",
+    "url": "https://madewithjev.com/builds/cline-jev-browser",
+    "text": "Cline @ cline We built a plugin that gives Jev a browser in Cline, and have been blown away by the results.\n\n1. Install it in our new desktop app: Customize > Marketplace > Plugins > search 'jev-browser'\n\n2. Create a Vercel AI Gateway API key, then save it to ~/.cline/plugins/cline-jev-browser.config.json as {\"gateway\": {\"apiKey\": \"...\"}} and restart Cline.\n\n3. Ask any browser task and it will launch Chrome in the background to complete it. X · Agents and browsers jev-browser in Cline"
+  },
+  {
+    "rank": 58,
+    "slug": "cua-s1-forms",
+    "title": "CUA-S1-FORMS",
+    "url": "https://madewithjev.com/builds/cua-s1-forms",
+    "text": "Cua @ trycua 1/ Introducing CUA-S1: a family of System One Models, small, specialized, and built for computer use.\n\nToday we're open-sourcing CUA-S1-FORMS, the first in the family: github.com/trycua/cua GitHub · Open source CUA-S1-FORMS Parameters 706k Form fill one 50 ms pass"
+  },
+  {
+    "rank": 59,
+    "slug": "webmcp-side-panel-extension",
+    "title": "A side panel that drives any site's WebMCP tools",
+    "url": "https://madewithjev.com/builds/webmcp-side-panel-extension",
+    "text": "Sarah Drasner @ sarah_edo 🎇 I made a small Chrome extension: a side panel that drives any site's WebMCP tools with Jev!\n\nWhen you type, on every keystroke it picks the relevant page's tool, fills in the arguments, and tells you how sure it is.\n\nHere it is grocery shopping: X · Routing and model choice Pick A side panel that drives any site's WebMCP tools"
+  },
+  {
+    "rank": 60,
+    "slug": "webmcp-benchmark",
+    "title": "Jev on the WebMCP benchmark",
+    "url": "https://madewithjev.com/builds/webmcp-benchmark",
+    "text": "idan levin @ 0xidanlevin We just ran Jev on our WebMCP benchmark.\n\nThe result: basically broke the benchmark.\n\nJev + Mercury 2.5 (a fast, low-cost LLM) using WebMCP solved 100% of the tasks at roughly 112× lower model cost than GPT-6 Astra using computer use with code execution. Compared to Astra using screenshot-based computer use, the model cost was 245× lower (!). \n\nWe also compared Jev operating the browser with and without WebMCP. \n\nWe used Browser Use’s open-source Ultrafast, with some improvements to the harness to make it more reliable across the benchmark. \n\nJev’s browser-control accuracy on its own was not amazing - adding WebMCP nearly doubled the number of solved tasks, from 25/49 to 49/49, while reducing model cost by 18% (more on why below).\n\nThe benchmark and methodology are fully open and reproducible.\n\nFull results: https://webmcp.com/benchmark\n\nA few words on how the Jev + WebMCP harness works and why this is exciting:\n\nJev receives text as input and a set of discrete options it can choose from.  With WebMCP, those options are the tools exposed by the website. At each step, Jev sees the task, the available tools and previous results, then picks what to do next.\n\nThe limitation is that Jev can’t generate arbitrary text, which you need for tool arguments. For example, it can choose the search_products tool, but it can’t generate the search query itself.\n\nSo we split the work: Jev picks the tool and Mercury 2.5 generates the arguments if needed. \n\nThis works well because turns out most of the cognitive load in these tasks is around choosing the right action. The argument generation itself is relatively simple, so we can delegate to a small and very fast model. We used Mercury, which outputs 1,000+ tokens/sec and is very cheap.\n\nThe result is a pretty simple combination: Jev for tool selection + Mercury for arguments + WebMCP for the interface. It ends up being very reliable, very fast, and very cheap.\n\nA few words about Ultrafast and why do we think it underperforms:\n\nWithout WebMCP, Jev chooses from the page’s controls: which button to click, which field to fill, or which option to select. \n\nBut choosing a valid button is different from choosing the right next step. The agent still has to navigate menus, understand forms, recover from errors  and recognize when the task is actually complete.\n\nOur hypothesis is that WebMCP makes the decision space much simpler. Instead of figuring out a sequence of clicks through a website, Jev chooses explicit actions that directly advance the task. \n\n@typesafeai itself documents weaker accuracy on questions requiring multiple reasoning steps. WebMCP moves much of that complexity into the website’s tools, leaving Jev with clearer decisions and fewer opportunities to go wrong (in a sense WebMCP \"compresses\" a sequence of clicks into one tool call).\n\nOur modified Ultrafast setup solved 25/49 tasks - that is a result for our particular implementation and benchmark, not a universal limit on Jev or Browser Use. We are open to more harness optimization to get this result to perform better, feel free to directly contribute to the benchmark here: https://github.com/nekuda-ai/WindTunnel\n\nBrowser-use ultrafast: https://github.com/browser-use/jev-ultrafast X · Agents and browsers Jev on the WebMCP benchmark Tasks solved 49/49 Model cost ~112× lower"
+  },
+  {
+    "rank": 61,
+    "slug": "10k-trading",
+    "title": "$10,000 in Jev’s hands",
+    "url": "https://madewithjev.com/builds/10k-trading",
+    "text": "Abol @ abolbuild I gave Jev $10,000 and let it trade X · Trading and markets $10,000 in Jev’s hands Bankroll $10,000"
+  },
+  {
+    "rank": 62,
+    "slug": "x-algorithm-simulator",
+    "title": "The X algorithm, rebuilt with Jev",
+    "url": "https://madewithjev.com/builds/x-algorithm-simulator",
+    "text": "leo @ leojrr rebuilt the X algorithm with Jev\n\n- uses real weights\n- simulates virality of your post\n- has a global feed (you see everyone)\n\nit's insanely accurate X · Social feeds The X algorithm, rebuilt with Jev"
+  },
+  {
+    "rank": 63,
+    "slug": "yc-indexor",
+    "title": "YC Indexor",
+    "url": "https://madewithjev.com/builds/yc-indexor",
+    "text": "Aayan @ aaayandev Jev (@typesafeai) is so insane & cheap for search!! \n\n> 6000+ @ycombinator Startups indexed. \n> Sub 1 second search results. \n> 90M tokens & $2.7 in total testing costs.\n\nSearch any startup in a second, in any way! \n- Color - Niche - Your Competitor - Age - Image - etc...\n\n> watch the entire video, it's so freaking cool omg!\n\n> this is the coolest thing i have ever built for fun! (worked on it for 2 days straight!) GitHub · Search Pick YC Indexor Index 6,241 companies Search ~1 s / ~$0.002 Test cost $2.70 / 90M tokens"
+  },
+  {
+    "rank": 64,
+    "slug": "reply-guy-filter",
+    "title": "A filter for reply-guy comments",
+    "url": "https://madewithjev.com/builds/reply-guy-filter",
+    "text": "Ian Nuttall @ iannuttall Pro tip: You can use Jev to remove annoying reply guy comments that X seems to always miss. Takes 5 minutes in Astra with the docs and an API key. X · Social feeds A filter for reply-guy comments"
+  },
+  {
+    "rank": 65,
+    "slug": "wikiracing",
+    "title": "Wikiracing",
+    "url": "https://madewithjev.com/builds/wikiracing",
+    "text": "255 options Choice ceiling Article · Games and real time Wikiracing Get from one Wikipedia page to another by picking links. TA TypeSafe AI"
+  },
+  {
+    "rank": 66,
+    "slug": "typesafe-computer-use",
+    "title": "typesafe-computer-use",
+    "url": "https://madewithjev.com/builds/typesafe-computer-use",
+    "text": "GitHub · Agents and browsers typesafe-computer-use Computer use on macOS, with one Jev decision per step. AL Andrew Levin 789 ~$0.0002"
+  },
+  {
+    "rank": 67,
+    "slug": "jev-drone",
+    "title": "jev-drone",
+    "url": "https://madewithjev.com/builds/jev-drone",
+    "text": "GitHub · Robotics and devices jev-drone A simulated drone that asks Jev for a judgment 2.5 times a second. RS Roman Slack 123 2.5 Hz"
+  },
+  {
+    "rank": 68,
+    "slug": "inbox-triage-1500-emails",
+    "title": "Triage across 1,500 emails",
+    "url": "https://madewithjev.com/builds/inbox-triage-1500-emails",
+    "text": "vogel @ ryanvogel this model is actually insane at email classification\n\ni tested it on 1500 of my own emails to see how well it works and I am blown away X · Inbox and support Triage across 1,500 emails Volume ~1,500 emails"
+  },
+  {
+    "rank": 69,
+    "slug": "every-editorial-judgments",
+    "title": "Every’s editorial vibe check",
+    "url": "https://madewithjev.com/builds/every-editorial-judgments",
+    "text": "Dan Shipper @ danshipper we almost never test new foundation models but we've been testing this for ~a week @every and it's pretty wild.\n\nthe kind of things that will be obviously indispensible in 6-12 months\n\nit doesn't produce words as output, it produces probabilities. so it can efficiently act as a judge in cases where you'd need a Fable-level model—but in our testing was 25x faster and 600x lower priced \n\nexcellent vibe check by @hammer_mt on @every:\nhttps://every.to/also-true-for-humans/mini-vibe-check-typesafe-s-jev-judged-everything-i-ve-written-in-0-7-seconds?utm_cta_source=home_main_a_3 Article · Benchmarks and evals Pick Every’s editorial vibe check Judgments 1,709 Total cost <$0.01 Median per passage 0.35 s"
+  },
+  {
+    "rank": 70,
+    "slug": "jev-plays-chess",
+    "title": "Jev plays chess",
+    "url": "https://madewithjev.com/builds/jev-plays-chess",
+    "text": "Article · Games and real time Jev plays chess Jev picks from the legal moves, compared with reasoning models. MS Maxim Saplin"
+  },
+  {
+    "rank": 71,
+    "slug": "slay-the-spire-2",
+    "title": "Jev plays Slay the Spire 2",
+    "url": "https://madewithjev.com/builds/slay-the-spire-2",
+    "text": "paulwei @ coolish 昨天出的 typesafe.ai Jev 模型\n适合高频决策，那岂不又是适合打游戏？\n\n之前用 GPT-6 Astra 代打杀戮尖塔2\n能力强但速度慢。\n\n我刚实测用 Jev 打，行动思考只需 0.7秒，\n画面我都没看清它就操作完了。\n这超人类游戏速度，\n着实又让我震惊瘫坐了😅\n\n语言很难描述这感觉，看视频⬇️ X · Games and real time Jev plays Slay the Spire 2 Time per move 0.7 s"
+  },
+  {
+    "rank": 72,
+    "slug": "keep-md-search",
+    "title": "Search and tagging on keep.md",
+    "url": "https://madewithjev.com/builds/keep-md-search",
+    "text": "Ian Nuttall @ iannuttall Cloudflare Workers has Jev now so I'm putting it to the test on keep.md\n\n- 7x faster search rerank compared to the current hybrid\n- 50x faster tagging of content vs GLM 4.7 Flash with no failures X · Search Search and tagging on keep.md Rerank 7x faster Tagging 50x faster"
+  },
+  {
+    "rank": 73,
+    "slug": "jev-review",
+    "title": "jev-review",
+    "url": "https://madewithjev.com/builds/jev-review",
+    "text": "Niaz Morshed @ niazmorshed_ built `jev-review` @typesafeai \n\nit's an experimental, local-first MCP plugin that gives coding agents a score quality feedback loop across different metrics. \n\nagents call jev while they work, get scored, make improvements, and repeat the loop\n\ntry below 👇 X · Coding and code review jev-review"
+  },
+  {
+    "rank": 74,
+    "slug": "agent-model-router",
+    "title": "An agent with a Jev model router",
+    "url": "https://madewithjev.com/builds/agent-model-router",
+    "text": "Riley Brown @ rileybrown Building an agent with model router powered by Jev. X · Routing and model choice An agent with a Jev model router"
+  },
+  {
+    "rank": 75,
+    "slug": "headless-chromium-agent",
+    "title": "Headless Chromium agent",
+    "url": "https://madewithjev.com/builds/headless-chromium-agent",
+    "text": "Mormon Negro @ mormonnegro Acabo de terminar la implementación de @typesafeai + Chromium Headless para que mis agentes puedan navegar por internet a una buena velocidad!\n\nEn este ejemplo le pido al agente que entre a la página del término \"Café\" en Wikipedia y navegue por los hipervínculos hasta terminar en la página \"Inteligencia artificial\"\n\nLogra completar la prueba en 20 segundos. Creo que pocos humanos podrían hacerlo en ese tiempo. X · Agents and browsers Headless Chromium agent"
+  },
+  {
+    "rank": 76,
+    "slug": "jev-voice-browser",
+    "title": "jev-voice-browser",
+    "url": "https://madewithjev.com/builds/jev-voice-browser",
+    "text": "GitHub · Agents and browsers jev-voice-browser A browser you control by voice, from Moritz Kremb’s Jev tutorial. MK Moritz Kremb 231"
+  },
+  {
+    "rank": 77,
+    "slug": "predictive-launcher",
+    "title": "Keystroke oracle",
+    "url": "https://madewithjev.com/builds/predictive-launcher",
+    "text": "nader dabit @ dabit3 Also have been playing with @typesafeai Jev, insane!\n\nSo many immediate use cases and new apps are possible. What a time to be a builder!\n\nSharing some experiments here starting with:\n\nKeystroke oracle / predictive launcher:\n\nYour launcher ranks by aliases, fuzzy match, and habit. \n\nJev reads intent: type \"the pdf I just downloaded\" and the newest PDF is already the top hit with a full confidence on every keystroke, in ~100 ms X · Benchmarks and evals Keystroke oracle"
+  },
+  {
+    "rank": 78,
+    "slug": "jev-calc",
+    "title": "Jev Calc",
+    "url": "https://madewithjev.com/builds/jev-calc",
+    "text": "kitze 🛠️ tinkerer.club @ thekitze i made a smart calculator notebook using jev\n\nit can calculate ANYTHING!! 😅 X · Tools and apps Jev Calc"
+  },
+  {
+    "rank": 79,
+    "slug": "gesture-canvas",
+    "title": "A canvas you control by pointing and speaking",
+    "url": "https://madewithjev.com/builds/gesture-canvas",
+    "text": "Jack Cheng @ jackcheng Jev is the future X · Tools and apps A canvas you control by pointing and speaking"
+  },
+  {
+    "rank": 80,
+    "slug": "regex-to-jev",
+    "title": "Hard-coded rules moved to Jev",
+    "url": "https://madewithjev.com/builds/regex-to-jev",
+    "text": "ILIAS ISM @ illyism Now using @typesafeai Jev in http://aiseotracker.com, http://linkdr.com, http://genppt.com, etc\n\nAI ends up vibe coding so much AI regex slop if you don't read the code, so I can finally move all this hard-coding to Jev and it's insanely fast!\n\nAlso for regular LLM calls, it is around 10x faster, 50% cheaper X · Benchmarks and evals Hard-coded rules moved to Jev"
+  },
+  {
+    "rank": 81,
+    "slug": "jevlike",
+    "title": "jevlike",
+    "url": "https://madewithjev.com/builds/jevlike",
+    "text": "Vincent Wang-Maścianica @ vinnylarouge I reverse-engineered a jev-like architecture given its type. You can find the repo here to train your own jevlikes: github.com/vinnylarouge/j… GitHub · Open source jevlike"
+  },
+  {
+    "rank": 82,
+    "slug": "second-hand-shopping-agent",
+    "title": "A second-hand shopping agent",
+    "url": "https://madewithjev.com/builds/second-hand-shopping-agent",
+    "text": "Alan Daitch @ AlanDaitch Claude me integró Jev con Playwright  para buscar usados. Lee unos 26 artículos por minuto y decide qué hacer con cada uno en 406 milisegundos\n\nDescartó los que no encajaban con lo que busco, ofertó por los que sí y hasta les mandó un mensaje a los vendedores cuando faltaba algún dato en la publicación.\n\nToda la búsqueda salió USD 0,00085. O sea: con un dólar revisás unas 26.000 publicaciones.\n\nUna IA que por fin puede navegar por internet más rápido que nosotros es un game changer X · Ecommerce A second-hand shopping agent Listings ~26/min Decision 406 ms Cost $0.00085"
+  },
+  {
+    "rank": 83,
+    "slug": "no-llm-chat-bot",
+    "title": "A chat bot with no LLM",
+    "url": "https://madewithjev.com/builds/no-llm-chat-bot",
+    "text": "CJ (Coding Garden) @ CodingGarden I built a chat bot with jev, no LLM at all! Responses are instant, no hallucinations.\n\nI hooked it up to web search, wikipedia, weather, todoist and home assistant.\n\nJev decides what tool to call and what args to use based on the prompt. Instant answers cite sources as well! X · Routing and model choice A chat bot with no LLM"
+  },
+  {
+    "rank": 84,
+    "slug": "predictive-spreadsheets",
+    "title": "Predictive spreadsheets",
+    "url": "https://madewithjev.com/builds/predictive-spreadsheets",
+    "text": "nader dabit @ dabit3 Another crazy @typesafeai Jev example:\n\nPredictive spreadsheets\n\nSpreadsheets recalculate numbers, not meaning. Jev reads intent.\n\nType \"Urgency\" at the top of a column and, as you type, it figures out you want each row rated from \"no follow-up needed\" to \"urgent\" in ~100 ms. X · Tools and apps Predictive spreadsheets Per rating ~100 ms"
+  }
+]

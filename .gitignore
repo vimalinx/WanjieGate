@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 .ai/tmp/
 artifacts/models/
+.data/
+.ai/shots/
+.ai/test-data/
+.ai/live-smoke/

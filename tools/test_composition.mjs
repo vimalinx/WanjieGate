@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {infer,planFrom,selectComponents} from '../static/js/composition.js';
+import {markdown,descriptors} from '../static/js/components.js';
+const r=JSON.parse(fs.readFileSync(new URL('../static/registry.json',import.meta.url)));
+const plan=planFrom(infer('分析数据，写周报，制定计划',r),r,true);
+assert.deepEqual(plan.steps.map(s=>s.id),['analyze','write','plan']);
+const selected=selectComponents(plan,r);
+assert(selected.some(c=>c.id==='document') && selected.some(c=>c.id==='tasks') && selected.some(c=>c.id==='chart'));
+assert(selected.reduce((n,c)=>n+c.previewCost,0)<=7);
+assert(!markdown('<img src=x onerror=alert(1)>').includes('<img'));
+assert.equal(descriptors([{id:'a',type:'analysis',components:['chart'],created:0}],r).length,1);
+assert.equal(planFrom(infer('分析数据',r),r,false).needs_data,true);
+assert.deepEqual(planFrom(infer('写周报',r),r,true,['plan']).steps.map(s=>s.id),['plan']);
+console.log('PASS: compound selection, budget, renderer binding, escaping, data gate, manual override');

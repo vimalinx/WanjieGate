@@ -1,0 +1,132 @@
+{
+  "as_of": "2026-09-26",
+  "note": "8 selected practical projects; these are neither exhaustive nor a global top8. Stars read directly from public GitHub pages; not adoption or quality metrics. No inference APIs called.",
+  "repositories": [
+    {
+      "repo": "devagrawal09/jev-review",
+      "name": "Jev Review",
+      "url": "https://github.com/devagrawal09/jev-review",
+      "stars": 618,
+      "stars_observed_at_utc": "2026-09-26T15:19:46+00:00",
+      "stars_source": "GitHub public HTML embedded sidebarAbout.stargazerCount; unauthenticated REST API returned403 rate-limit",
+      "purpose_zh": "代码差异或代码库审查：分阶段判断风险、选择证据、判断问题机制和严重程度，汇总到本地仪表盘。",
+      "problem_solved_zh": "把审查注意力指向有具体证据的代码区域。",
+      "caveat_zh": "作者明确称实验；未结合编译器、静态分析器、仓库索引或生成式解释；发现是审查线索，不是缺陷证明。",
+      "evidence_level": "repository-author-description; not independently run",
+      "github_fetch_id": "f-111",
+      "failed_api_fetch_id": "f-100"
+    },
+    {
+      "repo": "thruwire/foreman",
+      "name": "Foreman",
+      "url": "https://github.com/thruwire/foreman",
+      "stars": 571,
+      "stars_observed_at_utc": "2026-09-26T15:19:45+00:00",
+      "stars_source": "GitHub public HTML embedded sidebarAbout.stargazerCount; unauthenticated REST API returned403 rate-limit",
+      "purpose_zh": "在编码 Agent 运行期间，以独立观察循环判断是否偏离任务、卡住、需要验证或已完成，代码决定继续/引导/停止。",
+      "problem_solved_zh": "不用等慢模型整轮结束才发现方向跑偏。",
+      "caveat_zh": "作者称架构实验，准确率未证明；V1一次一个编码worker；观察有界且不完整；本地执行不隔离。",
+      "evidence_level": "repository-author-description; not independently run",
+      "github_fetch_id": "f-108",
+      "failed_api_fetch_id": "f-101"
+    },
+    {
+      "repo": "superagents-lab/jev-search",
+      "name": "Jev Search",
+      "url": "https://github.com/superagents-lab/jev-search",
+      "stars": 467,
+      "stars_observed_at_utc": "2026-09-26T15:19:45+00:00",
+      "stars_source": "GitHub public HTML embedded sidebarAbout.stargazerCount; unauthenticated REST API returned403 rate-limit",
+      "purpose_zh": "从自然语言判断搜索来源、查询词和时间范围，通过Search1API并行检索，再相关性排序、合并链接、流式显示。",
+      "problem_solved_zh": "无需先选搜索网站或筛选菜单，也能看到原始来源和可改过滤条件。",
+      "caveat_zh": "依赖搜索和Jev服务；不生成答案；相关性百分数不是事实正确率，片段可能过时；本次未运行搜索。",
+      "evidence_level": "repository-author-description; not independently run",
+      "github_fetch_id": "f-109",
+      "failed_api_fetch_id": "f-99"
+    },
+    {
+      "repo": "gargpratyush/jev-router",
+      "name": "jev-router",
+      "url": "https://github.com/gargpratyush/jev-router",
+      "stars": 429,
+      "stars_observed_at_utc": "2026-09-26T15:19:45+00:00",
+      "stars_source": "GitHub public HTML embedded sidebarAbout.stargazerCount; unauthenticated REST API returned403 rate-limit",
+      "purpose_zh": "每次新用户回合用Jev选择Claude Code/Codex的模型档位；回合内部工具循环保持该档位。",
+      "problem_solved_zh": "简单任务用快模型，复杂任务升级，同时保留现有CLI工作流。",
+      "caveat_zh": "私有CLI请求格式可能变化；首请求增加判断延迟；作者只报告特定Windows版本测试；本次未测成本或质量收益。",
+      "evidence_level": "repository-author-description; not independently run",
+      "github_fetch_id": "f-107",
+      "failed_api_fetch_id": "f-102"
+    },
+    {
+      "repo": "droidrun/mobile-jev",
+      "name": "Mobile Jev",
+      "url": "https://github.com/droidrun/mobile-jev",
+      "stars": 404,
+      "stars_observed_at_utc": "2026-09-26T15:19:46+00:00",
+      "stars_source": "GitHub public HTML embedded sidebarAbout.stargazerCount; unauthenticated REST API returned403 rate-limit",
+      "purpose_zh": "将Android控件和已安装应用变成候选，一次判断操作和目标，通过Mobilerun执行；附实时设备界面、轨迹和任务验证。",
+      "problem_solved_zh": "把一句目标变成可观察的手机操作，不需要每步人工点选。",
+      "caveat_zh": "需真实Mobilerun设备和两方服务；文本仅来自用户原句；模型DONE不证明成功。Uber演示只到支付选择，没有完成叫车。",
+      "evidence_level": "repository-author-description; not independently run",
+      "github_fetch_id": "f-110",
+      "failed_api_fetch_id": "f-103"
+    },
+    {
+      "repo": "lakeday-org/perch",
+      "name": "Perch",
+      "url": "https://github.com/lakeday-org/perch",
+      "stars": 185,
+      "stars_observed_at_utc": "2026-09-26T15:19:46+00:00",
+      "stars_source": "GitHub public HTML embedded sidebarAbout.stargazerCount; unauthenticated REST API returned403 rate-limit",
+      "purpose_zh": "语义代码lint：以自然语言规则约束方法/文件，展示问题排序，支持修复后的检查及CI门禁。",
+      "problem_solved_zh": "把难写成传统lint的团队语义约定变成持续反馈。",
+      "caveat_zh": "README与官方项目CI文档可核实接口；本次没有测误报漏报，模型判断不能充当编译器或形式证明。",
+      "evidence_level": "repository-author-description; not independently run",
+      "github_fetch_id": "f-112",
+      "failed_api_fetch_id": "f-105",
+      "additional_source": {
+        "url": "https://docs.perchscan.com/ci/",
+        "fetch_id": "f-140"
+      }
+    },
+    {
+      "repo": "uehaj/jev-semgrep",
+      "name": "jev-semgrep / sys1grep",
+      "url": "https://github.com/uehaj/jev-semgrep",
+      "stars": 144,
+      "stars_observed_at_utc": "2026-09-26T15:19:47+00:00",
+      "stars_source": "GitHub public HTML embedded sidebarAbout.stargazerCount; unauthenticated REST API returned403 rate-limit",
+      "purpose_zh": "逐行按语义筛选文件，支持AND/OR/NOT、跨语言查询和本地正则预筛；README已使用sys1grep名称。",
+      "problem_solved_zh": "找含义而非精确关键词，例如没有出现“愤怒”两字的愤怒投诉。",
+      "caveat_zh": "每次新查询可能重付整语料判定成本；长期大量重复查询更适合向量索引；语言表现和阈值要具体评估。",
+      "evidence_level": "repository-author-description; not independently run",
+      "github_fetch_id": "f-113",
+      "failed_api_fetch_id": "f-106"
+    },
+    {
+      "repo": "sdras/jev-webmcp-extension",
+      "name": "Jev × WebMCP Extension",
+      "url": "https://github.com/sdras/jev-webmcp-extension",
+      "stars": 117,
+      "stars_observed_at_utc": "2026-09-26T15:19:48+00:00",
+      "stars_source": "GitHub public HTML embedded sidebarAbout.stargazerCount; unauthenticated REST API returned403 rate-limit",
+      "purpose_zh": "由当前网页工具schema生成Jev问题，边输入边预测工具和参数；高置信只读调用自动运行，缺参数留给用户补充。",
+      "problem_solved_zh": "输入直接变成功能操作和真实结果，少做一次回车与工具选择；最接近万界门预期。",
+      "caveat_zh": "需要支持WebMCP的网站和对应Chrome；改变状态的操作仍显式执行；一般数组目前仅填第一项；本次读代码，未实机运行。",
+      "evidence_level": "repository-author-description; not independently run",
+      "github_fetch_id": "f-114",
+      "failed_api_fetch_id": "f-104",
+      "code_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/sdras/jev-webmcp-extension/main/src/core/policy.js",
+          "fetch_id": "f-141"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/sdras/jev-webmcp-extension/main/src/core/questions.js",
+          "fetch_id": "f-142"
+        }
+      ]
+    }
+  ]
+}

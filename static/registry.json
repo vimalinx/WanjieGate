@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "capabilities": {
+    "analyze": {"label": "分析数据", "verb": "计算", "input": ["dataset"], "output": "analysis", "cost": "local", "cue": "Does the user want to inspect numbers, compare metrics, calculate statistics, or visualize data?", "patterns": "数据|销售|营收|趋势|统计|图表|对比|分析|data|chart|csv|metrics|analy"},
+    "write": {"label": "形成文稿", "verb": "撰写", "input": ["text", "analysis?"], "output": "document", "cost": "cloud", "cue": "Does the user want a written artifact, report, article, summary, draft, rewrite or polished text? This can coexist with analysis and planning.", "patterns": "写|周报|报告|文稿|文章|总结|整理|润色|草稿|write|report|draft|summari"},
+    "plan": {"label": "拆成行动", "verb": "规划", "input": ["text", "document?", "analysis?"], "output": "tasks", "cost": "cloud", "cue": "Does the user want actionable tasks, a plan, next steps or a checklist? This can coexist with writing and data analysis.", "patterns": "计划|行动|任务|步骤|安排|待办|清单|排期|plan|todo|task|next step"},
+    "answer": {"label": "一起想想", "verb": "回答", "input": ["text"], "output": "document", "cost": "cloud", "cue": "Does the user want an explanation, answer or brainstorming rather than only a specific data/report/task artifact?", "patterns": "为什么|怎么|如何|想法|解释|建议|what|why|how"}
+  },
+  "components": {
+    "metrics": {"label": "关键数字", "capability": "analyze", "accepts": "analysis", "span": 12, "weight": 0.82, "previewCost": 1},
+    "chart": {"label": "变化趋势", "capability": "analyze", "accepts": "analysis", "span": 7, "weight": 1, "previewCost": 2},
+    "table": {"label": "数据明细", "capability": "analyze", "accepts": "analysis", "span": 5, "weight": 0.76, "previewCost": 2},
+    "document": {"label": "文稿", "capability": "write", "accepts": "document", "span": 7, "weight": 1, "previewCost": 2},
+    "tasks": {"label": "行动清单", "capability": "plan", "accepts": "tasks", "span": 5, "weight": 1, "previewCost": 2}
+  }
+}

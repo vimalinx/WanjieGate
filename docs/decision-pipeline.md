@@ -1,92 +1,43 @@
-# WanjieGate 决策管线全景
+# V2 决策与执行管线
 
-两个时钟解耦:**渲染循环 60fps**(本地,永远流畅)与**决策循环 ~3Hz**(KEV 一次前向传播,实测 57–191ms)。KEV 只产出"目标态",屏幕上所有运动由本地弹簧完成。
+```text
+输入 / 中文输入法组合结束
+  ├─ 即时：本地多标签提示 → 组件预算选择 → 输入框形态与实时交互界面
+  └─ 逐字立即调度：同源 /api/preview → KEV 四个独立 noul
+       → 显式表达下限 + 模型分数 → 多能力计划（旧序列结果丢弃）
 
-## 1. 输入路径
-
-```
-textarea input 事件
-  → latestText = value
-  → #app.classList.toggle("idle", 空?)
-  → 空: clearScene() 全量复位,不再问模型
-  → 非空: 本地派生卡即时刷新(summary/note/timeline/alert 文本类)
-  → debounce 320ms → decide()
-```
-
-`decide()`: `seq++` 帧序号 → `inflight.abort()` 取消上一帧 → mock 或真 KEV → 回来先比 `seq`,旧帧直接丢弃。
-
-## 2. 决策源(两条,可互换)
-
-- **真实**: `POST {baseUrl}/v1/systemone`,body = `{state, model, questions}`。state 含 `role/note/user_text_so_far/currently_visible`。
-- **Mock**: `?mock=1` → `mockDecide()` 用关键词正则伪造同构 answers,无 GPU 时调手感用。
-
-## 3. 问题集(每帧一次前向传播,目前 ~25 题)
-
-| 问题 | 类型 | 作用 |
-|---|---|---|
-| `intent` | choice(7) | 意图:analyze-data / write-document / monitor-status / plan-work / report-issue / check-social / explore |
-| `layout` | choice(4) | empty / focus / split / dashboard → 容量上限 |
-| `density` | score(0–4) | → densityCap = [0,2,4,7,10] |
-| `emphasis` | choice | 强调卡 id → 强制进主列 + accent 描边 |
-| `vis_<id>` | noul ×12 | 每个组件"该显示吗"的独立概率 |
-| `bind_<id>` | choice ×4 | chart/table/metric/hero 绑哪份数据集 |
-| `att_<ctx>` | noul ×7 | 附件:photos/news/logs/tasks/datasets/moments/services |
-
-## 4. 判定标准(applyAnswers 里的全部阈值)
-
-| 常量 | 值 | 含义 |
-|---|---|---|
-| `COMMIT_MARGIN_IN` | 0.30 | 意图头两名概率差 ≥0.30 → **已知意图**(committed) |
-| `COMMIT_MARGIN_OUT` | 0.15 | 滞后带:差距跌回 0.15 才退回未定 |
-| `GHOST_LO` | 0.15 | 显隐概率的入场门槛(幽灵态) |
-| `SOLID` | 0.55 | 已定时实体化的最低概率;也是幽灵/实体分界线。组件可用 `solid` 字段自设门槛(alert-banner=0.40:4B 对打断级组件系统性保守) |
-| `MOUNT_P` | 0.03 | 挂载/卸载阈值 |
-| attach argmax | >0.3 | 附件题头名 >0.3 才显示;已定时退回场景预设 `scene.attach` |
-| `scene.ensure` | per-intent | **场景保底**:已定时该场景核心组件概率取 `max(model, floor)`,且绕过容量裁剪——预设页总是成型的 |
-
-**承诺语义**:未定 → `target = p`(概率即透明度,幽灵层);已定 → `p>=组件门槛` 才 `target=1`,其余退场。`pin` 组件(nav-rail/intent-chip/alert-banner)与当前场景 `ensure` 组件绕过布局容量裁剪。nav-rail 另有壳保底 `p = max(model, 0.6)`。
-
-**4B 校准记录**(kev-4b + Qwen3.5-4B-Base,bf16,`KEV_CUDA_GRAPHS=0`,~950ms/帧):意图判别显著更强——"大家在干啥?"等口语社交输入全部判 check-social 并 commit(margin 0.27–0.61);但对显隐题整体保守(写作场景全部 vis<0.55),因此引入 `scene.ensure` 保底;alert-banner 全语境跨度 0.10–0.50,单列 0.40 门槛后正确分离。
-
-## 5. 布局路径(pack,每次 dirty 重算)
-
-```
-top 条带(alert-banner)    全宽 × 54px
-bottom 条带(action-bar)   全宽 × 54px
-nav 列(nav-rail)         200px,右缘发丝线
-main 列(主内容)          剩余宽度,组内 12px 间隔
-side 列(信息卡)          292px
-主列为空 → side 内容并入主列;Wi<980 → 单列+导航变横条
-栏内按 minH 权重铺满高度
+发送
+  → 请求编号（断网恢复复用）
+  → 后端检查数据前置条件、仅本地开关和能力白名单
+  → 每空间一个任务 / 全局两个执行线程 / 最多六个在途任务
+  → analyze → write → plan（仅执行选中的能力）
+  → 每步结果落 SQLite → 页面轮询呈现 → 可编辑 / 固定 / 导出
 ```
 
-## 6. 渲染路径(tick,每帧)
+## 选择算法
 
-- `c.delay > 0` → 只扣 delay(场景错峰调度),不积分
-- 否则弹簧 `m += (target-m)·(1-e^{-dt/τ})`,进场 τ=0.16s / 退场 τ=0.5s(不对称:进快出慢)
-- `m<0.03` 且 target=0 → 卸载 DOM
-- 位置宽高走 CSS transition(.48s);transform/clip-path/opacity 每帧直写
-- 进场方式按组件 `enter`:wipe=横向扫入 / zoom=缩放 / spring=上浮弹簧 / ghost=缓升
-- 模糊只属于运动:`|target-m|>0.015` 才 blur,静止必锐利
-- 幽灵 = 虚线轮廓;实体 = 发丝描边(强调区 accent 色);`--co=m^1.5` 让字比线慢半拍出现
+每个能力独立打分，避免复合意图被单选分类压成歧义。规则匹配分数 0.90，未匹配 0.08；模型可以补充能力；当前自动入选阈值 0.58。用户可增删能力，发送时以可见选择为准。分数只是模型倾向，不代表准确率。
 
-## 7. 输入框自身也是状态
+组件注册表给出能力、输入类型、span、weight 和 previewCost。当前注册表较小，对所有候选子集进行精确枚举，成本不超过 7：
 
-- `data-cmode` = 意图头名(即时,不等承诺):caret/mode/pulse 变色;write-document 长高+衬线字体;plan-work 微增
-- `placeholder` 随场景换文案(`manifest.prompts`)
-- `#mode` 标签 = 已承诺意图
-- `#attach` 附件区 = `att_*` argmax 或场景预设
-- `#hint` 逐层披露:未定露 `hints[0]`(半透明),已定露 `hints[1]`
+`utility = 3 × 覆盖能力数 + Σ(weight + 已有预览奖励 0.12)`
 
-## 8. 页面生命周期
+后端使用同一预算规则生成实际组件列表；产物保存时冻结组件选择。后续输入只改变预览，不收回真实产物。明细可在图表内按需展开。
 
-- 已承诺意图变化 = 换页(`sceneId` 跟踪)
-- 旧场景卡:target→0,错峰 delay `i*30ms` 退场
-- 新场景卡:delay `140ms + i*45ms` 错峰进场
-- 清空 → `clearScene()`:committed/sceneId/attach/hint/mode/cmode/placeholder/卡片 p·target 全复位
+## 表达与状态
 
-## 9. 其他路径
+输入框在写作时增高并切换阅读字体；复合目的显示组合步骤。Enter 在一般模式发送、Shift Enter 换行；写作模式 Enter 换行、Ctrl/Cmd Enter 发送。输入法组合期间不触发发送。
 
-- **重绑**: `.a-chip` 点击 → `__rebind(key)` → 所有可绑组件 `setBinding` → 重渲染(不换数据语义)
-- **调试**: `` ` `` 键开 `#debug` 面板(每卡 p→m 实时条);`dataset.p/target` 供自测断言
-- **自测**: `tools/selftest.py`(Playwright)7 个阶段断言 + `.ai/shots/` 截图
+组件使用内容自然高度与 CSS Grid，文稿通栏，指标和图表/任务按类型组合；不再按固定舞台高度压缩内容。变化使用渐入和 FLIP 位移，编辑过程中保留 DOM，reduced-motion 下禁用动画。
+
+工作区路由 `/w/<id>` 可直接打开。输入草稿和待确认发送编号留在当前浏览器会话，已发送内容与产物留在 SQLite。编辑用版本号拒绝陈旧覆盖；运行结果追加新产物，不覆盖用户已改的内容。
+
+## 服务边界
+
+- KEV：最多一个并发判断，64 条缓存、90 秒有效期；忙或失败回到显式本地预览，不把降级伪装成模型结果。
+- 生成：`lr exec` 精确目录和预检后调用一次；原始响应、错误、退出码与时延保存到私有目录。空响应、截断、不合法任务格式均是失败。
+- 执行：先本地计算，再依赖生成；失败保留已完成产物。取消不宣称撤回上游。重启不重放。
+
+实时调度不等待停字或回车。同一客户端最多一个 KEV 请求在途；期间输入替换待处理文本，返回后立即判断最新文本。过时结果、清空前的结果与旧空间结果均丢弃。中文输入法候选期间仅更新本地界面，提交字词后调用 KEV。
+
+KEV 分数优先于关键词规则，可以否决被否定的关键词。失败时显式使用本地预览。实时界面可直接编辑输入草稿、勾选从输入分出的条目，并只读计算已导入的数据，不创建生成任务或保存产物；云端文本生成另由“生成内容”触发。Enter 只换行。

@@ -1,33 +1,52 @@
 <!doctype html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>WanjieGate · 万界门</title>
-<link rel="icon" href="data:,">
-<link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f8f9f7"><title>万界门 · WanJie</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%2327463c'/%3E%3Cpath d='M12 30V17a8 8 0 0 1 16 0v13M18 30V18h10' fill='none' stroke='%23f7f8f4' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-<div id="app">
-  <header>
-    <div class="brand">万界门 <span>WanjieGate</span></div>
-    <div id="conn" class="conn conn-off">kev · offline</div>
-  </header>
-
-  <section id="composer">
-    <textarea id="input" autofocus spellcheck="false"
-      placeholder="随便说点什么——页面会随着你的话自己长出来。"></textarea>
-    <div id="pulse"><span id="mode"></span><span id="pulse-dot"></span><span id="pulse-text">listening</span></div>
-    <div id="attach"></div>
-    <div id="hint"></div>
-  </section>
-
-  <section id="stage" aria-live="polite">
-    <i class="reg tl"></i><i class="reg tr"></i><i class="reg bl"></i><i class="reg br"></i>
-  </section>
-
-  <aside id="debug" class="hidden"></aside>
-</div>
-<script src="app.js"></script>
-</body>
-</html>
+  <a href="#input" class="skip">跳到输入框</a>
+  <div id="entrance" class="entrance" aria-hidden="true"></div>
+  <dialog class="sidebar" id="sidebar" aria-labelledby="history-title">
+    <form method="dialog" class="dialog-header"><h2 id="history-title">历史</h2><button class="icon-button" aria-label="关闭历史"><span data-icon="close"></span></button></form>
+    <button class="new-space" id="new-space"><span data-icon="plus"></span>新的空间</button>
+    <div class="sidebar-label">已保存 <span id="space-count">0</span></div>
+    <nav id="workspace-list" aria-label="工作区"></nav>
+    <div class="sidebar-bottom"><button id="status-button"><span data-icon="sliders"></span><span id="runtime-status">连接状态</span></button></div>
+  </dialog>
+  <main id="main">
+    <div class="page">
+      <section class="composer" id="composer" aria-label="表达目的" data-mode="answer">
+        <div class="capsule">
+          <button id="menu-button" class="icon-button history-trigger" aria-label="打开历史" title="历史"><span data-icon="clock"></span></button>
+          <label class="sr-only" for="input">你想做什么</label>
+          <textarea id="input" maxlength="12000" placeholder="想做什么？" rows="1"></textarea>
+          <span class="auto-state" aria-label="自动更新"><i></i></span>
+        </div>
+        <div class="composer-context" id="composer-context" hidden>
+          <div id="attachments" class="attachments"></div>
+          <div class="composer-bottom">
+            <div class="composer-tools"><button id="attach-button" class="tool-button" title="粘贴或导入数据" aria-label="添加数据"><span data-icon="plus"></span></button><button id="note-button" class="tool-button" title="存为本地笔记" aria-label="存为笔记"><span data-icon="note"></span></button><span id="decision-status" class="decision-status" role="status"></span></div>
+            <div class="send-tools"><label class="local-toggle"><input id="local-only" type="checkbox"><span>仅本地</span></label></div>
+          </div>
+          <section class="composition" id="composition" hidden aria-label="能力组合预览">
+            <details id="routing-details"><summary><span id="component-preview" class="component-preview"></span><span class="routing-hint">调整</span></summary><div id="plan-steps" class="plan-steps"></div><button class="quiet-button" id="send-button" aria-label="生成内容" title="生成内容 · Ctrl Enter" disabled><span >生成内容</span><span data-icon="arrow-up"></span></button><div class="composer-foot"><span id="send-scope"></span><span id="key-hint"></span></div></details>
+            <button id="plan-notice" class="plan-notice" hidden></button>
+          </section>
+        </div>
+      </section>
+      <section id="live-surface" class="live-surface" aria-label="实时界面" hidden></section>
+      <section id="work-area" class="work-area" hidden>
+        <div class="work-heading"><h1 id="workspace-title">新的空间</h1><div class="work-actions"><div class="view-switch" aria-label="视图"><button id="view-canvas" class="active">内容</button><button id="view-history">过程</button></div><button id="export-button" class="icon-button" aria-label="导出" title="导出"><span data-icon="download"></span></button></div></div>
+        <div id="job-banner" class="job-banner" role="status" hidden></div>
+        <div id="canvas" class="canvas"></div><section id="history" class="history" hidden aria-label="执行历史"></section>
+      </section>
+    </div>
+  </main>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <dialog id="data-dialog" aria-labelledby="data-title"><form method="dialog" class="dialog-header"><h2 id="data-title">给空间一份数据</h2><button class="icon-button" aria-label="关闭"><span data-icon="close"></span></button></form><p class="dialog-desc">粘贴含表头的 CSV / TSV，或选择本机文件。先保存在本机；选择云端生成时，关联内容会发送到模型。</p><label for="data-name">数据名称</label><input id="data-name" value="我的数据" maxlength="100"><label for="data-text">数据内容</label><textarea id="data-text" class="data-input" placeholder="日期,访问量,订单&#10;周一,420,18&#10;周二,510,24"></textarea><div class="dialog-actions"><label class="file-button">选择 CSV 文件<input type="file" id="data-file" accept=".csv,.tsv,.txt"></label><button id="import-button" class="primary-button">添加到空间</button></div><p id="data-error" class="error-text" role="alert"></p></dialog>
+  <dialog id="info-dialog" aria-labelledby="info-title"><form method="dialog" class="dialog-header"><h2 id="info-title">能力与组件</h2><button class="icon-button" aria-label="关闭"><span data-icon="close"></span></button></form><div id="info-content"></div></dialog>
+  <script type="module" src="/app.js"></script>
+</body></html>
