@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {initialState,reduce,manualMergeOptions} from '../static/js/bubbles/state.mjs';
+const action={id:'v',kind:'action',resource:{action:'desktop',command:'files:search',query:'old'}};
+const write={id:'w',kind:'action',resource:{action:'write'}};
+let s=initialState({input:'old',bubbles:[action,write],runs:{v:{runId:'r',status:'running'}}});
+assert.deepEqual(manualMergeOptions(s,'v','w'),[], 'UI handoff cannot produce a document for writing');
+s=reduce(s,{type:'input',text:''});
+assert.equal(s.bubbles.length,0,'clearing input removes ephemeral candidates');
+assert.equal(s.runs.v.runId,'r','clearing input keeps running task identity');
+s=reduce(s,{type:'suggestions',revision:0,mode:'initial',items:[action]});
+assert.equal(s.bubbles.length,0,'late response cannot revive cleared candidates');
+console.log('PASS Vicinae state: handoff types, clearing, stale responses, task identity');

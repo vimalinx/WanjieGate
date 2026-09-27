@@ -2,8 +2,22 @@
 """Offline regression suite. Live browser/provider checks are recorded separately."""
 import subprocess
 import sys
+import os
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
-for command in ([sys.executable,'-m','unittest','tools.test_runtime','tools.test_workbench','tools.test_api','tools.test_live_runtime','tools.test_bubble_providers','tools.test_bubble_runtime','-v'],['node','tools/test_composition.mjs'],['node','tools/test_live.mjs'],['node','tools/test_runtime_client.mjs'],['node','tools/test_bubble_state.mjs'],['node','--test','tools/test_bubble_recovery.mjs']):
+for command in ([sys.executable,'-m','unittest','tools.test_runtime','tools.test_workbench','tools.test_api','tools.test_live_runtime','tools.test_bubble_providers','tools.test_bubble_runtime','tools.test_device_tools','tools.test_vicinae','-v'],['node','tools/test_composition.mjs'],['node','tools/test_live.mjs'],['node','tools/test_runtime_client.mjs'],['node','tools/test_bubble_state.mjs'],['node','--test','tools/test_bubble_recovery.mjs'],['node','tools/test_bubble_interaction.mjs']):
     result=subprocess.run(command,cwd=root)
     if result.returncode: raise SystemExit(result.returncode)
+
+if os.environ.get("HAPPY_DOM_MODULE"):
+    subprocess.run(["node", "tools/test_bubble_dom.mjs"], cwd=root, check=True)
+    subprocess.run(["node", "tools/test_intent_dom.mjs"], cwd=root, check=True)
+else:
+    print("SKIP optional DOM interaction suite: set HAPPY_DOM_MODULE to happy-dom/lib/index.js")
+
+subprocess.run(["node", "tools/test_bubble_handoff.mjs"], cwd=root, check=True)
+
+subprocess.run(["node", "tools/test_bubble_glass.mjs"], cwd=root, check=True)
+
+subprocess.run(['node','tools/test_vicinae_state.mjs'],cwd=root,check=True)
+subprocess.run(['node','tools/test_intent_execution.mjs'],cwd=root,check=True)

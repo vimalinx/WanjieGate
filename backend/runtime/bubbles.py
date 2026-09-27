@@ -28,6 +28,7 @@ def validate_canvas(content):
         if item.get('operation') not in ('collect','combine','compare') or not 2<=len(item['members'])<=16:raise Fault('invalid_graph','组合方式无效')
         leaves=[]
         for child in item['members']:leaves+=visit(child,path+[key])
+        if any(x.get('resource',{}).get('action')=='desktop' for x in leaves):raise Fault('handoff_not_composable','桌面入口不能作为资料组合执行')
         if len({x['id'] for x in leaves})!=len(leaves):raise Fault('invalid_graph','组合重复使用同一成员')
         steps=sum(x['kind']=='action' or 'url' in x.get('resource',{}) or 'market' in x.get('resource',{}) for x in leaves)+(item['operation']=='compare')
         if steps>4:raise Fault('step_limit','首版组合最多 4 个执行步骤')
@@ -71,6 +72,7 @@ def prepare_run(tx,intent,payload):
     content=canvas['content'];validate_canvas(content)
     if payload['groupId'] not in {x['id'] for x in content['groups']}|{x['id'] for x in content['bubbles']}:raise Fault('invalid_graph','组合不存在')
     leaves=flatten(content,payload['groupId']);actions=[x['resource']['action'] for x in leaves if x['kind']=='action']
+    if 'desktop' in actions:raise Fault('handoff_not_composable','桌面命令请通过 Vicinae 入口执行')
     if not actions:raise Fault('no_action','这是资料集合，请添加一个动作')
     if any(x['kind']=='link' for x in leaves):raise Fault('unread_link','搜索入口不能作为已读取的资料')
     if no_writing(payload['text']) and 'write' in actions:raise Fault('constraint_conflict','你要求不要代写，请拆开正文生成动作或选择空白文稿')
@@ -82,7 +84,7 @@ def prepare_run(tx,intent,payload):
     if len(actions)+len(reads)>4:raise Fault('step_limit','最多 4 个执行步骤（包含资料读取）')
     return {'runId':payload['runId'],'canvas':canvas['id'],'canvasVersion':canvas['version'],'groupId':payload['groupId'],'request':payload['text'],'constraints':{'noWriting':no_writing(payload['text'])},'sources':sources,'reads':reads,'actions':actions,'budget':budget}
 
-def install_bubbles(kernel,jev,generator):
+def install_bubbles(kernel,jev,generator,desktop=None):
     from .capabilities import obj,string,artifact
     def register(id_,title,inputs,handler):
         module='builtin.'+id_
@@ -92,6 +94,9 @@ def install_bubbles(kernel,jev,generator):
     def suggest(t,p,c):
         inp=t['input'];text=inp['text']
         with kernel.db.transaction() as tx:items=candidates(text,list(accessible(tx,t['intent']).values()))
+        if desktop:
+            try:items+=desktop.candidates(text)
+            except ValueError:pass
         questions={str(i):{'type':'noul','instructions':'用户想做的事是：'+text+'。判断这个具体候选是否直接有帮助：'+x['title']+'（'+x['description']+'）。候选的主题必须与需求相符。尊重否定和自己写作的要求；不相干的资料或动作应判为不适合。'} for i,x in enumerate(items)}
         decision=jev.decide({'request':text,'candidates':items},questions)
         selected=[{**x,'score':decision['answers'][str(i)]['noul']} for i,x in enumerate(items)]

@@ -1,0 +1,35 @@
+import assert from 'node:assert/strict';
+import * as motion from '../static/js/bubbles/motion.mjs';
+import * as destinations from '../static/js/bubbles/destinations.mjs';
+assert.equal(typeof motion.pickTarget,'function','drag target selection must exist');
+const a={id:'a',x:100,y:0,r:50},b={id:'b',x:110,y:0,r:50};
+assert.equal(motion.pickTarget({x:0,y:0,r:50},[a,b],null).id,'a');
+assert.equal(motion.pickTarget({x:0,y:0,r:50},[a,{...b,x:90}],'a').id,'a');
+assert.equal(motion.pickTarget({x:0,y:0,r:50},[{...a,x:250}],'a'),null);
+assert.ok(motion.bridge({x:0,y:0,r:50},a));
+assert.equal(motion.bridge({x:0,y:0,r:50},{...a,x:300}), '');
+assert.equal(motion.bridge({x:0,y:0,r:50},{...a,x:0}), '');
+const snap={tasks:[{id:'t',input:{runId:'r',groupId:'g',reads:[{resource:{market:'sh000001'}}]},artifacts:['quote','doc']}],artifacts:[{id:'old',kind:'document',content:{runId:'old'}},{id:'doc',kind:'document',content:{runId:'r'}},{id:'quote',kind:'market',content:{}}]};
+assert.equal(destinations.resolveRun(snap,{taskId:'t',runId:'r',groupId:'g'}).kind,'market');
+assert.deepEqual(destinations.resolveRun(snap,{taskId:'t',runId:'r',groupId:'g'}).artifacts.map(a=>a.id),['quote','doc']);
+assert.throws(()=>destinations.resolveRun(snap,{taskId:'t',runId:'wrong',groupId:'g'}));
+assert.throws(()=>destinations.resolveRun(snap,{taskId:'missing',runId:'r',groupId:'g'}));
+console.log('interaction geometry and exact run destination passed');
+const {initialState,reduce,layoutPositions}=await import('../static/js/bubbles/state.mjs');
+let placed=initialState({bubbles:[{id:'a',kind:'source'},{id:'b',kind:'source'}],positions:{a:{x:.2,y:.3}}});
+placed=reduce(placed,{type:'pin',id:'b',position:{x:.2,y:.3}});
+assert.equal(layoutPositions(placed,[[.2,.3],[.7,.3]]).b.x,.2,'explicit release position survives nearby objects');
+assert.equal(destinations.resolveRun({...snap,tasks:[{...snap.tasks[0],input:{...snap.tasks[0].input,reads:[],actions:['write']}}]},{taskId:'t',runId:'r',groupId:'g'}).kind,'writing');
+assert.equal(destinations.resolveRun({...snap,tasks:[{...snap.tasks[0],input:{...snap.tasks[0].input,reads:[],actions:['research']}}]},{taskId:'t',runId:'r',groupId:'g'}).kind,'market');
+assert.throws(()=>destinations.resolveRun(snap,{taskId:'t',runId:'r',groupId:'other'}));
+assert.equal(typeof motion.outline,'function');
+for(const distance of [0,1,50,99,130,157,159]){
+ const path=motion.outline({x:0,y:0,r:50},{x:distance,y:0,r:50});
+ assert.ok(path && !/NaN|Infinity/.test(path));
+ assert.ok(path.includes('A'),'common outline retains circular outer surfaces');
+}
+const geometry=motion.geometry({x:0,y:0,r:50},{x:130,y:0,r:50});
+const radial=geometry.p1a,handle=geometry.c1.map((n,i)=>n-radial[i]);
+assert.ok(Math.abs(radial[0]*handle[0]+radial[1]*handle[1])<1e-8,'bridge is tangent to circle');
+assert.ok(motion.deformation(3,0).stretch>motion.deformation(.1,0).stretch);
+assert.ok(motion.deformation(100,0).stretch<=1.12);

@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {destinationFor,previewContent} from '../static/js/bubbles/handoff.mjs';
+const b={id:'a',kind:'action',title:'写草稿',resource:{action:'write'}};
+assert.equal(destinationFor([b],{}),null);
+assert.equal(destinationFor([b],{writing:'https://example.com/editor'}).url,'https://example.com/editor');
+assert.equal(destinationFor([{kind:'link',resource:{url:'javascript:alert(1)'}}],{}),null);
+assert.equal(destinationFor([{kind:'link',resource:{url:'https://example.com/page'}}],{}).url,'https://example.com/page');
+assert.equal(destinationFor([{kind:'source',resource:{market:'sh000001'}}],{market:'https://example.com/quotes'}).url,'https://example.com/quotes');
+assert.match(previewContent({title:'组合'},[b,{title:'资料',resource:{artifact:'n'}}],{artifacts:[{id:'n',content:{text:'具体原文'}}]}),/具体原文/);
+console.log('handoff routing and preview passed');
+assert.deepEqual(destinationFor([b],{writing:'obsidian',vault:'abc'}),{kind:'obsidian',vault:'abc'});
+assert.equal(destinationFor([b],{writing:'obsidian'}),null);

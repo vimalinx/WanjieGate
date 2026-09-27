@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+assert.ok(fs.existsSync(new URL('../static/js/bubbles/execution.mjs',import.meta.url)),'execution routing is missing');
+const {executionFor}=await import('../static/js/bubbles/execution.mjs');
+assert.deepEqual(executionFor({kind:'action',resource:{action:'desktop',command:'files:search',query:'paper'}},[], 'paper'),{capability:'vicinae.launch',input:{command:'files:search',query:'paper'}});
+assert.deepEqual(executionFor({kind:'source',resource:{market:'sh000001'}},[],'stock'),{capability:'market.query',input:{text:'sh000001'}});
+assert.deepEqual(executionFor({kind:'action',resource:{action:'write'}},[],'写文章'),{workflow:true});
+assert.equal(executionFor({kind:'link',resource:{url:'javascript:bad'}},[],'').error,'不支持的网页地址');
+assert.equal(executionFor({kind:'source',resource:{artifact:'a'}},[],'').details,true);
+console.log('PASS intent execution routes');

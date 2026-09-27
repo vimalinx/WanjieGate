@@ -13,3 +13,9 @@ artifacts/models/
 .env
 .env.*
 .superpowers/
+
+# Local integration verification artifacts
+.ai/test-deps/
+.ai/screenshots/
+.ai/live_research_check.py
+.ai/research-evidence.json

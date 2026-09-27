@@ -13,5 +13,5 @@ export function createClient(send=transport,storage=localStorage){const commands
   const response=await this.run(run.payload);return {found:true,response};
  },
  run(payload){return this.command('bubble.run',payload,{id:payload.runId})},
- async authorize(){await this.command('intent.update',{preferences:{localOnly:false,autoRun:false}});return this.command('grant.create',{capabilities:['bubble.suggest','bubble.merge','bubble.execute','text.generate','market.query','web.read'],expiresIn:3600,maxCalls:100,network:true,maxEffect:'L2',reason:'用户为本机黑客松 Demo 授权 Jev、生成、资料读取和行情，各次调用记录在当前 Intent'})}
+ async authorize(){await this.command('intent.update',{preferences:{localOnly:false,autoRun:false}});return this.command('grant.create',{capabilities:['vicinae.launch','bubble.suggest','bubble.merge','bubble.execute','text.generate','market.query','web.read'],expiresIn:3600,maxCalls:100,network:true,maxEffect:'L2',reason:'用户为本机黑客松 Demo 授权 Jev、生成、资料读取和行情，各次调用记录在当前 Intent'})}
 };}

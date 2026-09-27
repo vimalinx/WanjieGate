@@ -1,0 +1,62 @@
+/* The reference's thin-film material and light palette remain in demo.css. */
+.intent-mode{background-color:#eef0f8}
+.intent-mode #canvas{isolation:isolate}
+.intent-mode #canvas::before{content:"";position:absolute;inset:5% 4% 8%;z-index:-1;border:1px solid #ffffffa6;border-radius:44px;background:linear-gradient(135deg,#ffffff30,#f4f6ff16);box-shadow:inset 0 1px 0 #fff9,0 24px 90px #8182a00b;backdrop-filter:blur(26px) saturate(1.15);pointer-events:none}
+.intent-mode .capsule{background:#ffffffa6;border:1px solid #fffffff2;box-shadow:0 10px 50px #797b9e12,inset 0 1px 0 #fff}
+.intent-mode .bubble{animation:none}
+.intent-mode .bubble.stale{opacity:.4}
+.intent-mode .bubble.stale .bubble-shell{border-style:dashed}
+.intent-mode .desktop-status{color:#727694;border-color:#d7dcec;background:#f8f9ff66}
+.intent-mode .canvas-heading{pointer-events:none}
+.intent-mode .canvas-heading h1{letter-spacing:.08em}
+.intent-mode aside{background:#f4f6fce8;color:#515970;border-color:#fff;backdrop-filter:blur(34px)}
+.intent-mode .primary{background:#747b99}
+.intent-mode .secondary,.intent-mode .run-status{background:#e8ebf566;color:#626b87;border-color:#dbe1f0}
+.intent-mode .field{background:#ffffffa8;border-color:#dce0ef;color:#4b566d}
+@media(max-width:800px){.intent-mode #canvas::before{inset:2% 10px 9%;border-radius:28px}.intent-mode .canvas-heading h1{font-size:21px}}
+
+.native-panel.intent-mode{background:linear-gradient(135deg,#e4def799,#e9f0fc77 50%,#dcebf688)}
+.native-panel header{padding-top:20px;height:95px}.native-panel #canvas{height:calc(100dvh - 95px);min-height:540px}
+.native-panel .canvas-heading{top:25px}.native-panel .canvas-heading h1{font-size:26px}
+.native-panel #canvas::before{inset:3% 3% 9%}.native-panel .canvas-bottom{bottom:16px;font-size:9px}
+.native-panel .capsule-zone{width:68%}.native-panel .bubble{--size:110px}
+
+.intent-mode .starters button{flex:0 0 auto;width:auto}
+.quote-card{display:flex;flex-direction:column;gap:10px;padding:22px;border:1px solid #fff;border-radius:22px;background:linear-gradient(135deg,#ffffffb0,#ececf86b);margin:12px 0}
+.quote-price{font-size:34px;font-weight:500;letter-spacing:-1px;color:#54617e}.quote-change{font-size:14px;color:#718399}.quote-card small{font-size:10px;line-height:1.8;color:#8892a8}
+
+.native-panel .bubble{--size:118px;padding:14px;gap:6px}
+.native-panel .bubble.flow,.native-panel .bubble.collection{--size:136px}
+.intent-mode .bubble strong{flex-shrink:0;max-width:100%;font-size:11px;line-height:1.5}
+.intent-mode .bubble small,.intent-mode .bubble .symbol{flex-shrink:0}
+
+/* Desktop entry: a shortcut-driven search panel, not a website landing page. */
+.native-panel header,.native-panel .canvas-heading,.native-panel .welcome{display:none!important}
+.native-panel #canvas{height:100dvh;min-height:0;overflow:hidden}
+.native-panel #canvas::before{inset:0;border-radius:28px;background:#ffffff22}
+.native-panel .capsule-zone{top:50%;left:50%;width:88%;transform:translate(-50%,-50%);z-index:3}
+.native-panel .capsule{height:70px;padding:10px 17px;border-radius:28px}
+.native-panel .capsule textarea{font-size:15px;line-height:24px;max-height:48px}
+.native-panel .capsule-caption{position:absolute;left:0;right:0;top:100%;padding:10px 16px;gap:10px;white-space:nowrap;font-size:9px}
+.native-panel #save-status{display:none}
+.native-panel .shortcut-hint{margin-left:auto;opacity:.7}
+.native-panel .capsule-actions button{width:29px;height:32px;font-size:22px}
+.native-panel .capsule-actions .search-settings{font-size:16px;opacity:.6}
+.native-panel .canvas-bottom{bottom:13px;left:25px;right:25px;font-size:9px;gap:10px}
+.native-panel .tools{gap:14px}.native-panel .tools button{font-size:9px}
+.native-panel:not(.has-input) .canvas-bottom,.native-panel:not(.has-input) #bubbles,.native-panel:not(.has-input) #glass-bubbles{display:none}
+.native-panel:not(.has-input) .capsule-zone{margin-top:-7px}
+.native-panel .bubble{--size:106px;padding:12px;gap:5px}
+.native-panel .bubble.flow,.native-panel .bubble.collection{--size:120px}
+.native-panel .bubble strong{font-size:10px;line-height:1.4}
+.native-panel .bubble small{font-size:7px}
+.native-panel .bubble .symbol{font-size:18px}
+.native-panel #drawer{width:360px;padding:20px;z-index:7}
+
+/* Only the search capsule and individual bubbles have a surface. */
+html.native-root,html.native-root body.native-panel.intent-mode,
+.native-panel #canvas{background:transparent!important}
+.native-panel #canvas::before{display:none}
+.native-panel .capsule-caption,.native-panel .canvas-bottom{display:none}
+.native-panel .capsule-zone{margin-top:0!important}
+.native-panel .capsule,.native-panel .capsule:focus-within{background:#f9faffef;box-shadow:0 6px 24px #56658c15,inset 0 1px 0 #fff;backdrop-filter:blur(22px)}

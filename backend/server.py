@@ -8,6 +8,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from .providers import Generator, Kev
 from .store import Store
+from .device_tools import discover, launch_obsidian
 from .runtime import Kernel
 from .runtime.protocol import Fault, ROOT as PROTOCOL_ROOT
 
@@ -40,7 +41,7 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json({'error': 'Host not allowed'}, 403)
         path = urlsplit(self.path).path
         if not path.startswith('/api/'):
-            if path in ('/demo', '/demo/'):
+            if path in ('/demo', '/demo/', '/launcher'):
                 self.path = '/demo.html'
             elif path == '/' or path.startswith('/w/'):
                 self.path = '/index.html'
@@ -86,6 +87,13 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_json({'error': '服务暂时无法处理请求'}, 500)
 
     def route(self, method, path, b):
+        if path == '/api/device-tools' and method == 'GET':
+            return discover()
+        if path == '/api/device-tools/obsidian' and method == 'POST':
+            return launch_obsidian(b, ROOT / '.data')
+        if path == '/api/vicinae/status' and method == 'GET':
+            bridge=getattr(self.server,'vicinae',None)
+            return bridge.status() if bridge else {'available':False,'message':'Vicinae 桥接未启用'}
         kernel = self.server.kernel
         if path == '/api/runtime/commands' and method == 'POST':
             return kernel.execute(b)
@@ -164,7 +172,10 @@ def create_server(port, data_dir):
         from .bubble_providers import load_config, JevClient, OpenRouterGenerator
         from .runtime.bubbles import install_bubbles
         config = load_config()
-        install_bubbles(server.kernel, JevClient(config), OpenRouterGenerator(config))
+        from .vicinae import VicinaeBridge, install_vicinae
+        server.vicinae=VicinaeBridge()
+        install_vicinae(server.kernel,server.vicinae)
+        install_bubbles(server.kernel, JevClient(config), OpenRouterGenerator(config),server.vicinae)
     return server
 
 

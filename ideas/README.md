@@ -46,3 +46,9 @@
 ## IDEA-0002 实现更新（2026-09-27，Codex）
 
 本会话用户选择原会话执行后，泡泡 Demo 已在 `codex/bubble-demo` 实现。代码：`static/js/bubbles/`、`backend/runtime/bubbles.py`；早期实现提交 `453c651`、`0eac612`。真实 Jev、资料写作、行情研究与浏览器交互的证据见 [验收与交接](../docs/acceptance-bubble-demo.md)。本条更新实现状态，前面的未实现描述保留为历史。作者保持 unknown，未收到双方具名共识。
+
+## IDEA-0004 · Vicinae 意图泡泡实施
+
+[提案](unknown/0004-vicinae-intent-bubbles.md) · [验收](../docs/acceptance-vicinae-bubbles.md)：用户指定 5174 画风并授权自主开发测试；Codex 在独立工作树完成万界门侧桥接和原生面板。未替换 Vicinae 主搜索框，未自动发帖。关联 IDEA-0001/0002，不推定双方共识。
+
+2026-09-27 用户补充：入口采用全局快捷键搜索浮层，随后明确去掉框外底板、只保留搜索框；已在 `integrations/vicinae/IntentPanel.swift` 和 `static/launcher.css` 实现透明承载、输入展开泡泡。原生视觉与 Esc 日志已检查；全局物理快捷键仍未实测，详见验收记录。作者归属保持 unknown。

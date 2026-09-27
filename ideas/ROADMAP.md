@@ -66,3 +66,9 @@
 ## 泡泡 Demo 实现状态（2026-09-27，Codex）
 
 IDEA-0002 已有本机 `/demo` 产品入口：胶囊、浮动泡泡、融合、显式运行、来源绑定、编辑和恢复。复用 IDEA-0001 的 Command / Task / Artifact / Grant；实现证据 `453c651`、`0eac612` 及本分支后续提交。真实 Jev、两条生成流程与本机交互已验收，范围见 [记录](../docs/acceptance-bubble-demo.md)。外部搜索 API、多人编辑和队员服务整合仍未完成；kanemaverick 具名意见仍未收到。
+
+## IDEA-0004 · 本项目实施与验证
+
+2026-09-27：用户授权自主开发，视觉采用现有 5174 Demo。万界门侧实时判断、6 个 Vicinae 入口、双击执行、组合产物与原生磨砂面板已实现。实际验证桌面交接、股票研究卡片、Python 官方资料提纲、社交草稿；[文件与验证证据](../docs/acceptance-vicinae-bubbles.md)。离线覆盖旧响应、重复运行和画布版本。原主搜索框改造及外部 owner 仍待根协调者确定；社交仅编辑器交接，无实际发帖。提案作者 unknown，评估和本次实现 Codex，未收到双方具名共识。
+
+2026-09-27 用户补充：入口采用全局快捷键搜索浮层，随后明确去掉框外底板、只保留搜索框；已在 `integrations/vicinae/IntentPanel.swift` 和 `static/launcher.css` 实现透明承载、输入展开泡泡。原生视觉与 Esc 日志已检查；全局物理快捷键仍未实测，详见验收记录。作者归属保持 unknown。

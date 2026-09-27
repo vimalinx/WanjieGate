@@ -3,6 +3,8 @@ import re
 from urllib.parse import quote, urlsplit
 
 ACTIONS={
+ 'desktop':('打开桌面命令','交给 Vicinae 继续操作'),
+ 'social':('起草社交帖子','根据用户明确提供的事实起草一条 200 字以内社交短文；不得新增产品能力、使用经历、数字或效果承诺；用户审阅后打开发布入口'),
  'write':('写一篇草稿','依据所选资料撰写正文'),
  'outline':('生成提纲','依据资料生成结构与要点，不代写正文'),
  'research':('整理研究卡片','整理行情与已提供资料，列出待核实问题'),
@@ -12,7 +14,7 @@ ACTIONS={
 }
 
 def candidates(text,artifacts):
-    result=[{'id':'action:'+k,'kind':'action','title':v[0],'description':v[1],'resource':{'action':k}} for k,v in ACTIONS.items()]
+    result=[{'id':'action:'+k,'kind':'action','title':v[0],'description':v[1],'resource':{'action':k}} for k,v in ACTIONS.items() if k!='desktop']
     for a in artifacts:
         if a['kind'] in ('note','document','web','memory','scene'):
             result.append({'id':'artifact:'+a['id'],'kind':'source','title':a['title'],'description':'已保存资料 · '+a.get('source',''),'resource':{'artifact':a['id'],'version':a['version'],'detail':'full'}})
@@ -31,6 +33,7 @@ def no_writing(text):
 
 def merge_options(left,right):
     kinds=[left['kind'],right['kind']]
+    if any(x.get('resource',{}).get('action')=='desktop' for x in (left,right)):return {'none':'桌面入口不返回资料，请先选取实际内容再组合'}
     if 'link' in kinds:return {'none':'这些是外部入口，不能直接作为已取得的资料执行'}
     options={}
     if all(k in ('source','collection') for k in kinds):
