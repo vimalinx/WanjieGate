@@ -221,4 +221,65 @@ class RuntimeTests(unittest.TestCase):
         for path in ('../LocalRouter/README.md','.data/receipts/request.json','/etc/passwd','.ai/live-smoke/request.json'):
             with self.assertRaises(Fault):project_file(path)
 
+    def test_context_detail_preserves_original_and_marks_excerpt(self):
+        a=self.artifact(content={'text':'x'*2000})
+        self.call('context.set',{'artifact':a['id'],'tier':'WARM','detail':'excerpt'})
+        item=self.kernel.snapshot(self.intent)['context']['items'][0]
+        self.assertEqual(item['detail'],'excerpt');self.assertTrue(item['truncated'])
+        self.assertEqual(item['content']['excerpt'],'x'*1200)
+        self.assertLess(item['cost'],item['originalCost'])
+        self.call('context.set',{'artifact':a['id'],'tier':'HOT','detail':'metadata'})
+        item=self.kernel.snapshot(self.intent)['context']['items'][0]
+        self.assertNotIn('text',item['content']);self.assertEqual(item['content']['artifact'],a['id'])
+        self.assertEqual(self.kernel.db.get(a['id'])['content']['text'],'x'*2000)
+        self.call('context.set',{'artifact':a['id'],'tier':'HOT','detail':'full'})
+        self.assertEqual(self.kernel.snapshot(self.intent)['context']['items'][0]['content']['text'],'x'*2000)
+    def test_queued_context_change_does_not_consume_grant(self):
+        from unittest.mock import patch
+        a=self.artifact();g=self.allow(['text.generate'],True,maxcalls=1)
+        with patch.object(self.kernel.pool,'submit'):
+            t=self.call('capability.run',{'capability':'text.generate','input':{'text':'use context'}})['task']
+        self.call('context.set',{'artifact':a['id'],'tier':'HOT','detail':'metadata'})
+        self.kernel._run(t['id']);result=self.kernel.db.get(t['id'])
+        self.assertEqual(result['error']['code'],'context_changed')
+        self.assertEqual(self.kernel.db.get(g['id'])['remaining'],1);self.assertEqual(self.gen.calls,[])
+    def test_semantic_content_and_detail_changes_make_result_stale(self):
+        a=self.artifact()
+        for change in ('content','detail'):
+            self.semantic.entered.clear();self.semantic.gate=threading.Event()
+            t=self.call('semantic.observe',{'text':'research '+change})['task']
+            self.assertTrue(self.semantic.entered.wait(1))
+            if change=='content':self.call('artifact.update',{'artifact':a['id'],'version':0,'content':{'text':'updated'}})
+            else:self.call('context.set',{'artifact':a['id'],'tier':'HOT','detail':'metadata'})
+            self.semantic.gate.set();self.wait(t)
+            self.assertEqual(self.kernel.db.get(self.intent)['state']['phase'],'exploring')
+            decisions=[m for m in self.kernel.db.events(correlation=t['command']['correlationId']) if m['type']=='policy.evaluated']
+            self.assertEqual(decisions[0]['payload']['reason'],'stale_revision')
+    def test_workflow_nonzero_exit_stops_following_steps(self):
+        self.kernel.providers['data.import']['handler']=lambda t,p,c:{'artifacts':[{'kind':'terminal','title':'failed output','content':{'text':'failed','exitCode':7},'source':'test'}],'exitCode':7}
+        t=self.run_cap('workflow.run',{'steps':[{'id':'first','capability':'data.import','input':{'text':'ignored'}},{'id':'later','capability':'data.import','input':{'text':'ignored'},'dependsOn':['first']}]})
+        self.assertEqual(t['status'],'partial');self.assertEqual(t['error']['code'],'process_failed')
+        self.assertEqual(len(t['artifacts']),1)
+        starts=[m for m in self.kernel.db.events(correlation=t['command']['correlationId']) if m['type']=='workflow.step.started']
+        self.assertEqual([m['payload']['step'] for m in starts],['first'])
+
+    def test_legacy_jobs_migrate_with_private_backup(self):
+        from backend.server import create_server
+        import sqlite3
+        with tempfile.TemporaryDirectory() as root:
+            store=Store(Path(root)/'workspaces.sqlite3');w=store.new_workspace()
+            for status in ('complete','running','queued'):
+                store.save_job({'id':'legacy-'+status,'workspace':w['id'],'request_id':'request-'+status,'status':status,'created':time.time(),'text':'old','artifacts':[],'events':[]})
+            server=create_server(0,root)
+            try:
+                backups=list((Path(root)/'backups').glob('*.sqlite3'));self.assertEqual(len(backups),1)
+                self.assertEqual(backups[0].stat().st_mode & 0o777,0o600)
+                with sqlite3.connect(backups[0]) as db:
+                    self.assertEqual(db.execute('SELECT count(*) FROM jobs').fetchone()[0],3)
+                    self.assertIsNone(db.execute("SELECT name FROM sqlite_master WHERE name='rt_entities'").fetchone())
+                for before,after in [('complete','success'),('running','outcome_unknown'),('queued','interrupted')]:
+                    self.assertEqual(server.kernel.db.get('legacy-'+before)['status'],after)
+                self.assertEqual(len(store.jobs(w['id'])),3)
+            finally:server.kernel.shutdown();server.server_close()
+
 if __name__=='__main__':unittest.main()
