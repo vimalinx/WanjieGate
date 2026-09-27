@@ -78,3 +78,11 @@ html.native-root,html.native-root body.native-panel.intent-mode,
 .native-panel.intent-mode #drawer{background:#f4f6fc42;border:1px solid #ffffff80;border-radius:24px;top:12px;right:12px;bottom:12px;box-shadow:-8px 0 32px #42547412;backdrop-filter:blur(18px) saturate(1.1)}
 .native-panel #drawer .run-status,.native-panel #drawer .secondary{background:#f5f7ff52;border-color:#ffffff70;color:#46526e}
 .native-panel #drawer .field{background:#ffffff66}
+
+/* Desktop-wide glass; keep interaction geometry compact in the centre. */
+html.native-root,html.native-root body.native-panel{width:100%;height:100%;overflow:hidden}
+.native-panel::before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(125deg,#eee8ff0d,transparent 50%,#def3ff0d)}
+.native-panel #canvas{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(980px,100vw);height:min(560px,calc(100dvh - 64px));min-height:0;overflow:visible}
+.native-panel.has-input #canvas::before{display:none}
+.native-panel .capsule,.native-panel .capsule:focus-within{background:#f9faff70;border-color:#ffffffb3;box-shadow:inset 0 1px 0 #ffffffc0,0 12px 40px #24385b12;backdrop-filter:blur(18px) saturate(1.15)}
+.native-panel.intent-mode #drawer{top:50%;bottom:auto;right:24px;transform:translateY(-50%);height:min(640px,calc(100dvh - 80px))}

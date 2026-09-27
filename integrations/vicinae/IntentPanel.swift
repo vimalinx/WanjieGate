@@ -19,14 +19,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         let app = NSApplication.shared
         app.setActivationPolicy(.accessory)
         installShortcut()
-        let screen = NSScreen.main?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
-        let size = NSSize(width: min(980, screen.width - 48), height: 144)
+        let screen = NSScreen.main?.frame ?? NSRect(x: 0, y: 0, width: 1440, height: 900)
+        let size = screen.size
         window = IntentWindow(contentRect: NSRect(origin: .zero, size: size),
             styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
         window.title = "万界门 · 意图搜索"
         window.isOpaque = false
         window.backgroundColor = .clear
-        window.level = .floating
+        window.level = .statusBar
         window.hidesOnDeactivate = false
         window.isFloatingPanel = true
         window.isReleasedWhenClosed = false
@@ -42,10 +42,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         frost.blendingMode = .behindWindow
         frost.state = .active
         frost.wantsLayer = true
-        frost.layer?.cornerRadius = 28
+        frost.layer?.cornerRadius = 0
         frost.layer?.masksToBounds = true
         frost.autoresizingMask = [.width, .height]
-        frost.isHidden = true
+        frost.isHidden = false
+        frost.alphaValue = 0.78
+        frost.appearance = NSAppearance(named: .vibrantLight)
         surface.addSubview(frost)
         let config = WKWebViewConfiguration()
         config.userContentController.add(self, name: "layout")
@@ -56,7 +58,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
         web.uiDelegate = self
         surface.addSubview(web)
         window.contentView = surface
-        window.setFrameOrigin(NSPoint(x: screen.midX - size.width / 2, y: screen.midY + 60 - size.height / 2))
+        window.setFrame(screen, display: true)
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             if event.keyCode == 53 { self?.hide(); return nil }
             return event
@@ -84,6 +86,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
     }
     func show() {
         guard window != nil else { return }
+        // Follow the display where the user invokes the launcher.
+        if let screen = NSScreen.screens.first(where: { NSMouseInRect(NSEvent.mouseLocation, $0.frame, false) }) ?? NSScreen.main {
+            window.setFrame(screen.frame, display: true)
+        }
         window.makeKeyAndOrderFront(nil)
         NSApplication.shared.activate(ignoringOtherApps: true)
         window.makeFirstResponder(web)
@@ -106,15 +112,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, WKNa
               let value = message.body as? [String: Any], let next = value["expanded"] as? Bool,
               next != expanded, window != nil else { return }
         expanded = next
-        frost.isHidden = !next
-        window.hasShadow = next
-        let screen = window.screen?.visibleFrame ?? NSScreen.main!.visibleFrame
-        let height: CGFloat = next ? min(560, screen.height - 60) : 144
-        var frame = window.frame
-        let center = frame.midY
-        frame.size.height = height
-        frame.origin.y = min(screen.maxY - height - 12, max(screen.minY + 12, center - height / 2))
-        window.setFrame(frame, display: true, animate: true)
+        // Input changes update the central stage, never shrink the desktop backdrop.
     }
     func external(_ url: URL) {
         if url.scheme == "https" || (url.scheme == "vicinae" && url.host == "open") {

@@ -73,3 +73,5 @@ Carbon 注册 Control + Option + Space；NSPanel 浮于普通窗口之上，支�
 证据：`backend/vicinae.py`、`tools/test_vicinae.py`、`integrations/vicinae/IntentPanel.swift`、`static/launcher.css`、`static/js/bubbles/app.mjs`。实现与验证：Codex；用户作者归属仍 unknown，不推定双方共识。
 
 视觉后续：降低展开渐变底色从 65–70% 到 8–15%，搜索框底色从约 94% 到 60%，结果抽屉从约 91% 到 26%；桌面磨砂继续由原生 NSVisualEffectView 提供。原生窗口已重新加载并检查，单窗口截图不能完整验证背后桌面的合成效果。用户所指是否包含外部应用跳转尚待澄清，未改动启动语义。
+
+2026-09-27：用户明确要求更通透的全屏磨砂。`integrations/vicinae/IntentPanel.swift` 改为覆盖调用时鼠标所在屏幕的完整 frame，磨砂常驻于可见浮层并降低至 0.78 alpha；`static/launcher.css` 去掉局部面板边界，中央 980×560 区域承载搜索与泡泡，搜索框底色约 44% 不透明。Swift 编译、原生全屏窗口截图检查、意图 DOM 回归通过；多显示器切换和桌面背景实际模糊观感未单独实测。实现 Codex，提案作者 unknown，前版局部面板选择保留为历史。
