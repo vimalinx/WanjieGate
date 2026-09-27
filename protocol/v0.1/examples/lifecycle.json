@@ -1,0 +1,1051 @@
+[
+  {
+    "protocolVersion": "0.1",
+    "id": "6e6559d13ec249d59695d86997948f15",
+    "kind": "command",
+    "type": "intent.create",
+    "timestamp": 1790485837056,
+    "source": "renderer",
+    "payload": {
+      "title": "协议生命周期样例",
+      "state": {
+        "goal": "导入并分析两行数据"
+      }
+    },
+    "correlationId": "6e6559d13ec249d59695d86997948f15",
+    "seq": 1
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "104a97631fce41bb8a71426a4b30c6d6",
+    "kind": "event",
+    "type": "intent.created",
+    "timestamp": 1790485837057,
+    "source": "kernel",
+    "payload": {
+      "intent": {
+        "id": "a5406419de4046d88f213994e92055dc",
+        "type": "intent",
+        "title": "协议生命周期样例",
+        "state": {
+          "thread": "",
+          "goal": "导入并分析两行数据",
+          "domain": "",
+          "phase": "exploring",
+          "target": "",
+          "attention": "background",
+          "commitment": "considering",
+          "urgency": ""
+        },
+        "status": "warm",
+        "parent": "",
+        "fieldSources": {
+          "goal": "human",
+          "phase": "default",
+          "attention": "default",
+          "commitment": "default"
+        },
+        "preferences": {
+          "contextBudget": 12000,
+          "autoRun": false,
+          "localOnly": true
+        },
+        "updated": 1790485837057,
+        "created": 1790485837057,
+        "version": 0
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "6e6559d13ec249d59695d86997948f15",
+    "causationId": "6e6559d13ec249d59695d86997948f15",
+    "seq": 2
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "b320f1fee1534643bab98f1f89be75c7",
+    "kind": "result",
+    "type": "command.completed",
+    "timestamp": 1790485837058,
+    "source": "kernel",
+    "payload": {
+      "status": "success",
+      "value": {
+        "id": "a5406419de4046d88f213994e92055dc",
+        "type": "intent",
+        "title": "协议生命周期样例",
+        "state": {
+          "thread": "",
+          "goal": "导入并分析两行数据",
+          "domain": "",
+          "phase": "exploring",
+          "target": "",
+          "attention": "background",
+          "commitment": "considering",
+          "urgency": ""
+        },
+        "status": "warm",
+        "parent": "",
+        "fieldSources": {
+          "goal": "human",
+          "phase": "default",
+          "attention": "default",
+          "commitment": "default"
+        },
+        "preferences": {
+          "contextBudget": 12000,
+          "autoRun": false,
+          "localOnly": true
+        },
+        "updated": 1790485837057,
+        "created": 1790485837057,
+        "version": 0
+      }
+    },
+    "correlationId": "6e6559d13ec249d59695d86997948f15",
+    "causationId": "6e6559d13ec249d59695d86997948f15",
+    "seq": 3
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "a540f3e32c474291a832e7f20424009a",
+    "kind": "command",
+    "type": "intent.activate",
+    "timestamp": 1790485837058,
+    "source": "renderer",
+    "payload": {},
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "a540f3e32c474291a832e7f20424009a",
+    "seq": 4
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "1c200a0da1fc4f5f953e8d15499d3aa3",
+    "kind": "event",
+    "type": "intent.activated",
+    "timestamp": 1790485837059,
+    "source": "kernel",
+    "payload": {
+      "intent": {
+        "id": "a5406419de4046d88f213994e92055dc",
+        "type": "intent",
+        "title": "协议生命周期样例",
+        "state": {
+          "thread": "",
+          "goal": "导入并分析两行数据",
+          "domain": "",
+          "phase": "exploring",
+          "target": "",
+          "attention": "foreground",
+          "commitment": "considering",
+          "urgency": ""
+        },
+        "status": "active",
+        "parent": "",
+        "fieldSources": {
+          "goal": "human",
+          "phase": "default",
+          "attention": "default",
+          "commitment": "default"
+        },
+        "preferences": {
+          "contextBudget": 12000,
+          "autoRun": false,
+          "localOnly": true
+        },
+        "updated": 1790485837059,
+        "created": 1790485837057,
+        "version": 1
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "a540f3e32c474291a832e7f20424009a",
+    "causationId": "a540f3e32c474291a832e7f20424009a",
+    "seq": 5
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "7ec58f9d1f3c4dbab4df99fe2754a6f5",
+    "kind": "result",
+    "type": "command.completed",
+    "timestamp": 1790485837060,
+    "source": "kernel",
+    "payload": {
+      "status": "success",
+      "value": {
+        "id": "a5406419de4046d88f213994e92055dc",
+        "type": "intent",
+        "title": "协议生命周期样例",
+        "state": {
+          "thread": "",
+          "goal": "导入并分析两行数据",
+          "domain": "",
+          "phase": "exploring",
+          "target": "",
+          "attention": "foreground",
+          "commitment": "considering",
+          "urgency": ""
+        },
+        "status": "active",
+        "parent": "",
+        "fieldSources": {
+          "goal": "human",
+          "phase": "default",
+          "attention": "default",
+          "commitment": "default"
+        },
+        "preferences": {
+          "contextBudget": 12000,
+          "autoRun": false,
+          "localOnly": true
+        },
+        "updated": 1790485837059,
+        "created": 1790485837057,
+        "version": 1
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "a540f3e32c474291a832e7f20424009a",
+    "causationId": "a540f3e32c474291a832e7f20424009a",
+    "seq": 6
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "0f25aeef14c149cf86c90e743cc20d95",
+    "kind": "command",
+    "type": "capability.run",
+    "timestamp": 1790485837060,
+    "source": "renderer",
+    "payload": {
+      "capability": "data.import",
+      "input": {
+        "text": "日期,数量\n一,10\n二,15"
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "seq": 7
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "e4d48b8bc5fc4e3bb7bf458d41f16749",
+    "kind": "event",
+    "type": "task.queued",
+    "timestamp": 1790485837061,
+    "source": "kernel",
+    "payload": {
+      "task": {
+        "id": "cf80341ddef340f78d66af9e123749ef",
+        "type": "task",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "capability": "data.import",
+        "provider": "builtin.data.import",
+        "status": "queued",
+        "command": {
+          "protocolVersion": "0.1",
+          "id": "0f25aeef14c149cf86c90e743cc20d95",
+          "kind": "command",
+          "type": "capability.run",
+          "timestamp": 1790485837060,
+          "source": "renderer",
+          "payload": {
+            "capability": "data.import",
+            "input": {
+              "text": "日期,数量\n一,10\n二,15"
+            }
+          },
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "correlationId": "0f25aeef14c149cf86c90e743cc20d95"
+        },
+        "input": {
+          "text": "日期,数量\n一,10\n二,15"
+        },
+        "context": {
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "revision": 1,
+          "budget": 12000,
+          "used": 0,
+          "items": [],
+          "excluded": [],
+          "builtAt": 1790485837061
+        },
+        "grant": "",
+        "cancelRequested": false,
+        "artifacts": [],
+        "progress": [],
+        "fingerprint": "ed5876b4953d2e809208d05f75c3bbb7052450a399a389ebfd6a678259adcdbc",
+        "updated": 1790485837061,
+        "created": 1790485837061,
+        "version": 0
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "causationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "seq": 8
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "31a2c2b851f94817a9a15ec0bd7ed9a1",
+    "kind": "event",
+    "type": "task.started",
+    "timestamp": 1790485837064,
+    "source": "kernel",
+    "payload": {
+      "task": {
+        "id": "cf80341ddef340f78d66af9e123749ef",
+        "type": "task",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "capability": "data.import",
+        "provider": "builtin.data.import",
+        "status": "running",
+        "command": {
+          "protocolVersion": "0.1",
+          "id": "0f25aeef14c149cf86c90e743cc20d95",
+          "kind": "command",
+          "type": "capability.run",
+          "timestamp": 1790485837060,
+          "source": "renderer",
+          "payload": {
+            "capability": "data.import",
+            "input": {
+              "text": "日期,数量\n一,10\n二,15"
+            }
+          },
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "correlationId": "0f25aeef14c149cf86c90e743cc20d95"
+        },
+        "input": {
+          "text": "日期,数量\n一,10\n二,15"
+        },
+        "context": {
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "revision": 1,
+          "budget": 12000,
+          "used": 0,
+          "items": [],
+          "excluded": [],
+          "builtAt": 1790485837061
+        },
+        "grant": "",
+        "cancelRequested": false,
+        "artifacts": [],
+        "progress": [],
+        "fingerprint": "ed5876b4953d2e809208d05f75c3bbb7052450a399a389ebfd6a678259adcdbc",
+        "updated": 1790485837064,
+        "created": 1790485837061,
+        "version": 1
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "causationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "seq": 9
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "955e665a18024aa1af8b2a78aaa9d738",
+    "kind": "event",
+    "type": "relation.added",
+    "timestamp": 1790485837068,
+    "source": "kernel",
+    "payload": {
+      "relation": {
+        "id": "2fae336038215ec1caf257417a910933",
+        "type": "relation",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "subject": "45b40dcee8804f0abd4c57a6f8f77252",
+        "predicate": "belongs_to",
+        "object": "a5406419de4046d88f213994e92055dc",
+        "source": "renderer",
+        "updated": 1790485837068,
+        "created": 1790485837068,
+        "version": 0
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "causationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "seq": 10
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "16b8e81be50643d1816886af62b0bc23",
+    "kind": "event",
+    "type": "artifact.created",
+    "timestamp": 1790485837069,
+    "source": "kernel",
+    "payload": {
+      "artifact": {
+        "id": "45b40dcee8804f0abd4c57a6f8f77252",
+        "type": "artifact",
+        "kind": "dataset",
+        "title": "导入数据",
+        "content": {
+          "name": "导入数据",
+          "headers": [
+            "日期",
+            "数量"
+          ],
+          "rows": [
+            [
+              "一",
+              "10"
+            ],
+            [
+              "二",
+              "15"
+            ]
+          ],
+          "numeric": [
+            1
+          ],
+          "demo": false
+        },
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "source": "本地导入",
+        "provenance": {
+          "message": "0f25aeef14c149cf86c90e743cc20d95",
+          "correlationId": "0f25aeef14c149cf86c90e743cc20d95"
+        },
+        "pinned": false,
+        "scope": "intent",
+        "version": 0,
+        "created": 1790485837067,
+        "updated": 1790485837067
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "causationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "seq": 11
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "20dee961fc06496fb52865be2ad7e478",
+    "kind": "event",
+    "type": "relation.added",
+    "timestamp": 1790485837070,
+    "source": "kernel",
+    "payload": {
+      "relation": {
+        "id": "77809933a3c5c29c5d5e04351aa04ae9",
+        "type": "relation",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "subject": "45b40dcee8804f0abd4c57a6f8f77252",
+        "predicate": "produced_by",
+        "object": "cf80341ddef340f78d66af9e123749ef",
+        "source": "renderer",
+        "updated": 1790485837070,
+        "created": 1790485837070,
+        "version": 0
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "causationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "seq": 12
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "1d770678996f4d4b9fd51395199df13e",
+    "kind": "result",
+    "type": "capability.result",
+    "timestamp": 1790485837071,
+    "source": "kernel",
+    "payload": {
+      "status": "success",
+      "outcome": "success",
+      "task": "cf80341ddef340f78d66af9e123749ef",
+      "artifacts": [
+        "45b40dcee8804f0abd4c57a6f8f77252"
+      ],
+      "error": null
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "causationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "seq": 13
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "e777c94aa3c5492eace816b49157d19d",
+    "kind": "event",
+    "type": "task.finished",
+    "timestamp": 1790485837071,
+    "source": "kernel",
+    "payload": {
+      "task": {
+        "id": "cf80341ddef340f78d66af9e123749ef",
+        "type": "task",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "capability": "data.import",
+        "provider": "builtin.data.import",
+        "status": "success",
+        "command": {
+          "protocolVersion": "0.1",
+          "id": "0f25aeef14c149cf86c90e743cc20d95",
+          "kind": "command",
+          "type": "capability.run",
+          "timestamp": 1790485837060,
+          "source": "renderer",
+          "payload": {
+            "capability": "data.import",
+            "input": {
+              "text": "日期,数量\n一,10\n二,15"
+            }
+          },
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "correlationId": "0f25aeef14c149cf86c90e743cc20d95"
+        },
+        "input": {
+          "text": "日期,数量\n一,10\n二,15"
+        },
+        "context": {
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "revision": 1,
+          "budget": 12000,
+          "used": 0,
+          "items": [],
+          "excluded": [],
+          "builtAt": 1790485837061
+        },
+        "grant": "",
+        "cancelRequested": false,
+        "artifacts": [
+          "45b40dcee8804f0abd4c57a6f8f77252"
+        ],
+        "progress": [],
+        "fingerprint": "ed5876b4953d2e809208d05f75c3bbb7052450a399a389ebfd6a678259adcdbc",
+        "updated": 1790485837070,
+        "created": 1790485837061,
+        "version": 2,
+        "result": {
+          "artifacts": [
+            {
+              "kind": "dataset",
+              "title": "导入数据",
+              "content": {
+                "name": "导入数据",
+                "headers": [
+                  "日期",
+                  "数量"
+                ],
+                "rows": [
+                  [
+                    "一",
+                    "10"
+                  ],
+                  [
+                    "二",
+                    "15"
+                  ]
+                ],
+                "numeric": [
+                  1
+                ],
+                "demo": false
+              },
+              "source": "本地导入"
+            }
+          ]
+        }
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "0f25aeef14c149cf86c90e743cc20d95",
+    "causationId": "1d770678996f4d4b9fd51395199df13e",
+    "seq": 14
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "925f8d5dd9b14baca8242c76c6a72a22",
+    "kind": "command",
+    "type": "capability.run",
+    "timestamp": 1790485837077,
+    "source": "renderer",
+    "payload": {
+      "capability": "data.analyze",
+      "input": {
+        "artifact": "45b40dcee8804f0abd4c57a6f8f77252"
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "seq": 15
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "49fd424dbc6147e8ae3c1aeb99bced37",
+    "kind": "event",
+    "type": "task.queued",
+    "timestamp": 1790485837078,
+    "source": "kernel",
+    "payload": {
+      "task": {
+        "id": "5418ef4ff0854d0ab392727d12cd2593",
+        "type": "task",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "capability": "data.analyze",
+        "provider": "builtin.data.analyze",
+        "status": "queued",
+        "command": {
+          "protocolVersion": "0.1",
+          "id": "925f8d5dd9b14baca8242c76c6a72a22",
+          "kind": "command",
+          "type": "capability.run",
+          "timestamp": 1790485837077,
+          "source": "renderer",
+          "payload": {
+            "capability": "data.analyze",
+            "input": {
+              "artifact": "45b40dcee8804f0abd4c57a6f8f77252"
+            }
+          },
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "correlationId": "925f8d5dd9b14baca8242c76c6a72a22"
+        },
+        "input": {
+          "artifact": "45b40dcee8804f0abd4c57a6f8f77252"
+        },
+        "context": {
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "revision": 1,
+          "budget": 12000,
+          "used": 108,
+          "items": [
+            {
+              "artifact": "45b40dcee8804f0abd4c57a6f8f77252",
+              "version": 0,
+              "kind": "dataset",
+              "title": "导入数据",
+              "tier": "HOT",
+              "reason": "当前产生或导入",
+              "cost": 108,
+              "content": {
+                "name": "导入数据",
+                "headers": [
+                  "日期",
+                  "数量"
+                ],
+                "rows": [
+                  [
+                    "一",
+                    "10"
+                  ],
+                  [
+                    "二",
+                    "15"
+                  ]
+                ],
+                "numeric": [
+                  1
+                ],
+                "demo": false
+              },
+              "source": "本地导入"
+            }
+          ],
+          "excluded": [],
+          "builtAt": 1790485837078
+        },
+        "grant": "",
+        "cancelRequested": false,
+        "artifacts": [],
+        "progress": [],
+        "fingerprint": "7c44f79831a6178c1ae93bf18fbbe48e396d6b7266920590e4766a150583e823",
+        "updated": 1790485837078,
+        "created": 1790485837078,
+        "version": 0
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "causationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "seq": 16
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "c23f388712914f45a321a02c0e04e056",
+    "kind": "event",
+    "type": "task.started",
+    "timestamp": 1790485837081,
+    "source": "kernel",
+    "payload": {
+      "task": {
+        "id": "5418ef4ff0854d0ab392727d12cd2593",
+        "type": "task",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "capability": "data.analyze",
+        "provider": "builtin.data.analyze",
+        "status": "running",
+        "command": {
+          "protocolVersion": "0.1",
+          "id": "925f8d5dd9b14baca8242c76c6a72a22",
+          "kind": "command",
+          "type": "capability.run",
+          "timestamp": 1790485837077,
+          "source": "renderer",
+          "payload": {
+            "capability": "data.analyze",
+            "input": {
+              "artifact": "45b40dcee8804f0abd4c57a6f8f77252"
+            }
+          },
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "correlationId": "925f8d5dd9b14baca8242c76c6a72a22"
+        },
+        "input": {
+          "artifact": "45b40dcee8804f0abd4c57a6f8f77252"
+        },
+        "context": {
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "revision": 1,
+          "budget": 12000,
+          "used": 108,
+          "items": [
+            {
+              "artifact": "45b40dcee8804f0abd4c57a6f8f77252",
+              "version": 0,
+              "kind": "dataset",
+              "title": "导入数据",
+              "tier": "HOT",
+              "reason": "当前产生或导入",
+              "cost": 108,
+              "content": {
+                "name": "导入数据",
+                "headers": [
+                  "日期",
+                  "数量"
+                ],
+                "rows": [
+                  [
+                    "一",
+                    "10"
+                  ],
+                  [
+                    "二",
+                    "15"
+                  ]
+                ],
+                "numeric": [
+                  1
+                ],
+                "demo": false
+              },
+              "source": "本地导入"
+            }
+          ],
+          "excluded": [],
+          "builtAt": 1790485837078
+        },
+        "grant": "",
+        "cancelRequested": false,
+        "artifacts": [],
+        "progress": [],
+        "fingerprint": "7c44f79831a6178c1ae93bf18fbbe48e396d6b7266920590e4766a150583e823",
+        "updated": 1790485837081,
+        "created": 1790485837078,
+        "version": 1
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "causationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "seq": 17
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "22bdaa6b8b1a45a0bcfda93cfe7550a7",
+    "kind": "event",
+    "type": "relation.added",
+    "timestamp": 1790485837084,
+    "source": "kernel",
+    "payload": {
+      "relation": {
+        "id": "a05ed77da4c58baee64e7c4ff23787ed",
+        "type": "relation",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "subject": "377a7cc6222e4cc194c7c896d37a3526",
+        "predicate": "belongs_to",
+        "object": "a5406419de4046d88f213994e92055dc",
+        "source": "renderer",
+        "updated": 1790485837084,
+        "created": 1790485837084,
+        "version": 0
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "causationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "seq": 18
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "d0a577e6d8e64654bd77d0d43c28ba4e",
+    "kind": "event",
+    "type": "artifact.created",
+    "timestamp": 1790485837085,
+    "source": "kernel",
+    "payload": {
+      "artifact": {
+        "id": "377a7cc6222e4cc194c7c896d37a3526",
+        "type": "artifact",
+        "kind": "analysis",
+        "title": "导入数据 · 统计",
+        "content": {
+          "dataset": {
+            "name": "导入数据",
+            "headers": [
+              "日期",
+              "数量"
+            ],
+            "rows": [
+              [
+                "一",
+                "10"
+              ],
+              [
+                "二",
+                "15"
+              ]
+            ],
+            "numeric": [
+              1
+            ],
+            "demo": false
+          },
+          "columns": [
+            {
+              "name": "数量",
+              "index": 1,
+              "total": 25.0,
+              "mean": 12.5,
+              "min": 10.0,
+              "max": 15.0,
+              "first": 10.0,
+              "last": 15.0,
+              "change": 50.0,
+              "values": [
+                10.0,
+                15.0
+              ]
+            }
+          ],
+          "count": 2,
+          "labels": [
+            "一",
+            "二"
+          ]
+        },
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "source": "本地计算",
+        "provenance": {
+          "message": "925f8d5dd9b14baca8242c76c6a72a22",
+          "correlationId": "925f8d5dd9b14baca8242c76c6a72a22"
+        },
+        "pinned": false,
+        "scope": "intent",
+        "version": 0,
+        "created": 1790485837084,
+        "updated": 1790485837084
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "causationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "seq": 19
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "18411dfc9eaa4380bb844523642dcdd5",
+    "kind": "event",
+    "type": "relation.added",
+    "timestamp": 1790485837086,
+    "source": "kernel",
+    "payload": {
+      "relation": {
+        "id": "2121cb4733cbbad2184582cad46256eb",
+        "type": "relation",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "subject": "377a7cc6222e4cc194c7c896d37a3526",
+        "predicate": "produced_by",
+        "object": "5418ef4ff0854d0ab392727d12cd2593",
+        "source": "renderer",
+        "updated": 1790485837086,
+        "created": 1790485837086,
+        "version": 0
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "causationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "seq": 20
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "1f7adcfd0beb486784d8a83b56f15e2f",
+    "kind": "result",
+    "type": "capability.result",
+    "timestamp": 1790485837087,
+    "source": "kernel",
+    "payload": {
+      "status": "success",
+      "outcome": "success",
+      "task": "5418ef4ff0854d0ab392727d12cd2593",
+      "artifacts": [
+        "377a7cc6222e4cc194c7c896d37a3526"
+      ],
+      "error": null
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "causationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "seq": 21
+  },
+  {
+    "protocolVersion": "0.1",
+    "id": "67b75d9b727c405cb2fabe9683690380",
+    "kind": "event",
+    "type": "task.finished",
+    "timestamp": 1790485837087,
+    "source": "kernel",
+    "payload": {
+      "task": {
+        "id": "5418ef4ff0854d0ab392727d12cd2593",
+        "type": "task",
+        "intent": "a5406419de4046d88f213994e92055dc",
+        "capability": "data.analyze",
+        "provider": "builtin.data.analyze",
+        "status": "success",
+        "command": {
+          "protocolVersion": "0.1",
+          "id": "925f8d5dd9b14baca8242c76c6a72a22",
+          "kind": "command",
+          "type": "capability.run",
+          "timestamp": 1790485837077,
+          "source": "renderer",
+          "payload": {
+            "capability": "data.analyze",
+            "input": {
+              "artifact": "45b40dcee8804f0abd4c57a6f8f77252"
+            }
+          },
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "correlationId": "925f8d5dd9b14baca8242c76c6a72a22"
+        },
+        "input": {
+          "artifact": "45b40dcee8804f0abd4c57a6f8f77252"
+        },
+        "context": {
+          "intent": "a5406419de4046d88f213994e92055dc",
+          "revision": 1,
+          "budget": 12000,
+          "used": 108,
+          "items": [
+            {
+              "artifact": "45b40dcee8804f0abd4c57a6f8f77252",
+              "version": 0,
+              "kind": "dataset",
+              "title": "导入数据",
+              "tier": "HOT",
+              "reason": "当前产生或导入",
+              "cost": 108,
+              "content": {
+                "name": "导入数据",
+                "headers": [
+                  "日期",
+                  "数量"
+                ],
+                "rows": [
+                  [
+                    "一",
+                    "10"
+                  ],
+                  [
+                    "二",
+                    "15"
+                  ]
+                ],
+                "numeric": [
+                  1
+                ],
+                "demo": false
+              },
+              "source": "本地导入"
+            }
+          ],
+          "excluded": [],
+          "builtAt": 1790485837078
+        },
+        "grant": "",
+        "cancelRequested": false,
+        "artifacts": [
+          "377a7cc6222e4cc194c7c896d37a3526"
+        ],
+        "progress": [],
+        "fingerprint": "7c44f79831a6178c1ae93bf18fbbe48e396d6b7266920590e4766a150583e823",
+        "updated": 1790485837087,
+        "created": 1790485837078,
+        "version": 2,
+        "result": {
+          "artifacts": [
+            {
+              "kind": "analysis",
+              "title": "导入数据 · 统计",
+              "content": {
+                "dataset": {
+                  "name": "导入数据",
+                  "headers": [
+                    "日期",
+                    "数量"
+                  ],
+                  "rows": [
+                    [
+                      "一",
+                      "10"
+                    ],
+                    [
+                      "二",
+                      "15"
+                    ]
+                  ],
+                  "numeric": [
+                    1
+                  ],
+                  "demo": false
+                },
+                "columns": [
+                  {
+                    "name": "数量",
+                    "index": 1,
+                    "total": 25.0,
+                    "mean": 12.5,
+                    "min": 10.0,
+                    "max": 15.0,
+                    "first": 10.0,
+                    "last": 15.0,
+                    "change": 50.0,
+                    "values": [
+                      10.0,
+                      15.0
+                    ]
+                  }
+                ],
+                "count": 2,
+                "labels": [
+                  "一",
+                  "二"
+                ]
+              },
+              "source": "本地计算"
+            }
+          ]
+        }
+      }
+    },
+    "intent": "a5406419de4046d88f213994e92055dc",
+    "correlationId": "925f8d5dd9b14baca8242c76c6a72a22",
+    "causationId": "1f7adcfd0beb486784d8a83b56f15e2f",
+    "seq": 22
+  }
+]

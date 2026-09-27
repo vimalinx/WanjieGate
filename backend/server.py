@@ -6,11 +6,10 @@ import re
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
-from .composition import CAPABILITIES, compose, parse_dataset, analyze
 from .providers import Generator, Kev
-from .scheduler import Scheduler
 from .store import Store
-from .live_runtime import LiveRuntime
+from .runtime import Kernel
+from .runtime.protocol import Fault, ROOT as PROTOCOL_ROOT
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -71,6 +70,8 @@ class Handler(SimpleHTTPRequestHandler):
                     raise ValueError('请求应为对象')
             result = self.route(method, path, b)
             self.send_json(result)
+        except Fault as exc:
+            self.send_json({'error': str(exc), 'code': exc.code}, 409 if exc.code in {'revision_conflict', 'idempotency_conflict'} else 403 if exc.code in {'permission_required', 'permission_denied', 'scope_denied', 'local_only', 'source_denied'} else 400)
         except KeyError as exc:
             self.send_json({'error': str(exc).strip("'")}, 404)
         except (ValueError, TypeError) as exc:
@@ -83,85 +84,50 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_json({'error': '服务暂时无法处理请求'}, 500)
 
     def route(self, method, path, b):
-        store, scheduler, kev = self.server.store, self.server.scheduler, self.server.kev
-        if path == '/api/status' and method == 'GET':
-            return {'kev': kev.last, 'generator': {**scheduler.generator.last, 'pack': scheduler.generator.pack, 'model': scheduler.generator.model},
-                    'active_jobs': sum(j['status'] not in {'complete', 'failed', 'cancelled', 'interrupted'} for j in store.jobs())}
+        kernel = self.server.kernel
+        if path == '/api/runtime/commands' and method == 'POST':
+            return kernel.execute(b)
+        submitted = re.fullmatch(r'/api/runtime/commands/([a-zA-Z0-9_-]{1,160})', path)
+        if submitted and method == 'GET':
+            with kernel.db.transaction() as tx:
+                row = tx.db.execute('SELECT response FROM rt_commands WHERE key=?', ('human:' + submitted[1],)).fetchone()
+                return {'found': bool(row), 'response': json.loads(row[0]) if row else None}
+        if path == '/api/runtime/state' and method == 'GET':
+            return kernel.snapshot()
+        runtime_state = re.fullmatch(r'/api/runtime/intents/([a-f0-9]{32})', path)
+        if runtime_state and method == 'GET':
+            return kernel.snapshot(runtime_state[1])
+        bus = re.fullmatch(r'/api/runtime/messages/(\d+)(?:/([a-f0-9]{32}))?', path)
+        if bus and method == 'GET':
+            messages = kernel.db.events(int(bus[1]), bus[2])
+            return {'messages': messages, 'cursor': messages[-1]['seq'] if messages else int(bus[1])}
+        trace = re.fullmatch(r'/api/runtime/trace/([a-zA-Z0-9_-]{1,160})', path)
+        if trace and method == 'GET':
+            return {'messages': kernel.db.events(correlation=trace[1], limit=500)}
+        contract = re.fullmatch(r'/api/runtime/schema/([a-z-]+)', path)
+        if contract and method == 'GET':
+            target = PROTOCOL_ROOT / 'schemas' / (contract[1] + '.schema.json')
+            if not target.is_file():
+                raise KeyError('协议不存在')
+            return json.loads(target.read_text())
+        if method != 'GET':
+            raise Fault('legacy_read_only', '旧接口仅保留读取；请通过 Intent Runtime Command 执行')
+        store = self.server.store
+        if path == '/api/status':
+            return {'protocolVersion': '0.1', 'generator': self.server.scheduler.generator.last,
+                    'active_jobs': sum(t['status'] in ('queued', 'running') for t in kernel.db.list('task'))}
         if path == '/api/workspaces':
-            if method == 'GET':
-                return {'workspaces': store.workspaces()}
-            if method == 'POST':
-                return store.new_workspace()
+            return {'workspaces': store.workspaces(), 'readOnly': True}
+        legacy = re.fullmatch(r'/api/workspaces/([a-f0-9]{32})', path)
+        if legacy:
+            return {**store.workspace(legacy[1]), 'jobs': store.jobs(legacy[1]), 'readOnly': True}
+        job = re.fullmatch(r'/api/jobs/([a-f0-9]{32})', path)
+        if job:
+            result = store.job(job[1])
+            if result: return result
         pending = re.fullmatch(r'/api/submissions/([a-zA-Z0-9-]{16,80})', path)
-        if pending and method == 'GET':
+        if pending:
             return {'job': store.job(request_id=pending[1])}
-        match = re.fullmatch(r'/api/workspaces/([a-f0-9]{32})(?:/(dataset|note|export|jobs|artifacts)(?:/([a-f0-9]{32}))?)?', path)
-        if match:
-            key, action, item = match.groups()
-            w = store.workspace(key)
-            if method == 'GET' and not action:
-                return {**w, 'jobs': store.jobs(key)[:20]}
-            if method == 'GET' and action == 'export':
-                parts = ['# ' + w['title']]
-                for a in w['artifacts']:
-                    parts.append('\n## ' + a['title'])
-                    if a['type'] == 'document':
-                        parts.append(a['data']['text'])
-                    elif a['type'] == 'tasks':
-                        parts.extend(f"- [{'x' if t['done'] else ' '}] {t['title']} — {t['detail']}" for t in a['data']['items'])
-                    else:
-                        parts.append(('演示数据 · ' if a['data']['dataset']['demo'] else '') + a['data']['dataset']['name'])
-                        for col in a['data']['columns']:
-                            parts.append(f"- {col['name']}: 合计 {col['total']:g}，均值 {col['mean']:g}，最小 {col['min']:g}，最大 {col['max']:g}")
-                return {'filename': 'wanjiegate-' + key[:8] + '.md', 'text': '\n\n'.join(parts)}
-            if method == 'POST' and action == 'dataset':
-                dataset = None if b.get('remove') else parse_dataset(b.get('text'), b.get('name', '粘贴的数据'), b.get('demo', False))
-                return store.mutate(key, lambda ws: ws.update(dataset=dataset))
-            if method == 'POST' and action == 'note':
-                text = valid_text(b.get('text'))
-                return store.put_artifact(key, {'type': 'document', 'title': '随手记', 'data': {'text': text}, 'source': '本地笔记'})
-            if method == 'PATCH' and action == 'artifacts' and item:
-                return store.edit_artifact(key, item, b)
-            if method == 'POST' and action == 'jobs':
-                text = valid_text(b.get('text'))
-                selected = b.get('selected')
-                if selected is not None and (not isinstance(selected, list) or not selected or any(not isinstance(k, str) or k not in CAPABILITIES for k in selected)):
-                    raise ValueError('能力选择无效')
-                request_id = b.get('request_id')
-                if not isinstance(request_id, str) or not re.fullmatch(r'[a-zA-Z0-9-]{16,80}', request_id):
-                    raise ValueError('需要有效的发送编号')
-                return scheduler.submit(key, text, selected, request_id, bool(b.get('local_only')))
-        if path == '/api/preview' and method == 'POST':
-            text = valid_text(b.get('text'))
-            client, revision = b.get('client'), b.get('revision')
-            if client is not None:
-                self.server.live.observe(client, revision)
-            w = store.workspace(b['workspace']) if b.get('workspace') else {'dataset': None, 'artifacts': []}
-            context = {'dataset': {'name': w['dataset']['name'], 'columns': w['dataset']['headers']} if w['dataset'] else None,
-                       'artifacts': [{'type': a['type'], 'title': a['title']} for a in w['artifacts'][-6:]]}
-            scores, decision = kev.decide(text, context)
-            plan = compose(text, w['dataset'], scores)
-            analysis = analyze(w['dataset']) if w['dataset'] and any(s['id'] == 'analyze' for s in plan['steps']) else None
-            content_context = {**context, 'analysis': analysis,
-                               'documents': [a['data']['text'][:6000] for a in w['artifacts'][-3:] if a['type'] == 'document']}
-            scene = self.server.live.request(client, revision, text, plan, w['dataset'], content_context, scores.get('market'), bool(b.get('local_only'))) if client else None
-            return {**plan, 'decision': decision, 'analysis': analysis, 'scene': scene}
-        scene_path = re.fullmatch(r'/api/scenes/([a-f0-9-]{32,36})/(\d+|cancel)', path)
-        if scene_path:
-            client, action = scene_path.groups()
-            if method == 'GET' and action.isdigit():
-                return self.server.live.snapshot(client, int(action))
-            if method == 'POST' and action == 'cancel':
-                return self.server.live.cancel(client, b.get('revision'))
-        match = re.fullmatch(r'/api/jobs/([a-f0-9]{32})(/cancel)?', path)
-        if match:
-            job = store.job(match[1])
-            if not job:
-                raise KeyError('执行不存在')
-            if method == 'POST' and match[2]:
-                return scheduler.cancel(match[1])
-            if method == 'GET' and not match[2]:
-                return job
         raise KeyError('接口不存在')
 
     def log_message(self, fmt, *args):
@@ -170,19 +136,28 @@ class Handler(SimpleHTTPRequestHandler):
             super().log_message(fmt, *args)
 
 
-def valid_text(text):
-    if not isinstance(text, str) or not text.strip() or len(text) > 12000:
-        raise ValueError('请输入 1–12000 字的内容')
-    return text.strip()
-
-
 def create_server(port, data_dir):
     os.umask(0o077)
     server = ThreadingHTTPServer(('127.0.0.1', port), Handler)
     server.store = Store(Path(data_dir) / 'workspaces.sqlite3')
+    with server.store.connect() as db:
+        migrated = db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='rt_entities'").fetchone()
+        has_legacy = db.execute('SELECT 1 FROM workspaces LIMIT 1').fetchone()
+        if has_legacy and not migrated:
+            import sqlite3
+            import time
+            backup_dir = Path(data_dir) / 'backups'
+            backup_dir.mkdir(parents=True, exist_ok=True, mode=0o700)
+            backup_path = backup_dir / ('before-intent-runtime-' + str(time.time_ns()) + '.sqlite3')
+            with sqlite3.connect(backup_path) as backup:
+                db.backup(backup)
+            backup_path.chmod(0o600)
     server.kev = Kev()
-    server.scheduler = Scheduler(server.store, Generator(Path(data_dir) / 'receipts'))
-    server.live = LiveRuntime(Generator(Path(data_dir) / 'receipts'))
+    # Legacy objects are read-only adapters; no second execution pool is started.
+    from types import SimpleNamespace
+    generator = Generator(Path(data_dir) / 'receipts')
+    server.scheduler = SimpleNamespace(generator=generator)
+    server.kernel = Kernel(server.store, generator)
     return server
 
 
@@ -199,8 +174,7 @@ def main():
         pass
     finally:
         server.server_close()
-        server.scheduler.pool.shutdown(wait=True)
-        server.live.shutdown()
+        server.kernel.shutdown()
 
 
 if __name__ == '__main__':

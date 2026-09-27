@@ -1,0 +1,606 @@
+{
+  "intent.create": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "state": {
+        "type": "object",
+        "properties": {
+          "thread": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "goal": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "phase": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "attention": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "commitment": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "urgency": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "parent": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      }
+    },
+    "required": [
+      "title"
+    ],
+    "additionalProperties": false
+  },
+  "intent.activate": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "intent.update": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "state": {
+        "type": "object",
+        "properties": {
+          "thread": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "goal": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "phase": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "attention": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "commitment": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "urgency": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      },
+      "preferences": {
+        "type": "object",
+        "properties": {
+          "contextBudget": {
+            "type": "integer",
+            "minimum": 256,
+            "maximum": 40000
+          },
+          "autoRun": {
+            "type": "boolean"
+          },
+          "localOnly": {
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    "required": [],
+    "additionalProperties": false
+  },
+  "intent.suspend": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "intent.archive": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "intent.fork": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "state": {
+        "type": "object",
+        "properties": {
+          "thread": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "goal": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "domain": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "phase": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "target": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "attention": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "commitment": {
+            "type": "string",
+            "maxLength": 300
+          },
+          "urgency": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    "required": [
+      "title"
+    ],
+    "additionalProperties": false
+  },
+  "artifact.create": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "kind": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "content": {},
+      "source": {
+        "type": "string",
+        "maxLength": 300
+      },
+      "scope": {
+        "type": "string",
+        "enum": [
+          "intent",
+          "shared"
+        ]
+      },
+      "pinned": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "title",
+      "kind",
+      "content"
+    ],
+    "additionalProperties": false
+  },
+  "artifact.update": {
+    "type": "object",
+    "properties": {
+      "artifact": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "version": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "title": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "content": {},
+      "pinned": {
+        "type": "boolean"
+      },
+      "scope": {
+        "type": "string",
+        "enum": [
+          "intent",
+          "shared"
+        ]
+      }
+    },
+    "required": [
+      "artifact",
+      "version"
+    ],
+    "additionalProperties": false
+  },
+  "relation.add": {
+    "type": "object",
+    "properties": {
+      "subject": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "predicate": {
+        "type": "string",
+        "enum": [
+          "belongs_to",
+          "references",
+          "produced_by",
+          "depends_on",
+          "supports",
+          "conflicts_with",
+          "derived_from"
+        ]
+      },
+      "object": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      }
+    },
+    "required": [
+      "subject",
+      "predicate",
+      "object"
+    ],
+    "additionalProperties": false
+  },
+  "relation.remove": {
+    "type": "object",
+    "properties": {
+      "relation": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      }
+    },
+    "required": [
+      "relation"
+    ],
+    "additionalProperties": false
+  },
+  "context.set": {
+    "type": "object",
+    "properties": {
+      "artifact": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "tier": {
+        "type": "string",
+        "enum": [
+          "HOT",
+          "WARM",
+          "COLD"
+        ]
+      },
+      "pinned": {
+        "type": "boolean"
+      },
+      "detail": {
+        "type": "string",
+        "enum": [
+          "full",
+          "excerpt",
+          "metadata"
+        ]
+      }
+    },
+    "required": [
+      "artifact",
+      "tier"
+    ],
+    "additionalProperties": false
+  },
+  "context.build": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "view.set": {
+    "type": "object",
+    "properties": {
+      "artifact": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "primitive": {
+        "type": "string",
+        "enum": [
+          "Text",
+          "Code",
+          "Terminal",
+          "Web",
+          "Media",
+          "Canvas",
+          "Timeline",
+          "Table",
+          "Conversation",
+          "Inspector"
+        ]
+      },
+      "placement": {
+        "type": "string",
+        "enum": [
+          "main",
+          "side",
+          "hidden"
+        ]
+      },
+      "state": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "artifact",
+      "primitive"
+    ],
+    "additionalProperties": false
+  },
+  "capability.run": {
+    "type": "object",
+    "properties": {
+      "capability": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "input": {
+        "type": "object"
+      },
+      "grant": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "provider": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      }
+    },
+    "required": [
+      "capability",
+      "input"
+    ],
+    "additionalProperties": false
+  },
+  "task.cancel": {
+    "type": "object",
+    "properties": {
+      "task": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      }
+    },
+    "required": [
+      "task"
+    ],
+    "additionalProperties": false
+  },
+  "grant.create": {
+    "type": "object",
+    "properties": {
+      "capabilities": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9_.:/-]+$"
+        },
+        "maxItems": 30
+      },
+      "expiresIn": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 86400
+      },
+      "maxCalls": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "network": {
+        "type": "boolean"
+      },
+      "maxEffect": {
+        "type": "string",
+        "enum": [
+          "L0",
+          "L1",
+          "L2",
+          "L3"
+        ]
+      },
+      "inputEquals": {
+        "type": "object"
+      },
+      "reason": {
+        "type": "string",
+        "maxLength": 1000
+      }
+    },
+    "required": [
+      "capabilities",
+      "expiresIn",
+      "maxCalls",
+      "network",
+      "maxEffect",
+      "reason"
+    ],
+    "additionalProperties": false
+  },
+  "grant.revoke": {
+    "type": "object",
+    "properties": {
+      "grant": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      }
+    },
+    "required": [
+      "grant"
+    ],
+    "additionalProperties": false
+  },
+  "module.set": {
+    "type": "object",
+    "properties": {
+      "module": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "enabled": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "module",
+      "enabled"
+    ],
+    "additionalProperties": false
+  },
+  "semantic.observe": {
+    "type": "object",
+    "properties": {
+      "text": {
+        "type": "string",
+        "maxLength": 12000
+      }
+    },
+    "required": [
+      "text"
+    ],
+    "additionalProperties": false
+  },
+  "notification.receive": {
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "maxLength": 200
+      },
+      "text": {
+        "type": "string",
+        "maxLength": 4000
+      },
+      "source": {
+        "type": "string",
+        "maxLength": 200
+      }
+    },
+    "required": [
+      "title",
+      "text"
+    ],
+    "additionalProperties": false
+  },
+  "notification.resolve": {
+    "type": "object",
+    "properties": {
+      "notification": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "action": {
+        "type": "string",
+        "enum": [
+          "attach",
+          "defer",
+          "interrupt",
+          "read"
+        ]
+      }
+    },
+    "required": [
+      "notification",
+      "action"
+    ],
+    "additionalProperties": false
+  },
+  "session.start": {
+    "type": "object",
+    "properties": {},
+    "required": [],
+    "additionalProperties": false
+  },
+  "intent.warm": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+  }
+}

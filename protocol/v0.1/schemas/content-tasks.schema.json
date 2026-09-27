@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 100000
+          },
+          "done": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "done"
+        ]
+      },
+      "maxItems": 1000
+    }
+  },
+  "required": [
+    "items"
+  ]
+}

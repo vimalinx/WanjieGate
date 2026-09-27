@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "url": {
+      "type": "string",
+      "pattern": "^https://",
+      "maxLength": 2000
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 100000
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 100000
+    }
+  },
+  "required": [
+    "url"
+  ]
+}

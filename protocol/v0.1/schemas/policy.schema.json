@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.1:policy",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "version": {
+      "type": "string",
+      "maxLength": 30
+    },
+    "accepts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "maxItems": 100
+    },
+    "threshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "automatic": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "accepts",
+    "threshold",
+    "action",
+    "automatic"
+  ],
+  "additionalProperties": false
+}

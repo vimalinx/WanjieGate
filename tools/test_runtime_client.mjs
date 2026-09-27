@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const {CommandClient}=await import('data:text/javascript;base64,'+Buffer.from(await readFile(new URL('../static/js/runtime-client.js',import.meta.url),'utf8')).toString('base64'));
+const data=new Map();const storage={getItem:k=>data.get(k)||null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)};
+let writes=0;let stored=null;let lost=true;
+const client=new CommandClient(async(path,body)=>{if(!body)return {found:!!stored,response:stored};writes++;stored={task:{id:'one'}};if(lost){lost=false;throw new Error('response lost');}return stored;},storage);
+await assert.rejects(client.send('capability.run',{capability:'paid',input:{}},'intent'));
+assert.equal(data.size,1);
+assert.deepEqual(await client.send('capability.run',{capability:'paid',input:{}},'intent'),{task:{id:'one'}});
+assert.equal(writes,1);assert.equal(data.size,0);
+const rejected=new CommandClient(async()=>{throw Object.assign(new Error('permission denied'),{confirmedFailure:true});},storage);
+await assert.rejects(rejected.send('capability.run',{},'intent'));assert.equal(data.size,0);
+console.log('PASS: lost-response reconciliation reuses identity, no paid replay, confirmed rejection clears pending');

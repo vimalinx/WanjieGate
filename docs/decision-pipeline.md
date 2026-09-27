@@ -1,3 +1,5 @@
+> 历史 V2 设计。当前运行入口已迁移到 [Intent Runtime v0.1](../protocol/v0.1/README.md)，本文保留用于追溯。
+
 # V2 决策与执行管线
 
 ```text

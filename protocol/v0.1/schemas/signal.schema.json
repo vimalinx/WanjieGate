@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.1:signal",
+  "type": "object",
+  "properties": {
+    "operator": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "value": {},
+    "score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "basedOnRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "maxItems": 100
+    },
+    "model": {
+      "type": "string",
+      "maxLength": 200
+    }
+  },
+  "required": [
+    "operator",
+    "name",
+    "value",
+    "score",
+    "basedOnRevision",
+    "expiresAt",
+    "evidence",
+    "model"
+  ],
+  "additionalProperties": false
+}

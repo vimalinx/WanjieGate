@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.1:manifest",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "version": {
+      "type": "string",
+      "maxLength": 30
+    },
+    "protocolVersion": {
+      "const": "0.1"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "capability",
+        "view",
+        "operator",
+        "policy",
+        "source"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "provides": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "maxItems": 100
+    },
+    "accepts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "maxItems": 100
+    },
+    "emits": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "maxItems": 100
+    },
+    "requires_context": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "maxItems": 100
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "maxItems": 100
+    },
+    "side_effect": {
+      "type": "string",
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3"
+      ]
+    },
+    "network": {
+      "type": "boolean"
+    },
+    "cost": {
+      "type": "string",
+      "enum": [
+        "none",
+        "metered"
+      ]
+    },
+    "reversible": {
+      "type": "boolean"
+    },
+    "latency": {
+      "type": "string",
+      "enum": [
+        "low",
+        "variable"
+      ]
+    },
+    "trusted": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "protocolVersion",
+    "kind",
+    "title",
+    "provides",
+    "accepts",
+    "emits",
+    "requires_context",
+    "permissions",
+    "side_effect",
+    "network",
+    "cost",
+    "reversible",
+    "latency",
+    "trusted"
+  ],
+  "additionalProperties": false
+}

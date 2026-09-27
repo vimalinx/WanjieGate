@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:0.1:task",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "type": {
+      "const": "task"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "intent": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "capability": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9_.:/-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "success",
+        "failure",
+        "partial",
+        "cancelled",
+        "interrupted",
+        "outcome_unknown"
+      ]
+    },
+    "command": {
+      "type": "object"
+    },
+    "input": {
+      "type": "object"
+    },
+    "context": {
+      "type": "object"
+    },
+    "grant": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "created": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "cancelRequested": {
+      "type": "boolean"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160,
+        "pattern": "^[A-Za-z0-9_.:/-]+$"
+      },
+      "maxItems": 100
+    },
+    "result": {
+      "type": "object"
+    },
+    "error": {
+      "type": "object"
+    },
+    "progress": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "maxItems": 100
+    },
+    "fingerprint": {
+      "type": "string",
+      "maxLength": 100
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "version",
+    "intent",
+    "capability",
+    "provider",
+    "status",
+    "command",
+    "input",
+    "context",
+    "grant",
+    "created",
+    "updated",
+    "cancelRequested",
+    "artifacts",
+    "progress",
+    "fingerprint"
+  ],
+  "additionalProperties": false
+}

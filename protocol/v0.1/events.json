@@ -1,0 +1,427 @@
+{
+  "intent.created": {
+    "type": "object",
+    "properties": {
+      "intent": {
+        "$ref": "intent.schema.json"
+      },
+      "source": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "intent"
+    ],
+    "additionalProperties": false
+  },
+  "intent.imported": {
+    "type": "object",
+    "properties": {
+      "intent": {
+        "$ref": "intent.schema.json"
+      },
+      "source": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "intent"
+    ],
+    "additionalProperties": false
+  },
+  "intent.activated": {
+    "type": "object",
+    "properties": {
+      "intent": {
+        "$ref": "intent.schema.json"
+      },
+      "source": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "intent"
+    ],
+    "additionalProperties": false
+  },
+  "intent.updated": {
+    "type": "object",
+    "properties": {
+      "intent": {
+        "$ref": "intent.schema.json"
+      },
+      "source": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "intent"
+    ],
+    "additionalProperties": false
+  },
+  "intent.warmed": {
+    "type": "object",
+    "properties": {
+      "intent": {
+        "$ref": "intent.schema.json"
+      },
+      "source": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "intent"
+    ],
+    "additionalProperties": false
+  },
+  "intent.suspended": {
+    "type": "object",
+    "properties": {
+      "intent": {
+        "$ref": "intent.schema.json"
+      },
+      "source": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "intent"
+    ],
+    "additionalProperties": false
+  },
+  "intent.archived": {
+    "type": "object",
+    "properties": {
+      "intent": {
+        "$ref": "intent.schema.json"
+      },
+      "source": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "intent"
+    ],
+    "additionalProperties": false
+  },
+  "artifact.created": {
+    "type": "object",
+    "properties": {
+      "artifact": {
+        "$ref": "artifact.schema.json"
+      }
+    },
+    "required": [
+      "artifact"
+    ],
+    "additionalProperties": false
+  },
+  "artifact.updated": {
+    "type": "object",
+    "properties": {
+      "artifact": {
+        "$ref": "artifact.schema.json"
+      }
+    },
+    "required": [
+      "artifact"
+    ],
+    "additionalProperties": false
+  },
+  "task.queued": {
+    "type": "object",
+    "properties": {
+      "task": {
+        "$ref": "task.schema.json"
+      }
+    },
+    "required": [
+      "task"
+    ],
+    "additionalProperties": false
+  },
+  "task.started": {
+    "type": "object",
+    "properties": {
+      "task": {
+        "$ref": "task.schema.json"
+      }
+    },
+    "required": [
+      "task"
+    ],
+    "additionalProperties": false
+  },
+  "task.progress": {
+    "type": "object",
+    "properties": {
+      "task": {
+        "$ref": "task.schema.json"
+      }
+    },
+    "required": [
+      "task"
+    ],
+    "additionalProperties": false
+  },
+  "task.finished": {
+    "type": "object",
+    "properties": {
+      "task": {
+        "$ref": "task.schema.json"
+      }
+    },
+    "required": [
+      "task"
+    ],
+    "additionalProperties": false
+  },
+  "task.cancel.requested": {
+    "type": "object",
+    "properties": {
+      "task": {
+        "$ref": "task.schema.json"
+      }
+    },
+    "required": [
+      "task"
+    ],
+    "additionalProperties": false
+  },
+  "task.recovered": {
+    "type": "object",
+    "properties": {
+      "task": {
+        "$ref": "task.schema.json"
+      }
+    },
+    "required": [
+      "task"
+    ],
+    "additionalProperties": false
+  },
+  "relation.added": {
+    "type": "object",
+    "properties": {
+      "relation": {
+        "$ref": "relation.schema.json"
+      }
+    },
+    "required": [
+      "relation"
+    ],
+    "additionalProperties": false
+  },
+  "relation.removed": {
+    "type": "object",
+    "properties": {
+      "relation": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      }
+    },
+    "required": [
+      "relation"
+    ],
+    "additionalProperties": false
+  },
+  "context.changed": {
+    "type": "object",
+    "properties": {
+      "member": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "member"
+    ],
+    "additionalProperties": false
+  },
+  "context.built": {
+    "type": "object",
+    "properties": {
+      "context": {
+        "$ref": "context.schema.json"
+      }
+    },
+    "required": [
+      "context"
+    ],
+    "additionalProperties": false
+  },
+  "view.changed": {
+    "type": "object",
+    "properties": {
+      "view": {
+        "$ref": "view.schema.json"
+      }
+    },
+    "required": [
+      "view"
+    ],
+    "additionalProperties": false
+  },
+  "module.started": {
+    "type": "object",
+    "properties": {
+      "module": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "module"
+    ],
+    "additionalProperties": false
+  },
+  "module.stopped": {
+    "type": "object",
+    "properties": {
+      "module": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "module"
+    ],
+    "additionalProperties": false
+  },
+  "permission.granted": {
+    "type": "object",
+    "properties": {
+      "grant": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "grant"
+    ],
+    "additionalProperties": false
+  },
+  "permission.revoked": {
+    "type": "object",
+    "properties": {
+      "grant": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      }
+    },
+    "required": [
+      "grant"
+    ],
+    "additionalProperties": false
+  },
+  "notification.received": {
+    "type": "object",
+    "properties": {
+      "notification": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "notification"
+    ],
+    "additionalProperties": false
+  },
+  "notification.routed": {
+    "type": "object",
+    "properties": {
+      "notification": {
+        "type": "object"
+      },
+      "reason": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "notification",
+      "reason"
+    ],
+    "additionalProperties": false
+  },
+  "workflow.step.started": {
+    "type": "object",
+    "properties": {
+      "task": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "step": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "capability": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      }
+    },
+    "required": [
+      "task",
+      "step",
+      "capability"
+    ],
+    "additionalProperties": false
+  },
+  "policy.evaluated": {
+    "type": "object",
+    "properties": {
+      "policy": {
+        "type": "string"
+      },
+      "version": {
+        "type": "string"
+      },
+      "signal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "basedOnRevision": {
+        "type": "integer"
+      },
+      "action": {
+        "type": "string"
+      },
+      "reason": {
+        "type": "string"
+      },
+      "candidates": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      }
+    },
+    "required": [
+      "policy",
+      "version",
+      "signal",
+      "basedOnRevision",
+      "action",
+      "reason"
+    ],
+    "additionalProperties": false
+  },
+  "command.rejected": {
+    "type": "object",
+    "properties": {
+      "code": {
+        "type": "string"
+      },
+      "message": {
+        "type": "string"
+      },
+      "requestedType": {}
+    },
+    "required": [
+      "code",
+      "message",
+      "requestedType"
+    ],
+    "additionalProperties": false
+  }
+}

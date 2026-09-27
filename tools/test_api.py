@@ -1,66 +1,60 @@
-"""Local HTTP integration tests. Isolated store; no upstream model calls."""
+"""HTTP transport tests against an isolated runtime; no upstream calls."""
 import json
 import tempfile
 import threading
+import time
 import unittest
-from unittest.mock import patch
 import urllib.request
 import urllib.error
 from backend.server import create_server
+from backend.runtime.protocol import message
 
 class ApiTests(unittest.TestCase):
     def setUp(self):
-        self.tmp=tempfile.TemporaryDirectory()
-        self.server=create_server(0,self.tmp.name)
-        self.thread=threading.Thread(target=self.server.serve_forever,daemon=True); self.thread.start()
+        self.tmp=tempfile.TemporaryDirectory();self.server=create_server(0,self.tmp.name)
+        self.thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.thread.start()
         self.base=f'http://127.0.0.1:{self.server.server_port}'
     def tearDown(self):
-        self.server.shutdown(); self.server.server_close(); self.server.scheduler.pool.shutdown(); self.server.live.shutdown(); self.tmp.cleanup()
-    def request(self,path,body=None,method=None,headers=None):
-        hdr={'Content-Type':'application/json',**(headers or {})}
-        req=urllib.request.Request(self.base+path,data=json.dumps(body).encode() if body is not None else None,headers=hdr,method=method)
+        self.server.shutdown();self.server.server_close();self.server.kernel.shutdown();self.tmp.cleanup()
+    def request(self,path,body=None,headers=None):
+        req=urllib.request.Request(self.base+path,data=json.dumps(body).encode() if body is not None else None,headers={'Content-Type':'application/json',**(headers or {})})
         try:
-            with urllib.request.urlopen(req) as r: return r.status,json.loads(r.read())
+            with urllib.request.urlopen(req) as r:return r.status,json.loads(r.read())
         except urllib.error.HTTPError as e:
-            with e: return e.code,json.loads(e.read())
-    def test_persistence_note_export_and_route(self):
-        _,w=self.request('/api/workspaces',{}); key=w['id']
-        _,a=self.request(f'/api/workspaces/{key}/note',{'text':'# 本地笔记\n内容'})
-        self.assertEqual(a['type'],'document')
-        _,w=self.request(f'/api/workspaces/{key}'); self.assertEqual(len(w['artifacts']),1)
-        _,export=self.request(f'/api/workspaces/{key}/export'); self.assertIn('本地笔记',export['text'])
-        with urllib.request.urlopen(self.base+'/w/'+key) as r: self.assertIn('万界门',r.read().decode())
-    def test_cross_origin_and_host_rejected(self):
-        self.assertEqual(self.request('/api/workspaces',{},headers={'Origin':'https://untrusted.example'})[0],403)
-        self.assertEqual(self.request('/api/workspaces',headers={'Host':'untrusted.example'})[0],403)
-    def test_bad_import_no_mutation(self):
-        _,w=self.request('/api/workspaces',{})
-        self.assertEqual(self.request(f"/api/workspaces/{w['id']}/dataset",{'text':'not a dataset'})[0],400)
-        self.assertIsNone(self.request(f"/api/workspaces/{w['id']}")[1]['dataset'])
-    def test_local_only_generation_rejected(self):
-        _,w=self.request('/api/workspaces',{})
-        code,data=self.request(f"/api/workspaces/{w['id']}/jobs",{'text':'写文章','selected':['write'],'request_id':'unique-request-00000001','local_only':True})
-        self.assertEqual(code,400)
-        self.assertEqual(self.server.store.jobs(),[])
+            with e:return e.code,json.loads(e.read())
+    def command(self,type_,payload=None,intent=None,**kw):
+        return self.request('/api/runtime/commands',message('command',type_,payload or {},'renderer',intent,**kw))
+    def intent(self):return self.command('intent.create',{'title':'HTTP 验收'})[1]['value']['id']
+    def test_browser_route_and_persistent_note(self):
+        i=self.intent();code,result=self.command('artifact.create',{'kind':'note','title':'笔记','content':{'text':'保留'}},i)
+        self.assertEqual(code,200);a=result['value'];state=self.request('/api/runtime/intents/'+i)[1]
+        self.assertEqual(state['artifacts'][0]['id'],a['id'])
+        with urllib.request.urlopen(self.base+'/w/'+i) as r:self.assertIn('runtime-app.js',r.read().decode())
+    def test_cross_origin_and_host(self):
+        c=message('command','intent.create',{'title':'bad'},'renderer')
+        self.assertEqual(self.request('/api/runtime/commands',c,{'Origin':'https://untrusted.example'})[0],403)
+        self.assertEqual(self.request('/api/runtime/state',headers={'Host':'untrusted.example'})[0],403)
+    def test_legacy_write_and_forged_signal_rejected(self):
+        self.assertEqual(self.request('/api/workspaces',{})[1]['code'],'legacy_read_only')
+        forged=message('signal','intent.phase',{},'kernel')
+        self.assertEqual(self.request('/api/runtime/commands',forged)[0],400)
+    def test_cursor_and_schema(self):
+        i=self.intent();self.command('intent.activate',intent=i)
+        events=self.request('/api/runtime/messages/0/'+i)[1];self.assertTrue(events['messages'])
+        self.assertEqual(self.request('/api/runtime/messages/'+str(events['cursor'])+'/'+i)[1]['messages'],[])
+        self.assertEqual(self.request('/api/runtime/schema/message')[1]['properties']['protocolVersion']['const'],'0.1')
+    def test_invalid_import_has_failed_task_no_artifact(self):
+        i=self.intent();code,r=self.command('capability.run',{'capability':'data.import','input':{'text':'invalid'}},i)
+        self.assertEqual(code,200)
+        for _ in range(100):
+            state=self.request('/api/runtime/intents/'+i)[1]
+            if state['tasks'][0]['status'] not in ('queued','running'):break
+            time.sleep(.01)
+        self.assertEqual(state['tasks'][0]['status'],'failure');self.assertEqual(state['artifacts'],[])
+    def test_denial_and_revision_http_codes(self):
+        i=self.intent();code,r=self.command('capability.run',{'capability':'text.generate','input':{'text':'write'}},i)
+        self.assertEqual(code,403);self.assertEqual(r['code'],'local_only')
+        self.assertEqual(self.command('intent.update',{'title':'stale'},i,expectedRevision=100)[0],409)
+        self.assertEqual(self.server.kernel.db.list('task'),[])
 
-    def test_preview_without_workspace_does_not_save_history(self):
-        with patch.object(self.server.kev, 'decide', return_value=({'write': .9}, {'source': 'test'})):
-            code, data = self.request('/api/preview', {'text': '写一段文字', 'workspace': None})
-        self.assertEqual(code, 200)
-        self.assertEqual(data['steps'][0]['id'], 'write')
-        self.assertEqual(self.request('/api/workspaces')[1]['workspaces'], [])
-        self.assertEqual(self.server.store.jobs(), [])
-        self.assertEqual(self.request('/api/preview', {'text': '写一段文字', 'workspace': 'missing'})[0], 404)
-
-    def test_live_analysis_without_job_or_artifact(self):
-        _, w = self.request('/api/workspaces', {})
-        key = w['id']
-        self.request(f'/api/workspaces/{key}/dataset', {'text': '日期,数量\n一,10\n二,15'})
-        with patch.object(self.server.kev, 'decide', return_value=({'analyze': .95}, {'source': 'test'})):
-            code, data = self.request('/api/preview', {'text': '分析数据', 'workspace': key})
-        self.assertEqual(code, 200)
-        self.assertEqual(data['analysis']['columns'][0]['total'], 25)
-        self.assertEqual(self.request(f'/api/workspaces/{key}')[1]['artifacts'], [])
-        self.assertEqual(self.server.store.jobs(), [])
-
-if __name__=='__main__': unittest.main()
+if __name__=='__main__':unittest.main()
