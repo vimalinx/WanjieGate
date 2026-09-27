@@ -3,9 +3,11 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f9f7"><title>万界门 · WanJie</title><link rel="stylesheet" href="/runtime.css"><link rel="stylesheet" href="/capsule.css"><link rel="stylesheet" href="/adaptive.css"><link rel="icon" href="data:,"></head>
 <body>
 <a class="skip" href="#request">跳到输入</a>
+<button id="history-edge" tabindex="-1" aria-label="展开会话历史" aria-controls="history-dialog" aria-expanded="false"></button>
 <dialog id="history-dialog" class="history-drawer" aria-labelledby="history-title">
   <div class="dialog-heading"><h2 id="history-title">历史</h2><button id="history-close" aria-label="关闭历史">×</button></div>
-  <button id="new-intent" class="new-intent">＋ 新的空间</button>
+  <button id="new-intent" class="new-intent" title="双指右滑 · Ctrl Shift N">＋ 新的空间</button>
+  <a class="demo-link" href="/?demo=1">播放交互演示 ↗</a>
   <nav id="intent-list" aria-label="意图空间"></nav>
   <div id="empty" class="resume-list"><button id="start-intent">创建新的空间</button></div>
   <div class="drawer-assistance"><label title="使用 JEV 理解输入，查找公开参考资料和行情，可能消耗额度；不会自动改写正文"><input id="assist-auto" type="checkbox" checked> 自动协助</label><span>理解输入 · 公开资料 · 行情</span></div>
@@ -18,7 +20,7 @@
   <div id="adaptive-grid">
   <aside class="growth-lane" data-lane="left" aria-label="左侧工具"></aside>
   <div class="growth-center">
-  <div id="writer-heading" hidden><div class="document-eyebrow">✧ &nbsp; 文稿 <span id="document-save" role="status">已保存</span></div><input id="document-title" aria-label="笔记标题" placeholder="未命名笔记"><div id="writer-format" hidden><button data-format="heading" title="添加标题">H₂</button><button data-format="bold" title="加粗">B</button><button data-format="quote" title="引用">❞</button><button data-format="check" title="待办">☑</button><button data-format="link" title="链接">↗</button><span></span><button id="writer-undo" hidden>撤销插入</button><button id="document-preview-toggle">阅读</button><button id="document-export">导出</button></div></div>
+  <div id="writer-heading" hidden><div class="document-eyebrow"><span id="document-save" role="status">已保存</span></div><div id="writer-format" hidden><button data-format="heading" title="添加标题">H₂</button><button data-format="bold" title="加粗">B</button><button data-format="quote" title="引用">❞</button><button data-format="check" title="待办">☑</button><button data-format="link" title="链接">↗</button><span></span><button id="document-pin" aria-pressed="false" title="固定文稿：清空后保留编辑区">固定</button><button id="writer-undo" hidden>撤销插入</button><button id="document-preview-toggle">阅读</button><button id="document-export">导出</button></div></div>
   <section class="composer" aria-label="表达目的">
     <div class="capsule">
       <button id="history-open" class="icon-button" aria-label="打开历史" title="历史"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.5 7M3 5v6h6M12 7v5l3 2"/></svg></button>
@@ -50,5 +52,5 @@
 </main>
 <dialog id="dialog"><form id="dialog-form"><div class="dialog-heading"><h2 id="dialog-title"></h2><button type="button" id="dialog-close" aria-label="关闭">×</button></div><div id="dialog-body"></div><p id="dialog-error" class="error" role="alert"></p><div class="dialog-actions"><button type="button" id="dialog-cancel">取消</button><button type="submit" class="primary" id="dialog-submit">保存</button></div></form></dialog>
 <div id="toast" role="status" hidden></div>
-<script type="module" src="/runtime-app.js"></script>
+<script type="module" src="/js/entry.js"></script>
 </body></html>

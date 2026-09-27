@@ -1,3 +1,5 @@
+import {returnToOrigin,installNextGesture} from './js/workspace-transition.js';
+import {installEdgeHistory} from './js/edge-history.js';
 import {CommandClient} from './js/runtime-client.js';
 import {esc, markdown, number} from './js/components.js';
 import {AdaptiveSpace} from './js/adaptive-space.js';
@@ -7,7 +9,7 @@ const terminal=new Set(['success','failure','partial','cancelled','interrupted',
 const dimensions={thread:'主线',goal:'目标',domain:'领域',phase:'阶段',target:'对象',attention:'注意力',commitment:'投入状态',urgency:'紧迫程度'};
 const phases={EXPLORE:'探索',FORM:'构思',ACT:'进行',VERIFY:'验证',WAIT:'等待',HANDOFF:'交接',exploring:'探索',researching:'研究',implementation:'实现',planning:'规划',writing:'写作'};
 const status={active:'当前',warm:'待恢复',suspended:'已暂停',archived:'已归档',queued:'排队',running:'执行中',success:'完成',failure:'失败',partial:'部分完成',cancelled:'已取消',interrupted:'已中断',outcome_unknown:'结果待核对'};
-let state={},intent=null,tab='content',cursor=0,messages=[],polling=false,modalHandler=null,toastTimer,observeTimer,autoTimer,semanticTask=null,automaticTask=null,inputRevision=0;
+let state={},intent=null,tab='content',cursor=0,messages=[],polling=false,modalHandler=null,toastTimer,observeTimer,autoTimer,semanticTask=null,automaticTask=null,inputRevision=0,changingWorkspace=false;
 const contentVersions=new Map();
 for(let i=0;i<12;i++){const shutter=document.createElement('div');shutter.className='shutter';shutter.style.setProperty('--i',i);shutter.style.setProperty('--direction',i%2?1:-1);const word=document.createElement('span');word.textContent='WANJIE';shutter.append(word);$('#shutters').append(shutter);}
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
@@ -22,7 +24,8 @@ async function enableAssistance(id){const current=await api('/intents/'+id);if(c
 $('#assist-auto').onchange=async()=>{sessionStorage.setItem('wanjie-assistance-v2',$('#assist-auto').checked?'on':'off');if(intent){try{if($('#assist-auto').checked)await enableAssistance(intent);else await command('intent.update',{preferences:{localOnly:true}});await refresh();if($('#assist-auto').checked)await observe();}catch(e){fail(e);}}};
 function renderCapsule(){const entered=growth.mode==='writing'||[...growth.blocks.values()].some(b=>!b.el.hidden)||!!$('#content [data-projection]');document.body.classList.toggle('entered',entered);$('#capsule-context').hidden=!$('#semantic-status').textContent&&!$('#suggestions').children.length;if(growth.mode==='writing'){growth.resize();return;}$('#request').style.height='auto';$('#request').style.height=Math.min(240,Math.max(28,$('#request').scrollHeight))+'px';}
 async function ensureIntent(){if(intent)return intent;if(!creatingIntent)creatingIntent=(async()=>{const text=$('#request').value.trim();const r=await command('intent.create',{title:text.split('\n')[0].slice(0,60)||'新的空间',state:{goal:text.slice(0,240)}},null);const id=value(r).id;if($('#assist-auto').checked)await enableAssistance(id);if(!intent){sessionStorage.setItem('runtime-draft:'+id,$('#request').value);await activate(id);}return intent;})().finally(()=>{creatingIntent=null;});return creatingIntent;}
-$('#history-open').onclick=()=>$('#history-dialog').showModal();
+const edgeHistory=installEdgeHistory($('#history-dialog'),$('#history-edge'));
+$('#history-open').onclick=()=>edgeHistory.open();
 $('#history-close').onclick=()=>$('#history-dialog').close();
 
 async function api(path,body){const r=await fetch('/api/runtime'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},body:body?JSON.stringify(body):undefined});const v=await r.json();if(!r.ok)throw Object.assign(new Error(v.error||'请求失败'),{code:v.code,confirmedFailure:r.status>=400&&r.status<500});return v;}
@@ -40,6 +43,7 @@ function field(name,label,val='',type='text'){return `<label class="field">${esc
 function createIntent(fork=false){dialog(fork?'分出一件新事':'新的意图',field('title','这件事叫什么')+field('goal','想达到什么结果')+`<p class="help">内容和执行记录会围绕这个意图保存。${fork?'原意图保留，分支有独立工作集。':''}</p>`,async data=>{const r=await command(fork?'intent.fork':'intent.create',{title:data.get('title')||'新的意图',state:{goal:data.get('goal')}},fork?intent:null);await activate(value(r).id);},'创建');}
 async function activate(id,push=true){if(intent&&intent!==id){growth.cache();if(growth.dirty)await growth.save();}if($('#history-dialog').open)$('#history-dialog').close();if($('#dialog').open)$('#dialog').close();if(intent)sessionStorage.setItem('runtime-draft:'+intent,$('#request').value);intent=id;semanticTask=null;automaticTask=null;$('#semantic-status').textContent='';inputRevision++;clearTimeout(observeTimer);clearTimeout(autoTimer);await command('intent.activate');if(sessionStorage.getItem('wanjie-assistance-v2')!=='off')await enableAssistance(id);if(push)history.pushState({},'', '/w/'+id);contentVersions.clear();$('#content').replaceChildren();$('#request').value=sessionStorage.getItem('runtime-draft:'+id)||'';messages=[];cursor=0;await refresh();await poll();}
 function render(){
+ if(changingWorkspace)return;
  renderCapsule();
  $('#connection').textContent='已连接 · 本机';
  $('#intent-list').innerHTML=(state.intents||[]).sort((a,b)=>b.updated-a.updated).map(i=>`<button data-intent="${i.id}" class="${i.id===intent?'active':''}">${esc(i.title)}<small>${esc(status[i.status])} · ${esc(phases[i.state.phase]||i.state.phase||'未分类')}</small></button>`).join('');
@@ -103,8 +107,8 @@ function capabilityDialog(){dialog('运行能力',`<label class="field">能力<s
 function workflowDialog(){const dataset=(state.artifacts||[]).find(a=>a.kind==='dataset');const steps=dataset?[{id:'analyze',capability:'data.analyze',input:{artifact:dataset.id}},{id:'write',capability:'text.generate',input:{text:$('#request').value||'根据统计写总结',mode:'write'},dependsOn:['analyze']}]:[{id:'search',capability:'repo.search',input:{query:$('#request').value||'Intent'}}];dialog('组合能力',`<p class="help">步骤按依赖顺序执行。每一步独立检查权限，已完成的内容会保留。临时工作者使用同一执行协议。</p><label class="field">组合图 JSON<textarea name="steps" style="min-height:280px">${esc(JSON.stringify(steps,null,2))}</textarea></label><label><input type="checkbox" name="agent">作为临时工作者运行</label>`,async f=>{await run(f.has('agent')?'agent.run':'workflow.run',{steps:JSON.parse(f.get('steps'))});},'执行');}
 async function cancelTracked(){const owner=intent;const tasks=[semanticTask,automaticTask].filter(Boolean);semanticTask=null;automaticTask=null;await Promise.all(tasks.map(task=>command('task.cancel',{task},owner).catch(fail)));}
 async function observe({interactive=false}={}){if(!$('#request').value.trim())return;await ensureIntent();const text=$('#request').value.trim();if(!text)return;const remote=state.capabilities.find(c=>c.id==='semantic.observe')?.network;if(remote&&state.intent.preferences.localOnly){$('#semantic-status').textContent='仅本地 · JEV 已暂停';return;}if(remote&&!state.grants.some(g=>!g.revoked&&g.expiresAt>Date.now()&&g.remaining>0&&g.network&&g.capabilities.includes('semantic.observe'))){$('#semantic-status').textContent='JEV 待授权';if(interactive)grantDialog(['semantic.observe'],()=>observe());return;}const revision=inputRevision,owner=intent;const previous=semanticTask;semanticTask=null;if(previous)await command('task.cancel',{task:previous},owner);if(revision!==inputRevision||owner!==intent)return;const r=await command('semantic.observe',{text,view:growth.semanticContext()},owner);if(revision===inputRevision&&owner===intent)semanticTask=r.task.id;else await command('task.cancel',{task:r.task.id},owner);await refresh();}
-async function poll(){if(polling)return;polling=true;try{const requested=intent;const r=await api('/messages/'+cursor+(requested?'/'+requested:''));if(requested!==intent)return;if(r.messages.length){cursor=r.cursor;messages.push(...r.messages);messages=messages.slice(-500);await refresh();}else $('#connection').textContent='已连接 · 本机';}catch(e){$('#connection').textContent='连接中断；恢复后继续读取记录';}finally{polling=false;}}
-$('#new-intent').onclick=$('#start-intent').onclick=()=>createIntent();$('#edit-intent').onclick=editIntent;$('#fork-intent').onclick=()=>createIntent(true);
+async function poll(){if(polling||changingWorkspace)return;polling=true;try{const requested=intent;const r=await api('/messages/'+cursor+(requested?'/'+requested:''));if(requested!==intent)return;if(r.messages.length){cursor=r.cursor;messages.push(...r.messages);messages=messages.slice(-500);await refresh();}else $('#connection').textContent='已连接 · 本机';}catch(e){$('#connection').textContent='连接中断；恢复后继续读取记录';}finally{polling=false;}}
+$('#new-intent').onclick=$('#start-intent').onclick=()=>newWorkspace(true).catch(fail);$('#edit-intent').onclick=editIntent;$('#fork-intent').onclick=()=>createIntent(true);
 $('#suspend-intent').onclick=async()=>{await command('intent.suspend');await refresh();};$('#archive-intent').onclick=async()=>{await command('intent.archive');await refresh();};
 $('#save-note').onclick=()=>save('note').catch(fail);$('#save-memory').onclick=()=>save('memory').catch(fail);
 $('#generate').onclick=()=>run('text.generate',{text:$('#request').value,mode:$('#generation-mode').value}).catch(fail);$('#market').onclick=()=>run('market.query',{text:$('#request').value||'A股行情'}).catch(fail);
@@ -114,7 +118,32 @@ $('#import-data').onclick=()=>dialog('导入数据',field('name','名称','我�
 $('#local-only').onchange=async()=>{const checked=$('#local-only').checked;sessionStorage.setItem('wanjie-assistance-v2',checked?'off':'on');try{await ensureIntent();if(checked)await command('intent.update',{preferences:{localOnly:true}});else await enableAssistance(intent);await refresh();}catch(e){fail(e);}};
 $('#auto-run').onchange=async()=>{const checked=$('#auto-run').checked;try{await ensureIntent();await command('intent.update',{preferences:{autoRun:checked}});await refresh();if($('#auto-run').checked)notify('自动内容使用已有授权与调用次数；停止输入后生成。');}catch(e){fail(e);}};
 let composing=false;$('#request').oncompositionstart=()=>{composing=true;clearTimeout(observeTimer);clearTimeout(autoTimer);};$('#request').oncompositionend=()=>{composing=false;$('#request').dispatchEvent(new Event('input'));};
-$('#request').oninput=()=>{renderCapsule();growth.changed();inputRevision++;const revision=inputRevision,owner=intent;const text=$('#request').value;if(owner)sessionStorage.setItem('runtime-draft:'+owner,text);clearTimeout(observeTimer);clearTimeout(autoTimer);cancelTracked().catch(fail);$('#suggestions').replaceChildren();$('#semantic-status').textContent='';if(composing||!text.trim())return;observeTimer=setTimeout(()=>observe().catch(fail),900);if(growth.mode!=='writing'&&state.intent?.preferences.autoRun&&!state.intent.preferences.localOnly)autoTimer=setTimeout(async()=>{try{if(revision!==inputRevision||owner!==intent||!state.intent.preferences.autoRun||state.intent.preferences.localOnly)return;const r=await command('capability.run',{capability:'text.generate',input:{text,mode:'scene'}},owner);const task=r.task;if(revision===inputRevision&&owner===intent)automaticTask=task?.id;else if(task)await command('task.cancel',{task:task.id},owner);await refresh();}catch(e){if(owner===intent)$('#semantic-status').textContent=e.message;}},900);};
+$('#request').oninput=()=>{renderCapsule();growth.changed();inputRevision++;const revision=inputRevision,owner=intent;const text=$('#request').value;if(owner)sessionStorage.setItem('runtime-draft:'+owner,text);clearTimeout(observeTimer);clearTimeout(autoTimer);cancelTracked().catch(fail);$('#suggestions').replaceChildren();$('#semantic-status').textContent='';if(composing)return;if(!text.trim()){if(growth.mode==='writing'&&!growth.manual)newWorkspace(false).catch(fail);return;}observeTimer=setTimeout(()=>observe().catch(fail),900);if(growth.mode!=='writing'&&state.intent?.preferences.autoRun&&!state.intent.preferences.localOnly)autoTimer=setTimeout(async()=>{try{if(revision!==inputRevision||owner!==intent||!state.intent.preferences.autoRun||state.intent.preferences.localOnly)return;const r=await command('capability.run',{capability:'text.generate',input:{text,mode:'scene'}},owner);const task=r.task;if(revision===inputRevision&&owner===intent)automaticTask=task?.id;else if(task)await command('task.cancel',{task:task.id},owner);await refresh();}catch(e){if(owner===intent)$('#semantic-status').textContent=e.message;}},900);};
+async function newWorkspace(slide=true){
+ if(changingWorkspace)return;
+ if(creatingIntent)await creatingIntent;
+ const owner=intent,revision=inputRevision;
+ clearTimeout(observeTimer);clearTimeout(autoTimer);clearTimeout(growth.saveTimer);
+ await cancelTracked();
+ if(growth.mode==='writing'&&(growth.note||$('#request').value.trim()))await growth.save();
+ else if(owner)sessionStorage.setItem('runtime-draft:'+owner,$('#request').value);
+ // Never discard text entered while a save was in flight.
+ if(owner!==intent||revision!==inputRevision)return;
+ if(!slide&&owner)await command('surface.update',{mode:'general',document:'',manual:false,blocks:{}},owner);
+ if(owner!==intent||revision!==inputRevision)return;
+ changingWorkspace=true;
+ try{await returnToOrigin({slide,reset:()=>{
+  if($('#history-dialog').open)$('#history-dialog').close();
+  intent=null;inputRevision++;cursor=0;messages=[];tab='content';semanticTask=null;automaticTask=null;
+  history.pushState({},'', '/');contentVersions.clear();$('#content').replaceChildren();
+  $('#request').value='';$('#semantic-status').textContent='';$('#suggestions').replaceChildren();
+  for(const id of ['tasks','notifications'])$('#'+id).replaceChildren();
+  $('#workspace').hidden=true;$('#intent-actions').hidden=true;
+  growth.update({},null);renderCapsule();$('#request').focus({preventScroll:true});
+ }});}finally{changingWorkspace=false;}
+ await refresh();
+}
+installNextGesture(()=>newWorkspace(true).catch(fail));
 $('#request').onkeydown=e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)&&!e.isComposing){e.preventDefault();$('#generate').click();}};
 $('#modules-button').onclick=()=>dialog('能力与模块',(state.modules||[]).map(m=>`<div class="row"><div class="grow">${esc(m.manifest.title)}<small>${esc(m.id)} · ${m.manifest.side_effect}${m.manifest.network?' · 网络':''}</small></div><button type="button" data-module="${m.id}" data-enabled="${!m.enabled}">${m.enabled?'停用':'启用'}</button></div>`).join(''),null);
 $('#export').onclick=()=>{const content='# '+state.intent.title+'\n\n'+state.artifacts.map(a=>'## '+a.title+'\n\n'+(a.content.text??JSON.stringify(a.content,null,2))).join('\n\n');const url=URL.createObjectURL(new Blob([content],{type:'text/markdown;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download='wanjie-'+intent.slice(0,8)+'.md';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
