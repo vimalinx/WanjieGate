@@ -71,3 +71,5 @@ Carbon 注册 Control + Option + Space；NSPanel 浮于普通窗口之上，支�
 按用户新反馈，空闲仍仅搜索框；输入展开时显示原生 NSVisualEffectView 磨砂面板，增加泡泡边缘与文字对比度，并显示候选等待、授权/错误及空结果提示。原生截图已核对。替代上一版展开状态无底板的视觉选择，历史需求保留。
 
 证据：`backend/vicinae.py`、`tools/test_vicinae.py`、`integrations/vicinae/IntentPanel.swift`、`static/launcher.css`、`static/js/bubbles/app.mjs`。实现与验证：Codex；用户作者归属仍 unknown，不推定双方共识。
+
+视觉后续：降低展开渐变底色从 65–70% 到 8–15%，搜索框底色从约 94% 到 60%，结果抽屉从约 91% 到 26%；桌面磨砂继续由原生 NSVisualEffectView 提供。原生窗口已重新加载并检查，单窗口截图不能完整验证背后桌面的合成效果。用户所指是否包含外部应用跳转尚待澄清，未改动启动语义。
