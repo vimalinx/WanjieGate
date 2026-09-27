@@ -602,5 +602,42 @@
     "type": "object",
     "properties": {},
     "additionalProperties": false
+  },
+  "bubble.run": {
+    "type": "object",
+    "properties": {
+      "runId": {
+        "type": "string",
+        "maxLength": 160,
+        "minLength": 1
+      },
+      "canvas": {
+        "type": "string",
+        "maxLength": 160,
+        "minLength": 1
+      },
+      "groupId": {
+        "type": "string",
+        "maxLength": 160,
+        "minLength": 1
+      },
+      "text": {
+        "type": "string",
+        "maxLength": 12000,
+        "minLength": 1
+      },
+      "version": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "required": [
+      "runId",
+      "canvas",
+      "version",
+      "groupId",
+      "text"
+    ],
+    "additionalProperties": false
   }
 }

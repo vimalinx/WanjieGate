@@ -17,6 +17,9 @@ def content_schema(kind):
 
 def validate_content(kind,content):
     validate(content,content_schema(kind),'$.content')
+    if kind=='bubble-canvas':
+        from .bubbles import validate_canvas
+        validate_canvas(content)
     if kind=='dataset':
         h=content['headers'];rows=content['rows'];columns=content['numeric']
         if not h or not rows or not columns or any(len(r)!=len(h) for r in rows) or any(c>=len(h) for c in columns):

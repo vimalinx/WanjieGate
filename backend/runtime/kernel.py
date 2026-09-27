@@ -133,6 +133,7 @@ class Kernel:
         validate(p,self.command_schemas[type_])
         if command['timestamp']>now()+60000:raise Fault('invalid_timestamp','命令时间超出范围')
         if 'ttl' in command and now()>command['timestamp']+command['ttl']:raise Fault('expired','命令已过期')
+        if type_=='bubble.run' and (command['id']!=p['runId'] or command.get('idempotencyKey',command['id'])!=p['runId']):raise Fault('invalid_run_id','运行身份必须与命令身份一致')
         key=principal+':'+command.get('idempotencyKey',command['id'])
         fingerprint=hashlib.sha256(dump([type_,intent_id,p,command.get('expectedRevision')]).encode()).hexdigest()
         scheduled=None
@@ -161,6 +162,11 @@ class Kernel:
 
     def _dispatch(self,tx,c,principal):
         t=c['type'];p=c['payload'];iid=c.get('intent')
+        if t=='bubble.run':
+            from .bubbles import prepare_run
+            inp=prepare_run(tx,iid,p)
+            ctx={'intent':iid,'revision':tx.get(iid,'intent')['version'],'budget':inp['budget'],'used':sum(len(x['text']) for x in inp['sources']),'items':[{'artifact':x['id'],'version':x['version'],'detail':x['detail']} for x in inp['sources']],'excluded':[],'builtAt':now()}
+            return self._queue(tx,c,'bubble.execute',inp,None,principal,context_override=ctx)
         if t in ('intent.create','intent.fork'):
             parent=iid if t=='intent.fork' else p.get('parent','')
             if parent:tx.get(parent,'intent')
@@ -281,7 +287,8 @@ class Kernel:
             return g['id']
         raise Fault('permission_required','需要为此能力授予当前意图的调用权限')
 
-    def _queue(self,tx,c,cap,inp,grant,principal,provider=None):
+    def _queue(self,tx,c,cap,inp,grant,principal,provider=None,context_override=None):
+        if cap=='bubble.execute' and c['type']!='bubble.run':raise Fault('scope_denied','组合执行必须通过 bubble.run 编译')
         if cap not in self.providers:raise Fault('unknown_capability','能力不可用')
         candidates=self.bindings[cap]
         if provider and provider not in candidates:raise Fault('provider_unavailable','指定提供者不可用')
@@ -294,7 +301,9 @@ class Kernel:
         if len(active)>=12:raise Fault('queue_full','执行队列已满')
         if sum(t['intent']==c['intent'] for t in active)>=3:raise Fault('intent_busy','此意图最多同时接受三个任务')
         grant=self._permission(tx,spec,c['intent'],inp,grant,principal)
-        ctx=build(tx,c['intent']);fingerprint=hashlib.sha256(dump([cap,inp,[(i['artifact'],i['version']) for i in ctx['items']]]).encode()).hexdigest()
+        ctx=context_override if context_override is not None else build(tx,c['intent'])
+        if cap in ('bubble.suggest','bubble.merge'):ctx={**ctx,'items':[],'used':0}
+        fingerprint=hashlib.sha256(dump([cap,inp,[(i['artifact'],i['version']) for i in ctx['items']]]).encode()).hexdigest()
         task=tx.put({'id':uid(),'type':'task','intent':c['intent'],'capability':cap,'provider':spec['module'],'status':'queued',
                      'command':c,'input':inp,'context':ctx,'grant':grant,'cancelRequested':False,'artifacts':[],'progress':[], 'fingerprint':fingerprint},create=True)
         validate(task,schema('task'));tx.emit('task.queued',{'task':task},c['intent'],c)
@@ -311,7 +320,7 @@ class Kernel:
                 if tx.get(task['intent'],'intent')['status']=='archived':raise Fault('intent_archived','意图已归档')
                 allowed=accessible(tx,task['intent'])
                 members={m['artifact']:m for m in tx.list('member',task['intent'])}
-                if any(item['artifact'] not in allowed or allowed[item['artifact']]['version']!=item['version'] or members.get(item['artifact'],{}).get('detail','full')!=item.get('detail','full') for item in task['context']['items']):
+                if any(item['artifact'] not in allowed or (task['capability']!='bubble.execute' and (allowed[item['artifact']]['version']!=item['version'] or members.get(item['artifact'],{}).get('detail','full')!=item.get('detail','full'))) for item in task['context']['items']):
                     raise Fault('context_changed','排队期间上下文或共享权限已变化，请重新发起')
                 self._permission(tx,spec,task['intent'],task['input'],task['grant'] or None,'human',consume=True)
             except Fault as exc:
