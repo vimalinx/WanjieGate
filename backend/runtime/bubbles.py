@@ -91,13 +91,10 @@ def install_bubbles(kernel,jev,generator):
         kernel.register(spec,manifest,handler)
     def suggest(t,p,c):
         inp=t['input'];text=inp['text']
-        with kernel.db.transaction() as tx:items=candidates(text,list(accessible(tx,t['intent']).values()))
-        questions={str(i):{'type':'noul','instructions':'用户想做的事是：'+text+'。判断这个具体候选是否直接有帮助：'+x['title']+'（'+x['description']+'）。候选的主题必须与需求相符。尊重否定和自己写作的要求；不相干的资料或动作应判为不适合。'} for i,x in enumerate(items)}
-        decision=jev.decide({'request':text,'candidates':items},questions)
-        selected=[{**x,'score':decision['answers'][str(i)]['noul']} for i,x in enumerate(items)]
-        selected=[x for x in selected if x['score']>=.55 and not(no_writing(text) and x['resource'].get('action')=='write')]
-        selected.sort(key=lambda x:(-x['score'],x['id']))
-        return {'artifacts':[],'decision':decision,'candidates':selected}
+        items=candidates(text,[])  # Saved sources are chosen explicitly, never inferred from generic titles.
+        from ..bubble_scenarios import questions,resolve
+        decision=jev.decide({'request':text,'candidates':items},questions(items))
+        return {'artifacts':[],'decision':decision,**resolve(text,items,decision)}
     def merge(t,p,c):
         inp=t['input'];options=merge_options(inp['left'],inp['right'])
         decision=jev.decide({'request':inp['text'],'left':inp['left'],'right':inp['right']},{'relation':{'type':'choice','instructions':'用户正在把两个泡泡拖到一起。选择最符合目的且可执行的组合含义。遵守否定约束；无法确定则选 none。','criteria':options}})

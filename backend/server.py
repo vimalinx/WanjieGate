@@ -8,6 +8,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 from .providers import Generator, Kev
 from .store import Store
+from .device_tools import discover, launch_obsidian, launch_app
 from .runtime import Kernel
 from .runtime.protocol import Fault, ROOT as PROTOCOL_ROOT
 
@@ -86,6 +87,12 @@ class Handler(SimpleHTTPRequestHandler):
             self.send_json({'error': '服务暂时无法处理请求'}, 500)
 
     def route(self, method, path, b):
+        if path == '/api/device-tools' and method == 'GET':
+            return discover()
+        if path == '/api/device-tools/open' and method == 'POST':
+            return launch_app(b)
+        if path == '/api/device-tools/obsidian' and method == 'POST':
+            return launch_obsidian(b, ROOT / '.data')
         kernel = self.server.kernel
         if path == '/api/runtime/commands' and method == 'POST':
             return kernel.execute(b)

@@ -1,0 +1,33 @@
+{
+  "request": "我想学懂傅里叶变换，帮我想几个学习和复习的办法。",
+  "task": "54351b7240264dbbadc0ed43a8babd47",
+  "model": "typesafe/jev-1.13-20260917",
+  "elapsed_ms": 5760,
+  "candidates": [
+    {
+      "title": "制作复习卡片",
+      "score": 0.79,
+      "scene": "learning"
+    },
+    {
+      "title": "安排复习节奏",
+      "score": 0.75,
+      "scene": "learning"
+    },
+    {
+      "title": "换个例子讲解",
+      "score": 0.68,
+      "scene": "learning"
+    },
+    {
+      "title": "根据材料出题",
+      "score": 0.68,
+      "scene": "learning"
+    },
+    {
+      "title": "讲解这个知识点",
+      "score": 0.63,
+      "scene": "learning"
+    }
+  ]
+}

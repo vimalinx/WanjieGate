@@ -1,0 +1,159 @@
+{
+  "note": "真实浏览器触发的示例；不是独立准确率评估。保留各表达的最近一次已完成判断。",
+  "examples": [
+    {
+      "text": "根据这份笔记出五道题，先别给答案。",
+      "task": "342be08d201441ff9a3452fe6d1dbcaf",
+      "status": "success",
+      "understanding": {
+        "scene": "learning",
+        "interaction": "request",
+        "message": "学习复习 · 问题与限制会一起带到学习工具；有笔记可添加后组合。",
+        "request": "根据这份笔记出五道题，先别给答案。"
+      },
+      "candidates": [
+        {
+          "title": "根据材料出题",
+          "kind": "action",
+          "action": "quiz"
+        }
+      ],
+      "model": "typesafe/jev-1.13-20260917",
+      "elapsed_ms": 624
+    },
+    {
+      "text": "先别查股价，帮我解释市盈率。",
+      "task": "6e8d00c06fb74a74a62d891245d346c5",
+      "status": "success",
+      "understanding": {
+        "scene": "learning",
+        "interaction": "request",
+        "message": "学习复习 · 添加学习材料并连接动作；出题数量、不给答案等要求会一起带到工具。",
+        "request": "先别查股价，帮我解释市盈率。"
+      },
+      "candidates": [
+        {
+          "title": "讲解这个知识点",
+          "kind": "action",
+          "action": "explain"
+        }
+      ],
+      "model": "typesafe/jev-1.13-20260917",
+      "elapsed_ms": 1045
+    },
+    {
+      "text": "帮我写测试代码。",
+      "task": "0f798ebdb2b34517ac186dfc0e954410",
+      "status": "success",
+      "understanding": {
+        "scene": "development",
+        "interaction": "request",
+        "message": "代码开发 · 添加代码或报错并连接动作；本页不会修改仓库或运行测试。",
+        "request": "帮我写测试代码。"
+      },
+      "candidates": [
+        {
+          "title": "分析与处理代码",
+          "kind": "action",
+          "action": "code"
+        }
+      ],
+      "model": "typesafe/jev-1.13-20260917",
+      "elapsed_ms": 662
+    },
+    {
+      "text": "继续。",
+      "task": "668ad36adc79438985e6865eeaed225d",
+      "status": "success",
+      "understanding": {
+        "scene": "unknown",
+        "interaction": "clarify",
+        "message": "你想继续哪件事？请补充对象，或打开已有组合继续。",
+        "request": "继续。"
+      },
+      "candidates": [],
+      "model": "typesafe/jev-1.13-20260917",
+      "elapsed_ms": 1792
+    },
+    {
+      "text": "只有一天时间，帮我安排这个 Demo 的开发顺序。",
+      "task": "1fa2c0fd460046528f2a2bdabf257843",
+      "status": "success",
+      "understanding": {
+        "scene": "planning",
+        "interaction": "request",
+        "message": "计划决策 · 补充期限、预算等限制；本页不会创建日历或预订。",
+        "request": "只有一天时间，帮我安排这个 Demo 的开发顺序。"
+      },
+      "candidates": [
+        {
+          "title": "形成行动清单",
+          "kind": "action",
+          "action": "plan"
+        }
+      ],
+      "model": "typesafe/jev-1.13-20260917",
+      "elapsed_ms": 905
+    },
+    {
+      "text": "写一篇介绍股票基础知识的文章。",
+      "task": "656c4378bf674166b5da6061b4beb37e",
+      "status": "success",
+      "understanding": {
+        "scene": "writing",
+        "interaction": "request",
+        "message": "内容创作 · 把原文或笔记与动作连接，再交给写作工具。",
+        "request": "写一篇介绍股票基础知识的文章。"
+      },
+      "candidates": [
+        {
+          "title": "写一篇草稿",
+          "kind": "action",
+          "action": "write"
+        }
+      ],
+      "model": "typesafe/jev-1.13-20260917",
+      "elapsed_ms": 1442
+    },
+    {
+      "text": "对比这两个链接里的方案，列出各自的优缺点。",
+      "task": "a60cfa07b38946198ec7c7ca41baca0c",
+      "status": "success",
+      "understanding": {
+        "scene": "research",
+        "interaction": "request",
+        "message": "资料研究 · 添加要比较的资料或链接；网页搜索只打开入口，尚未读取结果。",
+        "request": "对比这两个链接里的方案，列出各自的优缺点。"
+      },
+      "candidates": [
+        {
+          "title": "对比资料",
+          "kind": "action",
+          "action": "compare"
+        }
+      ],
+      "model": "typesafe/jev-1.13-20260917",
+      "elapsed_ms": 923
+    },
+    {
+      "text": "查一下腾讯现在的股价，标明报价时间。",
+      "task": "d6b5342d148a43d59778b82eaceba83e",
+      "status": "success",
+      "understanding": {
+        "scene": "market",
+        "interaction": "request",
+        "message": "行情研究 · 补充股票名称或代码；尚未接入全市场筛选和交易。",
+        "request": "查一下腾讯现在的股价，标明报价时间。"
+      },
+      "candidates": [
+        {
+          "title": "查询股票行情",
+          "kind": "source",
+          "action": null
+        }
+      ],
+      "model": "typesafe/jev-1.13-20260917",
+      "elapsed_ms": 743
+    }
+  ]
+}

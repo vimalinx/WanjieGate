@@ -25,3 +25,8 @@ const changingReq=mergeRequest(changing,'a','b');let changed=reduce(changing,{ty
 assert.equal(reduce(changed,{type:'mergeResult',request:changingReq,result:{status:'clear',operation:'combine'}}).groups.length,0,'member revision changes must invalidate fusion');
 const uncertain=initialState({runs:{g:{runId:'charged',status:'outcome_unknown'}}});
 assert.equal(reduce(uncertain,{type:'runAgain',groupId:'g',runId:'duplicate'}).runs.g.runId,'charged','unknown run cannot silently become new execution');
+let intentState=reduce(initialState(),{type:'input',text:'考考我'});
+intentState=reduce(intentState,{type:'suggestions',revision:intentState.inputRevision,mode:'initial',items:[],understanding:{scene:'learning',request:'考考我',message:'添加材料'}});
+assert.equal(intentState.understanding.scene,'learning');
+intentState=reduce(intentState,{type:'input',text:'继续'});
+assert.equal(intentState.understanding,null);

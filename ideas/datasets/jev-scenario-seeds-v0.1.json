@@ -1,0 +1,1073 @@
+{
+  "version": "0.1-draft",
+  "created": "2026-09-27",
+  "author": "Codex",
+  "status": "synthetic_seed_unvalidated",
+  "purpose": "WanjieGate 场景定义、提示样例与后续评测准备；未训练模型，非现有 Jev API 契约。",
+  "scenes": [
+    {
+      "id": "research",
+      "name": "资料研究",
+      "default_phase": "researching",
+      "keywords": [
+        "查资料",
+        "了解",
+        "比较",
+        "依据",
+        "来源",
+        "优缺点"
+      ],
+      "capability_catalog": [
+        "web.read",
+        "memory.retrieve",
+        "text.generate"
+      ],
+      "tools": [
+        "公开网页读取",
+        "已有资料检索",
+        "证据比较与归纳"
+      ],
+      "limitations": [
+        "联网搜索、PDF 解析待接入"
+      ]
+    },
+    {
+      "id": "writing",
+      "name": "内容创作",
+      "default_phase": "writing",
+      "keywords": [
+        "写",
+        "改写",
+        "润色",
+        "草稿",
+        "提纲",
+        "文案"
+      ],
+      "capability_catalog": [
+        "memory.retrieve",
+        "text.generate"
+      ],
+      "tools": [
+        "相关材料检索",
+        "提纲和正文生成",
+        "修订与版本保存"
+      ],
+      "limitations": [
+        "PPTX、音视频产物需额外适配"
+      ]
+    },
+    {
+      "id": "learning",
+      "name": "学习复习",
+      "default_phase": "researching",
+      "keywords": [
+        "学懂",
+        "解释",
+        "复习",
+        "例题",
+        "错题",
+        "考我"
+      ],
+      "capability_catalog": [
+        "memory.retrieve",
+        "text.generate"
+      ],
+      "tools": [
+        "笔记检索",
+        "概念讲解",
+        "练习生成与讲评"
+      ],
+      "limitations": [
+        "课件解析、持久错题状态待补充"
+      ]
+    },
+    {
+      "id": "development",
+      "name": "代码开发",
+      "default_phase": "implementation",
+      "keywords": [
+        "代码",
+        "报错",
+        "调试",
+        "接口",
+        "测试",
+        "修复"
+      ],
+      "capability_catalog": [
+        "repo.search",
+        "repo.read",
+        "text.generate",
+        "patch.apply",
+        "git.diff",
+        "test.run"
+      ],
+      "tools": [
+        "项目搜索和读取",
+        "代码分析",
+        "受控修改",
+        "差异检查与测试"
+      ],
+      "limitations": [
+        "现有仓库能力仅限本项目；不代表完整 IDE"
+      ]
+    },
+    {
+      "id": "planning",
+      "name": "计划决策",
+      "default_phase": "planning",
+      "keywords": [
+        "计划",
+        "安排",
+        "预算",
+        "选择",
+        "清单",
+        "截止"
+      ],
+      "capability_catalog": [
+        "memory.retrieve",
+        "text.generate"
+      ],
+      "tools": [
+        "约束整理",
+        "备选方案比较",
+        "步骤和清单生成"
+      ],
+      "limitations": [
+        "实时旅行数据、日历读写和提醒调度待接入"
+      ]
+    },
+    {
+      "id": "market",
+      "name": "行情研究",
+      "default_phase": "researching",
+      "keywords": [
+        "股票",
+        "股价",
+        "行情",
+        "走势",
+        "成交量",
+        "研究卡片"
+      ],
+      "capability_catalog": [
+        "market.query",
+        "web.read",
+        "text.generate"
+      ],
+      "tools": [
+        "带时间戳的行情查询",
+        "公开资料读取",
+        "研究卡片生成"
+      ],
+      "limitations": [
+        "实时可用性需实测；不含交易能力"
+      ]
+    }
+  ],
+  "examples": [
+    {
+      "id": "research-01",
+      "utterance": "对比这两个链接里的方案，列出各自的优缺点。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "research",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "web.read",
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "research-02",
+      "utterance": "我想搞清楚这个技术到底解决了什么问题。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "research",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "research-03",
+      "utterance": "这些资料对同一个问题有哪些不同看法？",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "research",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "research-04",
+      "utterance": "这个结论有什么依据，帮我从已有材料里找找。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "research",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "memory.retrieve",
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "research-05",
+      "utterance": "先帮我整理这个主题需要了解的问题，暂时不用写正文。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "research",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "research-06",
+      "utterance": "这两个东西看着差不多，到底差在哪？",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "research",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "writing-01",
+      "utterance": "把这些笔记整理成一篇文章。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "writing",
+        "phase": "writing",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "writing-02",
+      "utterance": "这段太生硬了，帮我改得自然一点。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "writing",
+        "phase": "writing",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "writing-03",
+      "utterance": "按这份资料写一个三分钟演讲稿。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "writing",
+        "phase": "writing",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "writing-04",
+      "utterance": "给这篇文章起几个标题。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "writing",
+        "phase": "writing",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "writing-05",
+      "utterance": "保留我的观点，把结构重新理一下。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "writing",
+        "phase": "writing",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "writing-06",
+      "utterance": "意思没错，但读起来不像我说的话，再改改。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "writing",
+        "phase": "writing",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "learning-01",
+      "utterance": "用一个简单例子讲明白傅里叶变换。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "learning",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "learning-02",
+      "utterance": "根据这份笔记出五道题，先别给答案。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "learning",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "learning-03",
+      "utterance": "这道题我为什么做错了？",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "learning",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "learning-04",
+      "utterance": "把这章知识点整理成复习提纲。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "learning",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "learning-05",
+      "utterance": "考考我刚学的内容，一次只问一道。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "learning",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "learning-06",
+      "utterance": "我看了三遍还是没懂，换个讲法。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "learning",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "development-01",
+      "utterance": "万界门这个接口为什么返回空数据？",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "development",
+        "phase": "implementation",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "repo.search",
+          "repo.read",
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "development-02",
+      "utterance": "帮我在本项目找一下登录逻辑在哪。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "development",
+        "phase": "implementation",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "repo.search"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "development-03",
+      "utterance": "先解释这段代码，不要修改。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "development",
+        "phase": "implementation",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "repo.read",
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "development-04",
+      "utterance": "定位这个报错，给出修复方案。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "development",
+        "phase": "implementation",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "repo.search",
+          "repo.read",
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "development-05",
+      "utterance": "把刚才确认的修复应用到这个文件，并跑测试。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "development",
+        "phase": "implementation",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "repo.read",
+          "patch.apply",
+          "test.run"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "development-06",
+      "utterance": "这次改完又坏了，看看和原来有什么区别。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "development",
+        "phase": "implementation",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "git.diff",
+          "repo.read",
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "planning-01",
+      "utterance": "只有一天时间，帮我安排这个 Demo 的开发顺序。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "planning",
+        "phase": "planning",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "planning-02",
+      "utterance": "按我给的预算和候选电脑，整理一下怎么选。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "planning",
+        "phase": "planning",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "planning-03",
+      "utterance": "把这些事情按周五交付倒排一下。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "planning",
+        "phase": "planning",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "planning-04",
+      "utterance": "根据这些已确定的地点，排一个周末旅行草案。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "planning",
+        "phase": "planning",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "planning-05",
+      "utterance": "帮我列出这次活动出发前要准备的东西。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "planning",
+        "phase": "planning",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "planning-06",
+      "utterance": "事情太多了，帮我排一下先做哪件。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "planning",
+        "phase": "planning",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "market-01",
+      "utterance": "查一下腾讯现在的股价，标明报价时间。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "market",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "market.query"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "market-02",
+      "utterance": "看看这只股票最近的走势。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "market",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "market.query"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "market-03",
+      "utterance": "把这家公司的行情和我给的资料整理成研究卡片。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "market",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "market.query",
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "market-04",
+      "utterance": "这只股票今天成交量多少？",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "market",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "market.query"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "market-05",
+      "utterance": "先获取行情，再把数据里值得关注的变化列出来。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "market",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "market.query",
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "market-06",
+      "utterance": "我想跟踪这家公司，先整理一张基本信息卡。",
+      "context": {
+        "current_scene": null,
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "market",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "resolve_references_if_missing"
+      },
+      "note": "人工合成的场景种子样例；能力仅为候选，不代表工具齐备、参数完整或执行授权。"
+    },
+    {
+      "id": "boundary-01",
+      "utterance": "继续写昨天那篇文章。",
+      "context": {
+        "current_scene": "writing",
+        "current_intent": "article-A"
+      },
+      "expected": {
+        "scene": "writing",
+        "phase": "writing",
+        "continuity": "resume",
+        "interaction": "request",
+        "capability_candidates": [
+          "memory.retrieve",
+          "text.generate"
+        ],
+        "clarification": "context_dependent"
+      },
+      "note": "明确恢复写作；不能只归类为恢复。"
+    },
+    {
+      "id": "boundary-02",
+      "utterance": "继续。",
+      "context": {
+        "current_scene": null
+      },
+      "expected": {
+        "scene": "unknown",
+        "phase": null,
+        "continuity": "unknown",
+        "interaction": "clarify",
+        "capability_candidates": [],
+        "clarification": "context_dependent"
+      },
+      "note": "缺少当前任务，先询问继续哪件事。"
+    },
+    {
+      "id": "boundary-03",
+      "utterance": "先别查股价，帮我解释市盈率。",
+      "context": {
+        "current_scene": "market"
+      },
+      "expected": {
+        "scene": "learning",
+        "phase": "researching",
+        "continuity": "same",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "context_dependent"
+      },
+      "note": "否定行情查询；主题延续但活动切换为学习。"
+    },
+    {
+      "id": "boundary-04",
+      "utterance": "写一篇介绍股票基础知识的文章。",
+      "context": {},
+      "expected": {
+        "scene": "writing",
+        "phase": "writing",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "context_dependent"
+      },
+      "note": "股票是写作主题，不自动调用行情。"
+    },
+    {
+      "id": "boundary-05",
+      "utterance": "帮我写测试代码。",
+      "context": {
+        "current_scene": "development"
+      },
+      "expected": {
+        "scene": "development",
+        "phase": "implementation",
+        "continuity": "same",
+        "interaction": "request",
+        "capability_candidates": [
+          "repo.read",
+          "text.generate"
+        ],
+        "clarification": "context_dependent"
+      },
+      "note": "写不一定属于内容创作；未指定直接落盘。"
+    },
+    {
+      "id": "boundary-06",
+      "utterance": "看看这个。",
+      "context": {
+        "selected_artifacts": []
+      },
+      "expected": {
+        "scene": "unknown",
+        "phase": null,
+        "continuity": "unknown",
+        "interaction": "clarify",
+        "capability_candidates": [],
+        "clarification": "context_dependent"
+      },
+      "note": "作用对象和动作都不明确。"
+    },
+    {
+      "id": "boundary-07",
+      "utterance": "这个先放一放，我要准备明天的考试。",
+      "context": {
+        "current_scene": "development"
+      },
+      "expected": {
+        "scene": "learning",
+        "phase": "planning",
+        "continuity": "new",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "context_dependent"
+      },
+      "note": "暂停原任务，开启学习目标；需要科目与范围。"
+    },
+    {
+      "id": "boundary-08",
+      "utterance": "停止生成。",
+      "context": {
+        "current_scene": "writing",
+        "active_task": "task-A"
+      },
+      "expected": {
+        "scene": "writing",
+        "phase": null,
+        "continuity": "same",
+        "interaction": "stop",
+        "capability_candidates": [],
+        "clarification": "context_dependent"
+      },
+      "note": "控制进行中的任务，不发起新生成；由 Runtime 处理停止。"
+    },
+    {
+      "id": "boundary-09",
+      "utterance": "记一下：下周想研究这家公司，现在不用查。",
+      "context": {
+        "current_scene": "writing"
+      },
+      "expected": {
+        "scene": "market",
+        "phase": null,
+        "continuity": "new",
+        "interaction": "capture",
+        "capability_candidates": [],
+        "clarification": "context_dependent"
+      },
+      "note": "只记录待办想法，不查询行情或生成研究报告。"
+    },
+    {
+      "id": "boundary-10",
+      "utterance": "你能帮我安排旅行吗？",
+      "context": {},
+      "expected": {
+        "scene": "planning",
+        "phase": "planning",
+        "continuity": "unknown",
+        "interaction": "clarify",
+        "capability_candidates": [],
+        "clarification": "context_dependent"
+      },
+      "note": "意图已知，目的地和日期缺失，先补充约束。"
+    },
+    {
+      "id": "boundary-11",
+      "utterance": "根据这两份资料先做比较，再写一篇推荐理由。",
+      "context": {
+        "selected_artifacts": [
+          "doc-A",
+          "doc-B"
+        ]
+      },
+      "expected": {
+        "scene": "research",
+        "phase": "researching",
+        "continuity": "unknown",
+        "interaction": "request",
+        "capability_candidates": [
+          "text.generate"
+        ],
+        "clarification": "context_dependent",
+        "secondary_scenes": [
+          "writing"
+        ]
+      },
+      "note": "多阶段请求：先研究，后写作；保留 writing 为次场景。"
+    },
+    {
+      "id": "boundary-12",
+      "utterance": "今天天气不错。",
+      "context": {},
+      "expected": {
+        "scene": "other",
+        "phase": null,
+        "continuity": "unknown",
+        "interaction": "chat",
+        "capability_candidates": [],
+        "clarification": "context_dependent"
+      },
+      "note": "不强制匹配业务场景或触发工具。"
+    }
+  ]
+}

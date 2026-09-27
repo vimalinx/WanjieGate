@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import {SuppliedBubbleMaterial} from '../static/js/bubbles/supplied-material.mjs';
+const m=new SuppliedBubbleMaterial();
+const shader={uniforms:{},vertexShader:'#include <common>\n#include <begin_vertex>',fragmentShader:'#include <common>\nvec4 diffuseColor = vec4( diffuse, opacity );\n#include <emissivemap_fragment>'};
+m.onBeforeCompile(shader);
+assert.ok(shader.vertexShader.includes('uWobble'));
+assert.ok(shader.fragmentShader.includes('bubbleFres'));
+assert.equal(m.transparent,true);
+assert.equal(m.transmission,.55);
+m.updateTime(.5);assert.equal(shader.uniforms.uTime.value,.5);
+const {glassFrame}=await import('../static/js/bubbles/glass.mjs');
+assert.equal(glassFrame({connected:true}).visible,false);
+assert.equal(glassFrame({burst:280}).opacity,0);
+assert.equal(glassFrame({burst:0}).opacity,.1);
+console.log('supplied glass material and render states passed');

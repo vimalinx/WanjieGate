@@ -1,8 +1,12 @@
 """Bounded resources and actions; model decisions never invent executable capabilities."""
 import re
 from urllib.parse import quote, urlsplit
+from .bubble_presets import PRESETS
 
 ACTIONS={
+ 'explain':('讲解这个知识点','按用户要求解释概念或错题，交给学习工具'),
+ 'quiz':('根据材料出题','按用户指定数量和节奏出题，保留是否给答案的约束'),
+ 'code':('分析与处理代码','在用户选择的开发工具中解释、调试或编写测试，遵守只读约束'),
  'write':('写一篇草稿','依据所选资料撰写正文'),
  'outline':('生成提纲','依据资料生成结构与要点，不代写正文'),
  'research':('整理研究卡片','整理行情与已提供资料，列出待核实问题'),
@@ -11,11 +15,11 @@ ACTIONS={
  'blank':('打开空白文稿','让用户自己写，不代写'),
 }
 
+ACTIONS.update({key:(value['title'],value['description']) for key,value in PRESETS.items()})
+
 def candidates(text,artifacts):
     result=[{'id':'action:'+k,'kind':'action','title':v[0],'description':v[1],'resource':{'action':k}} for k,v in ACTIONS.items()]
-    for a in artifacts:
-        if a['kind'] in ('note','document','web','memory','scene'):
-            result.append({'id':'artifact:'+a['id'],'kind':'source','title':a['title'],'description':'已保存资料 · '+a.get('source',''),'resource':{'artifact':a['id'],'version':a['version'],'detail':'full'}})
+    # Historical sources are explicitly chosen from the library, never ranked by title.
     links=[('typesafe','Jev 官方文档','https://docs.typesafe.ai/','人工智能、Jev、决策模型的官方资料'),('gutenberg','公版阅读书库','https://www.gutenberg.org/','文学、读书、阅读与公版书目录'),('python','Python 官方教程','https://docs.python.org/zh-cn/3/tutorial/','编程学习、Python 教程'),('sec','公司公开披露','https://www.sec.gov/edgar/search/','上市公司与股票研究资料入口')]
     for id_,title,url,desc in links:result.append({'id':'web:'+id_,'kind':'source','title':title,'description':desc+' · 尚未读取','resource':{'url':url,'detail':'excerpt'}})
     for i,url in enumerate(re.findall(r'https://[^\s<>"\u3000]+',text)[:4]):
