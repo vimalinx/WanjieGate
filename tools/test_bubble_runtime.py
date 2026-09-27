@@ -68,6 +68,29 @@ class BubbleRuntimeTests(unittest.TestCase):
         with self.assertRaises(Fault):validate_citations('内容 [99]',[{'title':'a'}])
     def test_cycle_and_step_limit(self):
         with self.assertRaises(Fault):validate_canvas({'bubbles':[],'groups':[{'id':'g','members':['g'],'operation':'combine','version':0}],'positions':{}})
+    def test_disabled_generation_module_is_respected(self):
+        c=self.canvas()
+        with self.k.db.transaction() as tx:
+            spec=self.k.providers['text.generate']['spec'];m=tx.get(spec['module'],'module');m['enabled']=False;tx.put(m)
+        t=self.wait(self.k.execute(self.run_cmd(c))['task'])
+        self.assertEqual(t['status'],'failure');self.assertEqual(self.gen.prompts,[])
+    def test_stop_preserves_read_artifact(self):
+        def market(t,p,c):return {'artifacts':[{'kind':'note','title':'报价','content':{'text':'报价时间 2026-09-24，价格 100'},'source':'fixture quote'}]}
+        self.k.providers['market.query']['handler']=market
+        self.gen.gate=threading.Event()
+        content={'bubbles':[{'id':'q','kind':'source','title':'行情','resource':{'market':'sh000001','detail':'full'}},{'id':'a','kind':'action','resource':{'action':'research'}},{'id':'b','kind':'action','resource':{'action':'outline'}}],'groups':[{'id':'group','members':['q','a','b'],'operation':'combine'}]}
+        c=self.call('artifact.create',{'kind':'bubble-canvas','title':'画布','content':content})['value']
+        t=self.k.execute(self.run_cmd(c))['task'];self.assertTrue(self.gen.entered.wait(2))
+        self.call('task.cancel',{'task':t['id']});self.gen.gate.set();out=self.wait(t)
+        self.assertEqual(out['status'],'cancelled');self.assertEqual(len(self.gen.prompts),1)
+        self.assertEqual(len(out['artifacts']),1)
+    def test_old_quote_timestamp_preserved(self):
+        def market(t,p,c):return {'artifacts':[{'kind':'note','title':'报价','content':{'text':'报价时间 2026-09-24，价格 100'},'source':'fixture quote'}]}
+        self.k.providers['market.query']['handler']=market
+        content={'bubbles':[{'id':'q','kind':'source','title':'行情','resource':{'market':'sh000001','detail':'full'}},{'id':'a','kind':'action','resource':{'action':'research'}}],'groups':[{'id':'group','members':['q','a'],'operation':'combine'}]}
+        c=self.call('artifact.create',{'kind':'bubble-canvas','title':'画布','content':content})['value']
+        out=self.wait(self.k.execute(self.run_cmd(c))['task']);self.assertEqual(out['status'],'success',out.get('error'))
+        self.assertIn('2026-09-24',json.dumps(self.gen.prompts));self.assertEqual(len(out['artifacts']),2)
     def test_user_negation_blocks_run(self):
         c=self.canvas();cmd=self.run_cmd(c);cmd['payload']['text']='不要代写正文'
         with self.assertRaises(Fault):self.k.execute(cmd)

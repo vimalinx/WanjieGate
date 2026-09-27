@@ -92,7 +92,7 @@ def install_bubbles(kernel,jev,generator):
     def suggest(t,p,c):
         inp=t['input'];text=inp['text']
         with kernel.db.transaction() as tx:items=candidates(text,list(accessible(tx,t['intent']).values()))
-        questions={str(i):{'type':'noul','instructions':'候选 '+str(i)+' 是否直接有助于用户当前目的？尊重否定和自己写作的要求；不要仅因共享关键词而推荐。'} for i in range(len(items))}
+        questions={str(i):{'type':'noul','instructions':'用户想做的事是：'+text+'。判断这个具体候选是否直接有帮助：'+x['title']+'（'+x['description']+'）。候选的主题必须与需求相符。尊重否定和自己写作的要求；不相干的资料或动作应判为不适合。'} for i,x in enumerate(items)}
         decision=jev.decide({'request':text,'candidates':items},questions)
         selected=[{**x,'score':decision['answers'][str(i)]['noul']} for i,x in enumerate(items)]
         selected=[x for x in selected if x['score']>=.55 and not(no_writing(text) and x['resource'].get('action')=='write')]
@@ -127,6 +127,8 @@ def install_bubbles(kernel,jev,generator):
                 if not sources and action in ('write','research','compare','outline'):raise Fault('source_required','请先合并一份资料或行情泡泡')
                 with kernel.db.transaction() as tx:
                     if any(s['id'] not in accessible(tx,t['intent']) for s in sources):raise Fault('scope_denied','资料访问权限已变化')
+                    if not tx.get(kernel.providers['text.generate']['spec']['module'],'module')['enabled']:raise Fault('module_disabled','生成能力已停用')
+                    if sum(len(s['text']) for s in sources)>plan['budget']:raise Fault('source_budget','本步骤输入超出预算，请减少来源或步骤')
                     kernel._permission(tx,kernel.providers['text.generate']['spec'],t['intent'],{'text':plan['request']},None,'human',consume=True)
                 purpose=ACTIONS[action][1]+'。正文引用资料时用 [1]、[2] 编号。仅引用 sources 中存在的编号。不要自行输出来源列表或链接。'
                 if action=='research':purpose+='如没有新闻资料，明确写“尚未添加新闻资料”。标注行情来源和报价时间，不编造最新消息或交易建议。'

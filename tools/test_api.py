@@ -25,6 +25,19 @@ class ApiTests(unittest.TestCase):
     def command(self,type_,payload=None,intent=None,**kw):
         return self.request('/api/runtime/commands',message('command',type_,payload or {},'renderer',intent,**kw))
     def intent(self):return self.command('intent.create',{'title':'HTTP 验收'})[1]['value']['id']
+    def test_demo_page_without_provider_activation(self):
+        with urllib.request.urlopen(self.base+'/demo') as r:
+            self.assertIn('bubbles/app.mjs',r.read().decode())
+        self.assertNotIn('bubble.suggest',self.server.kernel.providers)
+    def test_demo_capabilities_are_opt_in_and_network_metered(self):
+        from unittest.mock import patch
+        import os
+        with patch.dict(os.environ,{'WANJIE_DEMO':'1','WANJIE_ENV_FILE':''}),patch('urllib.request.urlopen') as upstream:
+            other=create_server(0,self.tmp.name+'/demo')
+            try:
+                spec=other.kernel.providers['bubble.suggest']['spec']
+                self.assertTrue(spec['network']);self.assertEqual(spec['cost'],'metered');upstream.assert_not_called()
+            finally:other.server_close();other.kernel.shutdown()
     def test_browser_route_and_persistent_note(self):
         i=self.intent();code,result=self.command('artifact.create',{'kind':'note','title':'笔记','content':{'text':'保留'}},i)
         self.assertEqual(code,200);a=result['value'];state=self.request('/api/runtime/intents/'+i)[1]

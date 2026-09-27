@@ -40,7 +40,9 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json({'error': 'Host not allowed'}, 403)
         path = urlsplit(self.path).path
         if not path.startswith('/api/'):
-            if path == '/' or path.startswith('/w/'):
+            if path in ('/demo', '/demo/'):
+                self.path = '/demo.html'
+            elif path == '/' or path.startswith('/w/'):
                 self.path = '/index.html'
             return super().do_GET()
         self.dispatch('GET', path)
@@ -158,6 +160,11 @@ def create_server(port, data_dir):
     generator = Generator(Path(data_dir) / 'receipts')
     server.scheduler = SimpleNamespace(generator=generator)
     server.kernel = Kernel(server.store, generator)
+    if os.environ.get('WANJIE_DEMO') == '1':
+        from .bubble_providers import load_config, JevClient, OpenRouterGenerator
+        from .runtime.bubbles import install_bubbles
+        config = load_config()
+        install_bubbles(server.kernel, JevClient(config), OpenRouterGenerator(config))
     return server
 
 

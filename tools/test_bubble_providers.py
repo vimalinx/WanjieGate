@@ -28,6 +28,10 @@ class ProviderTests(unittest.TestCase):
         with patch('urllib.request.urlopen',side_effect=TimeoutError()) as request:
             with self.assertRaises(BubbleProviderError):OpenRouterGenerator({'OPENROUTER_API_KEY':'secret'}).generate('x','y','id')
             self.assertEqual(request.call_count,1)
+    def test_network_failure_is_unknown_outcome(self):
+        from backend.providers import ProviderError
+        with patch('urllib.request.urlopen',side_effect=TimeoutError()):
+            with self.assertRaises(ProviderError):OpenRouterGenerator({'OPENROUTER_API_KEY':'secret'}).generate('x','y','id')
     def test_truncated_generation_fails(self):
         with patch('urllib.request.urlopen',return_value=io.BytesIO(json.dumps({'choices':[{'finish_reason':'length','message':{'content':'partial'}}]}).encode())):
             with self.assertRaises(BubbleProviderError):OpenRouterGenerator({'OPENROUTER_API_KEY':'secret'}).generate('x','y','id')

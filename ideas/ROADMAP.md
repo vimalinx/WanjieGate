@@ -62,3 +62,7 @@
 | 2026-09-27 | Wilson | vimalinx 本轮提案与作者确认；源码 `22f9541` | 建立索引、提案、评估、阶段与协作规则 | 仅文档变更；未做 Runtime 实现或运行验收 |
 
 - 2026-09-27：按 vimalinx 的实现授权落地本地 Runtime；保留 kanemaverick 未提交状态。新增第三方参考研究任务，不能把用户转贴的研究报告当作已核验源码或 kanemaverick 的提案。
+
+## 泡泡 Demo 实现状态（2026-09-27，Codex）
+
+IDEA-0002 已有本机 `/demo` 产品入口：胶囊、浮动泡泡、融合、显式运行、来源绑定、编辑和恢复。复用 IDEA-0001 的 Command / Task / Artifact / Grant；实现证据 `453c651`、`0eac612` 及本分支后续提交。真实 Jev、两条生成流程与本机交互已验收，范围见 [记录](../docs/acceptance-bubble-demo.md)。外部搜索 API、多人编辑和队员服务整合仍未完成；kanemaverick 具名意见仍未收到。

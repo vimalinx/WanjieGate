@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import {initialState,reduce,mergeRequest,visibleBubbles} from '../static/js/bubbles/state.mjs';
+const items=Array.from({length:20},(_,i)=>({id:'b'+i,kind:'source',title:'Source '+i,resource:{url:'https://example.com/'+i}}));
+let s=initialState();s=reduce(s,{type:'input',text:'写作'});s=reduce(s,{type:'suggestions',revision:s.inputRevision,items,mode:'initial'});
+assert.equal(s.bubbles.length,6);
+s=reduce(s,{type:'pin',id:'b0',position:{x:.2,y:.3}});
+s=reduce(s,{type:'suggestions',revision:s.inputRevision,items,mode:'more'});assert.equal(s.bubbles.length,9);
+s=reduce(s,{type:'suggestions',revision:s.inputRevision,items,mode:'more'});assert.equal(s.bubbles.length,12);
+s=reduce(s,{type:'suggestions',revision:s.inputRevision,items,mode:'more'});assert.equal(s.bubbles.length,12);
+s=reduce(s,{type:'suggestions',revision:s.inputRevision,items,mode:'refresh'});assert(s.bubbles.some(b=>b.id==='b0'));
+const before=structuredClone(s);s=reduce(s,{type:'suggestions',revision:0,items:[],mode:'refresh'});assert.deepEqual(s,before);
+const left=s.bubbles[0].id,right=s.bubbles[1].id;
+const req=mergeRequest(s,left,right);s=reduce(s,{type:'mergeStart',request:req});s=reduce(s,{type:'mergeCancel'});
+s=reduce(s,{type:'mergeResult',request:req,result:{status:'clear',operation:'collect'}});assert.equal(s.groups.length,0);
+const req2=mergeRequest(s,left,right);s=reduce(s,{type:'mergeStart',request:req2});s=reduce(s,{type:'mergeResult',request:req2,result:{status:'clear',operation:'collect'}});
+assert.equal(s.groups.length,1);assert(!visibleBubbles(s).some(b=>b.id===left));
+const restored=initialState(JSON.parse(JSON.stringify(s)));assert.equal(restored.groups.length,1);assert.equal(restored.pending,null);
+s=reduce(s,{type:'split',id:s.groups[0].id});assert.equal(s.groups.length,0);assert(visibleBubbles(s).some(b=>b.id===left));
+s=reduce(s,{type:'runStart',groupId:left,runId:'r1'});s=reduce(s,{type:'runStart',groupId:left,runId:'r2'});assert.equal(s.runs[left].runId,'r1');
+s=reduce(s,{type:'runUpdate',groupId:left,value:{status:'success'}});s=reduce(s,{type:'runAgain',groupId:left,runId:'r3'});assert.equal(s.runs[left].runId,'r3');
+console.log('PASS: candidate bounds, protected refresh, stale judgments, cancel, merge/split, restore and run identity');
+// A saved run must freeze the version actually sent, even when local receipt is persisted later.
+const changing=initialState({bubbles:[{id:'a',kind:'source',version:0},{id:'b',kind:'action',version:0}]});
+const changingReq=mergeRequest(changing,'a','b');let changed=reduce(changing,{type:'mergeStart',request:changingReq});changed.bubbles[0].version=1;
+assert.equal(reduce(changed,{type:'mergeResult',request:changingReq,result:{status:'clear',operation:'combine'}}).groups.length,0,'member revision changes must invalidate fusion');
+const uncertain=initialState({runs:{g:{runId:'charged',status:'outcome_unknown'}}});
+assert.equal(reduce(uncertain,{type:'runAgain',groupId:'g',runId:'duplicate'}).runs.g.runId,'charged','unknown run cannot silently become new execution');

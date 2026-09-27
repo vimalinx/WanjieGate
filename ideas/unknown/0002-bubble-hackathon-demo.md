@@ -21,3 +21,7 @@
 vimalinx 与 kanemaverick 针对本提案的具名回应未收到，不推定双方共识。未改变 IDEA-0001 的作者主张。
 
 产品实现未开始。当前有浏览器设计草图，用户选择了中央布局与泛光效果。只读检查确认 Jev 历史成功响应；腾讯行情本次读请求成功，返回的是带历史报价时间的数据。源码证据为 `backend/market.py`、`backend/providers.py` 与 `backend/runtime/capabilities.py`。本轮未完成端到端产品验收。
+
+## 实现验收更新（2026-09-27，Codex）
+
+用户选择 A，在本会话直接执行已批准计划。当前状态：implemented，核心本机路径 validated。实现 `static/demo.html`、`static/js/bubbles/`、`backend/bubble_providers.py`、`backend/runtime/bubbles.py`；早期提交 `453c651`、`0eac612`。Jev 使用真实 Decisions API，生成改为实测可用的 DeepSeek；两份笔记写作和真实行情研究均成功，详见 [验收记录](../../docs/acceptance-bubble-demo.md)。上述早期“产品实现未开始”是历史记录。此更新不改变提案署名，也不把实现授权表述为双方共同意见。

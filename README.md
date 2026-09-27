@@ -4,6 +4,24 @@
 
 [共同设计区](ideas/README.md) · [Intent Runtime Protocol v0.1](protocol/v0.1/README.md) · [本轮验收](docs/acceptance-runtime-v01.md)
 
+## 泡泡 Demo（黑客松）
+
+新增 `/demo`：中央胶囊、真实 Jev 候选、浮动泡泡、拖拽融合、资料写作和行情研究。`/` 保留原工作台。
+
+```sh
+WANJIE_DEMO=1 \
+WANJIE_ENV_FILE="/你的本地路径/JEV 黑客松/.env" \
+WANJIE_GENERATION_MODEL=deepseek/deepseek-chat-v3.1 \
+NO_PROXY=127.0.0.1,localhost no_proxy=127.0.0.1,localhost \
+python3 -m backend.server --port 5174 --data-dir .data/bubble-demo
+```
+
+打开 <http://localhost:5174/demo>，在“连接设置”启用当前空间的有限授权。配置文件包含 `OPENROUTER_API_KEY`，仅由服务端读取，不要复制到前端或提交 Git。未设置 `WANJIE_DEMO=1` 时不会装载 Demo 提供者。
+
+Jev 使用 Decisions API 与 `typesafe/jev-1.13`；文稿默认使用已实测的 `deepseek/deepseek-chat-v3.1`。最初候选 `openai/gpt-4.1-mini` 在本机请求被地区限制拒绝，故替换。两者可能产生 API 费用，调用失败不会自动重试。
+
+[演示步骤、验收范围与整合事项](docs/acceptance-bubble-demo.md)。在意图中输入需求，添加自己的资料，把资料与动作拖到一起；检查来源后点击“运行”。融合本身不执行工作。首次最多 6 个候选，`＋` 每次最多增加 3 个，`↻` 保留固定及组合成员。
+
 ## 启动
 
 ```sh

@@ -42,3 +42,7 @@
 - 2026-09-27：vimalinx 授权完整实现；本地 Runtime 已落地，证据与未验收项见 [验收记录](../docs/acceptance-runtime-v01.md)。第三方参考研究由 Wilson 整理于 [研究记录](research/0001-reference-implementations.md)，不推定为双方共同观点。
 
 - [参考研究后的本地改动](reviews/0002-reference-driven-changes.md)：请求身份、旧响应保护、显式读取深度与执行边界。
+
+## IDEA-0002 实现更新（2026-09-27，Codex）
+
+本会话用户选择原会话执行后，泡泡 Demo 已在 `codex/bubble-demo` 实现。代码：`static/js/bubbles/`、`backend/runtime/bubbles.py`；早期实现提交 `453c651`、`0eac612`。真实 Jev、资料写作、行情研究与浏览器交互的证据见 [验收与交接](../docs/acceptance-bubble-demo.md)。本条更新实现状态，前面的未实现描述保留为历史。作者保持 unknown，未收到双方具名共识。
