@@ -480,5 +480,162 @@
       "verification"
     ],
     "additionalProperties": false
+  },
+  "surface.changed": {
+    "type": "object",
+    "properties": {
+      "surface": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "surface"
+    ],
+    "additionalProperties": false
+  },
+  "surface.suggested": {
+    "type": "object",
+    "properties": {
+      "presentation": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "presentation"
+    ],
+    "additionalProperties": false
+  },
+  "context.relation.changed": {
+    "type": "object",
+    "properties": {
+      "relation": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "urn:wanjie:extensions:0.1:context-relation",
+        "type": "object",
+        "properties": {
+          "artifact": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9_.:/-]+$"
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9_.-]+$"
+          },
+          "relevance": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive",
+              "removed"
+            ]
+          },
+          "localProperties": {
+            "type": "object"
+          },
+          "origin": {
+            "type": "string",
+            "enum": [
+              "explicit",
+              "computed"
+            ]
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "tier": {
+            "type": "string",
+            "enum": [
+              "HOT",
+              "WARM",
+              "COLD"
+            ]
+          },
+          "detail": {
+            "type": "string",
+            "enum": [
+              "full",
+              "excerpt",
+              "metadata"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "const": "member"
+          },
+          "intent": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160,
+            "pattern": "^[A-Za-z0-9_.:/-]+$"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "created": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "updated": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "query": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "intent",
+          "artifact",
+          "role",
+          "relevance",
+          "state",
+          "localProperties",
+          "origin",
+          "pinned",
+          "tier",
+          "detail"
+        ],
+        "additionalProperties": false
+      },
+      "before": {}
+    },
+    "required": [
+      "relation",
+      "before"
+    ],
+    "additionalProperties": false
+  },
+  "context.query.changed": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "object"
+      },
+      "before": {}
+    },
+    "required": [
+      "query",
+      "before"
+    ],
+    "additionalProperties": false
   }
 }

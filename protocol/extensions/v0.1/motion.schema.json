@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wanjiegate.local/protocol/extensions/v0.1/motion.schema.json",
+  "title": "Semantic motion request v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "entity", "intent", "transition", "cause", "origin"],
+  "properties": {
+    "version": {"const": "0.1"},
+    "entity": {"type": "string", "minLength": 1, "maxLength": 240},
+    "intent": {"type": "string", "minLength": 1, "maxLength": 240},
+    "transition": {"enum": ["BRANCH", "RETURN", "CORRECT", "WARM", "FOREGROUND", "PARK", "INTERRUPT", "COMMIT", "MERGE", "HYPOTHESIS", "PREPARED", "READY", "FREEZE"]},
+    "cause": {"type": "string", "minLength": 1, "maxLength": 240},
+    "origin": {"enum": ["user", "policy"]},
+    "destination": {"type": "string", "minLength": 1, "maxLength": 240},
+    "placement": {"enum": ["left", "right", "bottom", "center", "rail"]},
+    "stage": {"enum": ["ghost", "preview", "committed"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"transition": {"enum": ["PARK", "CORRECT", "MERGE"]}}},
+      "then": {"required": ["destination"]}
+    }
+  ]
+}

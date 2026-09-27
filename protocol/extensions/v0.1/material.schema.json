@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:extension:0.1:material",
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": "0.1"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "intent": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "kind": {
+      "enum": [
+        "text",
+        "citation",
+        "image",
+        "artifact"
+      ]
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 12000
+    },
+    "artifact": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2000
+    }
+  },
+  "required": [
+    "version",
+    "id",
+    "intent",
+    "kind",
+    "text"
+  ],
+  "additionalProperties": false
+}

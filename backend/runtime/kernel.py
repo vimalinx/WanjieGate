@@ -9,8 +9,9 @@ import json
 import threading
 from .protocol import VERSION, DIMENSIONS, TERMINAL, Fault, uid, now, validate, schema, message, ROOT
 from .storage import Database, dump
-from .context import build, projections, accessible
+from .context import build, projections, accessible, detail_for
 from .artifacts import validate_content
+from . import object_graph
 
 from .policies import POLICIES
 
@@ -22,6 +23,8 @@ class Kernel:
         self.command_schemas=json.loads((ROOT/'commands.json').read_text())
         from .capabilities import install
         install(self,generator,market,semantic)
+        from .extensions import install_capabilities
+        install_capabilities(self)
         self._migrate()
         with self.db.transaction() as tx:
             for task in tx.list('task'):
@@ -95,7 +98,7 @@ class Kernel:
                   'pinned':p.get('pinned',False),'scope':p.get('scope','intent'),
                   'version':p.get('version',0),'created':p.get('created',now())},create=True)
         validate(e,schema('artifact'))
-        tx.put({'id':intent+':'+e['id'],'type':'member','intent':intent,'artifact':e['id'],'tier':'HOT','pinned':False,'relevance':1,'reason':'当前产生或导入'},create=True)
+        tx.put(object_graph.normalize({'id':intent+':'+e['id'],'type':'member','intent':intent,'artifact':e['id'],'tier':'HOT','pinned':False,'relevance':1,'reason':'用户选择' if cause.get('type')=='artifact.create' else '当前产生或导入'}),create=True)
         self._relation(tx,intent,e['id'],'belongs_to',intent,cause)
         tx.emit('artifact.created',{'artifact':e},intent,cause)
         return e
@@ -232,21 +235,29 @@ class Kernel:
             r=tx.get(p['relation'],'relation');self._owned(r,iid);tx.remove(r['id']);tx.emit('relation.removed',{'relation':r['id']},iid,c)
             return {'removed':r['id']},None
         if t=='context.set':
-            a=tx.get(p['artifact'],'artifact')
-            if a['intent']!=iid and a['scope']!='shared':raise Fault('scope_denied','内容未共享到其他意图')
-            mid=iid+':'+a['id']
-            try:m=tx.get(mid,'member');create=False
-            except Fault:m={'id':mid,'type':'member','intent':iid,'artifact':a['id'],'pinned':False};create=True
-            if p['tier']=='COLD' and (a['pinned'] or m['pinned']) and p.get('pinned') is not False:raise Fault('pinned','请先取消固定')
-            m.update(tier=p['tier'],pinned=p.get('pinned',m['pinned']),reason='用户选择' if c['source']=='renderer' else '语义相关性')
-            if 'detail' in p:m['detail']=p['detail']
-            m=tx.put(m,create=create);tx.emit('context.changed',{'member':m},iid,c)
-            return m,None
+            return object_graph.set_relation(tx,iid,{**p,'role':object_graph.DEFAULT_ROLE,
+                'state':'active','origin':'explicit' if principal=='human' else 'computed'},c,principal),None
+        if t=='context.relate':return object_graph.set_relation(tx,iid,p,c,principal),None
+        if t=='context.remove':return object_graph.remove_relation(tx,iid,p,c,principal),None
+        if t in ('context.query.set','context.query.remove'):
+            return object_graph.set_query(tx,iid,p,c,principal,remove=t=='context.query.remove'),None
         if t=='context.build':
             ctx=build(tx,iid);tx.emit('context.built',{'context':ctx},iid,c);return ctx,None
+        if t=='surface.update':
+            key='surface:'+iid
+            try:surface=tx.get(key,'surface');create=False
+            except Fault:surface={'id':key,'type':'surface','intent':iid,'mode':'general','document':'','manual':False,'blocks':{}};create=True
+            if p.get('document'):
+                document=tx.get(p['document'],'artifact');self._owned(document,iid)
+                if document['kind'] not in ('note','document','memory'):raise Fault('invalid_document','写作区只接受文稿或笔记')
+            surface.update(p);surface=tx.put(surface,create=create)
+            tx.emit('surface.changed',{'surface':surface},iid,c);return surface,None
         if t=='view.set':
             if p['artifact'] not in accessible(tx,iid):raise Fault('scope_denied','内容不在当前空间')
-            vid='view:'+iid+':'+p['artifact']
+            role=p.get('role',object_graph.DEFAULT_ROLE)
+            if role!=object_graph.DEFAULT_ROLE and not any(m['artifact']==p['artifact'] and m['role']==role for m in object_graph.effective_relations(tx,iid)):
+                raise Fault('not_found','当前空间没有该角色关系')
+            vid='view:'+object_graph.relation_id(iid,p['artifact'],role)
             try:v=tx.get(vid,'view');create=False
             except Fault:v={'id':vid,'type':'view','intent':iid,'state':{},'placement':'main'};create=True
             v.update(p);v=tx.put(v,create=create);validate(v,schema('view'));tx.emit('view.changed',{'view':v},iid,c)
@@ -351,8 +362,9 @@ class Kernel:
                 if not tx.get(spec['module'],'module')['enabled']:raise Fault('module_disabled','模块已停用')
                 if tx.get(task['intent'],'intent')['status']=='archived':raise Fault('intent_archived','意图已归档')
                 allowed=accessible(tx,task['intent'])
-                members={m['artifact']:m for m in tx.list('member',task['intent'])}
-                if any(item['artifact'] not in allowed or allowed[item['artifact']]['version']!=item['version'] or members.get(item['artifact'],{}).get('detail','full')!=item.get('detail','full') for item in task['context']['items']):
+                members=object_graph.primary_members(tx,task['intent'])
+                relations=object_graph.effective_relations(tx,task['intent'])
+                if any(item['artifact'] not in allowed or allowed[item['artifact']]['version']!=item['version'] or detail_for(allowed[item['artifact']],members.get(item['artifact'],{}))!=item.get('detail','full') or ('contextRelations' in item and item['contextRelations']!=[m for m in relations if m['artifact']==item['artifact']]) for item in task['context']['items']):
                     raise Fault('context_changed','排队期间上下文或共享权限已变化，请重新发起')
                 self._permission(tx,spec,task['intent'],task['input'],task['grant'] or None,'human',consume=True)
             except Fault as exc:
@@ -417,9 +429,9 @@ class Kernel:
                     'cursor':tx.db.execute('SELECT COALESCE(MAX(seq),0) FROM rt_messages').fetchone()[0]}
             if iid:
                 i=tx.get(iid,'intent')
-                result.update(intent=i,artifacts=list(accessible(tx,iid).values()),tasks=tx.list('task',iid),
+                result.update(surface=next(iter(tx.list('surface',iid)),None),presentation=tx.meta('surface.semantic:'+iid),intent=i,artifacts=list(accessible(tx,iid).values()),tasks=tx.list('task',iid),
                               relations=tx.list('relation',iid),frames=tx.list('frame',iid)[-20:],observations=tx.list('observation',iid)[-20:],members=tx.list('member',iid),views=projections(tx,iid),
-                              context=build(tx,iid),grants=tx.list('grant',iid),notifications=tx.list('notification',iid))
+                              context=build(tx,iid),objectGraph=object_graph.snapshot(tx,iid),grants=tx.list('grant',iid),notifications=tx.list('notification',iid))
             return result
 
     def shutdown(self):

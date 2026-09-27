@@ -1,0 +1,55 @@
+{
+  "id": "writer.references",
+  "version": "0.1.0",
+  "apiVersion": "0.1",
+  "title": "资料与引用",
+  "description": "Sourced material would help this writing.",
+  "owner": "WanjieGate",
+  "kind": "component",
+  "entry": "builtin:references",
+  "builtin": true,
+  "slotKey": "references",
+  "accepts": [
+    "note",
+    "document",
+    "image",
+    "references",
+    "scene"
+  ],
+  "provides": [],
+  "permissions": [],
+  "sideEffect": "L0",
+  "network": false,
+  "cost": "none",
+  "reversible": true,
+  "inputSchema": {
+    "type": "object"
+  },
+  "outputSchema": {
+    "type": "object"
+  },
+  "stateSchema": {
+    "type": "object"
+  },
+  "placement": "right",
+  "activation": {
+    "always": false,
+    "signal": "references",
+    "cue": "Sourced material would help this writing.",
+    "threshold": 0.55,
+    "minimumCharacters": 0
+  },
+  "ports": [
+    {
+      "name": "materials",
+      "direction": "in",
+      "accepts": [
+        "text",
+        "citation",
+        "image",
+        "artifact",
+        "component"
+      ]
+    }
+  ]
+}

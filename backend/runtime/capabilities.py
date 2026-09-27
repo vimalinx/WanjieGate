@@ -138,8 +138,14 @@ def install(kernel,generator=None,market=None,semantic=None):
         return {'artifacts':[artifact('web',content['title'][:200],content,content['url'][:300])]}
     register('web.read','读取公开网页',obj({'url':string(2000)},['url']),web_read,permissions=['network.web'],network=True)
 
+    def reference_search(t,p,c):
+        from .references import search,web_search
+        content=search(t['input']['query']) if t['input'].get('source')=='wikipedia' else web_search(t['input']['query'],kernel.store.path.parent/'receipts'/'references')
+        return {'artifacts':[artifact('references','相关资料 · '+t['input']['query'][:60],content,content['source'])]}
+    register('reference.search','查找公开参考资料',obj({'query':string(160),'source':{'enum':['web','wikipedia']}},['query']),reference_search,permissions=['network.references'],network=True,cost='metered')
+
     def semantic_observe(t,p,c):
-        ctx={**t['context'],'event':t['input'].get('event'),'intentState':kernel.db.get(t['intent'],'intent')['state'],
+        ctx={**t['context'],'event':t['input'].get('event'),'view':t['input'].get('view',{}),'intentState':kernel.db.get(t['intent'],'intent')['state'],
              'notifications':[{'id':n['id'],'title':n['title'],'text':n['text']} for n in kernel.db.list('notification',t['intent']) if n['status']!='read']}
         with kernel.db.transaction() as tx:
             ctx['intentCandidates']=[{'id':i['id'],'title':i['title'],'goal':i['state'].get('goal','')} for i in sorted(tx.list('intent'),key=lambda i:(i['id']!=t['intent'],-i['updated']))[:8]]
@@ -147,7 +153,7 @@ def install(kernel,generator=None,market=None,semantic=None):
             ctx['targetCandidates']=[{'artifact':a['id'],'title':a['title'],'kind':a['kind'],'tier':members.get(a['id'],{}).get('tier','WARM')} for a in accessible(tx,t['intent']).values()]
         ctx['selectedArtifact']=(ctx.get('event') or {}).get('selectedArtifact','')
         return semantic.observe(t['input']['text'],ctx)
-    register('semantic.observe','JEV 语义判断' if getattr(semantic,'network',False) else '语义判断',obj({'text':string(),'event':control_contract('raw-event')},['text']),semantic_observe,kind='operator',network=getattr(semantic,'network',False),cost=getattr(semantic,'cost','none'),permissions=['model.semantic'] if getattr(semantic,'network',False) else [])
+    register('semantic.observe','JEV 语义判断' if getattr(semantic,'network',False) else '语义判断',obj({'text':string(),'event':control_contract('raw-event'),'view':json.loads((Path(__file__).resolve().parents[2]/'protocol/extensions/v0.1/view-context.schema.json').read_text())},['text']),semantic_observe,kind='operator',network=getattr(semantic,'network',False),cost=getattr(semantic,'cost','none'),permissions=['model.semantic'] if getattr(semantic,'network',False) else [])
 
     def retrieve(t,p,c):
         query=t['input']['query'].casefold();tokens=[x for x in re.split(r'\s+',query) if x]

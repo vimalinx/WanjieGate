@@ -1,0 +1,341 @@
+{
+  "version": "0.1",
+  "modules": [
+    {
+      "id": "market.quotes",
+      "version": "0.1.0",
+      "apiVersion": "0.1",
+      "title": "市场观察",
+      "description": "The user is viewing market quotes.",
+      "owner": "WanjieGate",
+      "kind": "component",
+      "entry": "builtin:market",
+      "builtin": true,
+      "slotKey": "market",
+      "accepts": [
+        "note",
+        "document",
+        "image",
+        "references",
+        "scene"
+      ],
+      "provides": [],
+      "permissions": [],
+      "sideEffect": "L0",
+      "network": false,
+      "cost": "none",
+      "reversible": true,
+      "inputSchema": {
+        "type": "object"
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "stateSchema": {
+        "type": "object"
+      },
+      "placement": "bottom",
+      "activation": {
+        "always": true,
+        "signal": "market",
+        "cue": "The user is viewing market quotes.",
+        "threshold": 0.55,
+        "minimumCharacters": 0
+      },
+      "ports": [
+        {
+          "name": "materials",
+          "direction": "in",
+          "accepts": [
+            "text",
+            "citation",
+            "image",
+            "artifact",
+            "component"
+          ]
+        }
+      ],
+      "digest": "8e3ac091e6757c6161f8ad44f0ff61199b83554e3248be5f74328d7afbdcbe73"
+    },
+    {
+      "id": "writer.images",
+      "version": "0.1.0",
+      "apiVersion": "0.1",
+      "title": "图片与截图",
+      "description": "Images and user screenshots would help this writing.",
+      "owner": "WanjieGate",
+      "kind": "component",
+      "entry": "builtin:images",
+      "builtin": true,
+      "slotKey": "images",
+      "accepts": [
+        "note",
+        "document",
+        "image",
+        "references",
+        "scene"
+      ],
+      "provides": [],
+      "permissions": [],
+      "sideEffect": "L0",
+      "network": false,
+      "cost": "none",
+      "reversible": true,
+      "inputSchema": {
+        "type": "object"
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "stateSchema": {
+        "type": "object"
+      },
+      "placement": "right",
+      "activation": {
+        "always": false,
+        "signal": "images",
+        "cue": "Images and user screenshots would help this writing.",
+        "threshold": 0.55,
+        "minimumCharacters": 0
+      },
+      "ports": [
+        {
+          "name": "materials",
+          "direction": "in",
+          "accepts": [
+            "text",
+            "citation",
+            "image",
+            "artifact",
+            "component"
+          ]
+        }
+      ],
+      "digest": "fa8623cf6d769e3fc4897109d85c3f18c0de6b3711f04cccb73ecfec2d25aa65"
+    },
+    {
+      "id": "writer.notes",
+      "version": "0.1.0",
+      "apiVersion": "0.1",
+      "title": "这个空间的笔记",
+      "description": "Related notes can help writing.",
+      "owner": "WanjieGate",
+      "kind": "component",
+      "entry": "builtin:notes",
+      "builtin": true,
+      "slotKey": "notes",
+      "accepts": [
+        "note",
+        "document",
+        "image",
+        "references",
+        "scene"
+      ],
+      "provides": [],
+      "permissions": [],
+      "sideEffect": "L0",
+      "network": false,
+      "cost": "none",
+      "reversible": true,
+      "inputSchema": {
+        "type": "object"
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "stateSchema": {
+        "type": "object"
+      },
+      "placement": "left",
+      "activation": {
+        "always": true,
+        "signal": "links",
+        "cue": "Related notes can help writing.",
+        "threshold": 0.55,
+        "minimumCharacters": 0
+      },
+      "ports": [
+        {
+          "name": "materials",
+          "direction": "in",
+          "accepts": [
+            "text",
+            "citation",
+            "image",
+            "artifact",
+            "component"
+          ]
+        }
+      ],
+      "digest": "cc5fbc97975b4dc67d27d18030ef59a4a7ec99bc3fc5233e8ba50acbc396e289"
+    },
+    {
+      "id": "writer.outline",
+      "version": "0.1.0",
+      "apiVersion": "0.1",
+      "title": "文档大纲",
+      "description": "Show document outline for long structured writing.",
+      "owner": "WanjieGate",
+      "kind": "component",
+      "entry": "builtin:outline",
+      "builtin": true,
+      "slotKey": "outline",
+      "accepts": [
+        "note",
+        "document",
+        "image",
+        "references",
+        "scene"
+      ],
+      "provides": [],
+      "permissions": [],
+      "sideEffect": "L0",
+      "network": false,
+      "cost": "none",
+      "reversible": true,
+      "inputSchema": {
+        "type": "object"
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "stateSchema": {
+        "type": "object"
+      },
+      "placement": "left",
+      "activation": {
+        "always": true,
+        "signal": "outline",
+        "cue": "Show document outline for long structured writing.",
+        "threshold": 0.55,
+        "minimumCharacters": 0
+      },
+      "ports": [
+        {
+          "name": "materials",
+          "direction": "in",
+          "accepts": [
+            "text",
+            "citation",
+            "image",
+            "artifact",
+            "component"
+          ]
+        }
+      ],
+      "digest": "49e0b1e52cba19e1a10b999f921cbc1a44f6bb34b4999c112dcf3f4bb6b189cb"
+    },
+    {
+      "id": "writer.references",
+      "version": "0.1.0",
+      "apiVersion": "0.1",
+      "title": "资料与引用",
+      "description": "Sourced material would help this writing.",
+      "owner": "WanjieGate",
+      "kind": "component",
+      "entry": "builtin:references",
+      "builtin": true,
+      "slotKey": "references",
+      "accepts": [
+        "note",
+        "document",
+        "image",
+        "references",
+        "scene"
+      ],
+      "provides": [],
+      "permissions": [],
+      "sideEffect": "L0",
+      "network": false,
+      "cost": "none",
+      "reversible": true,
+      "inputSchema": {
+        "type": "object"
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "stateSchema": {
+        "type": "object"
+      },
+      "placement": "right",
+      "activation": {
+        "always": false,
+        "signal": "references",
+        "cue": "Sourced material would help this writing.",
+        "threshold": 0.55,
+        "minimumCharacters": 0
+      },
+      "ports": [
+        {
+          "name": "materials",
+          "direction": "in",
+          "accepts": [
+            "text",
+            "citation",
+            "image",
+            "artifact",
+            "component"
+          ]
+        }
+      ],
+      "digest": "bc9168fea87878cb9dd09013eba143b84bf7e0a999980fc7c690db3ab7ae3c48"
+    },
+    {
+      "id": "writer.structure",
+      "version": "0.1.0",
+      "apiVersion": "0.1",
+      "title": "写作进度",
+      "description": "Show writing structure and document progress.",
+      "owner": "WanjieGate",
+      "kind": "component",
+      "entry": "builtin:structure",
+      "builtin": true,
+      "slotKey": "structure",
+      "accepts": [
+        "note",
+        "document",
+        "image",
+        "references",
+        "scene"
+      ],
+      "provides": [],
+      "permissions": [],
+      "sideEffect": "L0",
+      "network": false,
+      "cost": "none",
+      "reversible": true,
+      "inputSchema": {
+        "type": "object"
+      },
+      "outputSchema": {
+        "type": "object"
+      },
+      "stateSchema": {
+        "type": "object"
+      },
+      "placement": "left",
+      "activation": {
+        "always": false,
+        "signal": "outline",
+        "cue": "Show writing structure and document progress.",
+        "threshold": 0.55,
+        "minimumCharacters": 180
+      },
+      "ports": [
+        {
+          "name": "materials",
+          "direction": "in",
+          "accepts": [
+            "text",
+            "citation",
+            "image",
+            "artifact",
+            "component"
+          ]
+        }
+      ],
+      "digest": "afc91ff39aab5f5511ff598d2f3709cb2cb3e7d64b40d116961e65921382036f"
+    }
+  ]
+}

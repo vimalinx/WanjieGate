@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+project_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+case "${1:-}" in
+  module) shift; exec python3 "$project_dir/tools/extension_cli.py" "$@" ;;
+  batch) shift; exec python3 "$project_dir/tools/batch_run.py" "$@" ;;
+  *) echo 'Usage: bin/wanjie module {new,list,check,install,uninstall,catalog} | batch FILE [--run] [--base http://127.0.0.1:PORT]' >&2; exit 2 ;;
+esac

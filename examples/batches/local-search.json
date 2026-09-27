@@ -1,0 +1,22 @@
+{
+  "version": "0.1",
+  "id": "local-search-001",
+  "intent": "00000000000000000000000000000000",
+  "maxParallel": 2,
+  "maxSubmissions": 2,
+  "timeoutSeconds": 300,
+  "jobs": [
+    {
+      "id": "memory",
+      "capability": "memory.retrieve",
+      "input": {"query": "Intent Runtime"},
+      "dependsOn": []
+    },
+    {
+      "id": "repository",
+      "capability": "repo.search",
+      "input": {"query": "IntentFrame"},
+      "dependsOn": ["memory"]
+    }
+  ]
+}

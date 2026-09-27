@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f9f7"><title>万界门 · WanJie</title><link rel="stylesheet" href="/runtime.css"><link rel="stylesheet" href="/capsule.css"><link rel="icon" href="data:,"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f9f7"><title>万界门 · WanJie</title><link rel="stylesheet" href="/runtime.css"><link rel="stylesheet" href="/capsule.css"><link rel="stylesheet" href="/adaptive.css"><link rel="icon" href="data:,"></head>
 <body>
 <a class="skip" href="#request">跳到输入</a>
 <dialog id="history-dialog" class="history-drawer" aria-labelledby="history-title">
@@ -12,6 +12,12 @@
 </dialog>
 <div id="ambient" class="ambient" aria-hidden="true"><div id="shutters" class="shutters"></div><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><span class="floating-mark mark-one">＋</span><span class="floating-mark mark-two">＋</span><i class="floating-dot dot-one"></i><i class="floating-dot dot-two"></i><i class="floating-dot dot-three"></i></div>
 <main class="page">
+  <div class="assist-setting"><label title="使用 JEV 理解输入，查找公开参考资料和行情，可能消耗额度；不会自动改写正文"><input id="assist-auto" type="checkbox"> 自动协助</label><span>理解输入 · 公开资料 · 行情</span></div>
+  <header id="surface-bar" hidden><button id="surface-history" aria-label="空间历史">◈ <span>WANJIE</span></button><nav id="surface-switch" aria-label="添加内容"><button data-surface="writing">＋ 文稿</button><button data-surface="market">＋ 行情</button></nav><span class="surface-hint">空间，随工作展开</span></header>
+  <div id="adaptive-grid">
+  <aside class="growth-lane" data-lane="left" aria-label="左侧工具"></aside>
+  <div class="growth-center">
+  <div id="writer-heading" hidden><div class="document-eyebrow">✧ &nbsp; 文稿 <span id="document-save" role="status">已保存</span></div><input id="document-title" aria-label="笔记标题" placeholder="未命名笔记"><div id="writer-format" hidden><button data-format="heading" title="添加标题">H₂</button><button data-format="bold" title="加粗">B</button><button data-format="quote" title="引用">❞</button><button data-format="check" title="待办">☑</button><button data-format="link" title="链接">↗</button><span></span><button id="writer-undo">撤销插入</button><button id="document-preview-toggle">阅读</button><button id="document-export">导出</button></div></div>
   <section class="composer" aria-label="表达目的">
     <div class="capsule">
       <button id="history-open" class="icon-button" aria-label="打开历史" title="历史"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.5 7M3 5v6h6M12 7v5l3 2"/></svg></button>
@@ -24,6 +30,12 @@
       <details class="more-tools"><summary>更多</summary><div class="composer-tools"><button id="save-memory">记为事实</button><button id="add-notification">记提醒</button><button id="observe">判断当前意图</button><button id="market">查看行情</button><button id="run-workflow">组合执行</button><button id="run-capability">更多能力</button><button id="motion-toggle" type="button" aria-pressed="true">动态效果</button><label><input id="auto-run" type="checkbox">自动内容</label><select id="generation-mode" aria-label="生成方式"><option value="scene">组合内容</option><option value="write">文稿</option><option value="plan">行动</option><option value="answer">回答</option></select></div></details>
     </div>
   </section>
+  <article id="document-preview" class="markdown" hidden></article>
+  <nav id="surface-tools" hidden aria-label="写作工具"><button data-helper="references">＋ 资料与引用</button><button data-helper="images">＋ 图片与截图</button><button data-helper="outline">＋ 写作结构</button><span>材料可拖入正文 · 组件可拖到两侧</span></nav>
+  <input id="image-import" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+  <div class="growth-lane growth-bottom" data-lane="bottom" aria-label="下方工作区"></div>
+  </div><aside class="growth-lane" data-lane="right" aria-label="右侧材料"></aside>
+  </div>
   <section id="workspace" hidden>
     <header class="work-heading"><div><h1 id="intent-title"></h1><p id="intent-goal" hidden></p><span id="intent-status" class="sr-only"></span></div><div class="work-actions"><button data-tab="content" class="selected">内容</button><button data-tab="context">工作集</button><details class="space-menu"><summary aria-label="空间选项">···</summary><div class="space-options"><div id="intent-actions" class="actions" hidden><button id="edit-intent">状态</button><button id="fork-intent">分支</button><button id="suspend-intent">暂停</button><button id="archive-intent">归档</button></div><button data-tab="graph">关系</button><button data-tab="activity">过程</button><button data-tab="permissions">授权</button><button id="export">导出</button></div></details></div></header>
     <section id="notifications" class="notifications"></section>

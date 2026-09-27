@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:extension:0.1:module",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[a-z][a-z0-9]*(?:[.-][a-z0-9]+)+$"
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 30,
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "apiVersion": {
+      "const": "0.1"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "kind": {
+      "enum": [
+        "component",
+        "capability",
+        "workflow"
+      ]
+    },
+    "entry": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "style": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "builtin": {
+      "type": "boolean"
+    },
+    "slotKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "pattern": "^[a-z][a-z0-9_.-]*$"
+    },
+    "accepts": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      },
+      "maxItems": 32
+    },
+    "provides": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "maxItems": 32
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 160
+      },
+      "maxItems": 32
+    },
+    "sideEffect": {
+      "enum": [
+        "L0",
+        "L1",
+        "L2",
+        "L3"
+      ]
+    },
+    "network": {
+      "type": "boolean"
+    },
+    "cost": {
+      "enum": [
+        "none",
+        "metered"
+      ]
+    },
+    "reversible": {
+      "type": "boolean"
+    },
+    "inputSchema": {
+      "type": "object"
+    },
+    "outputSchema": {
+      "type": "object"
+    },
+    "stateSchema": {
+      "type": "object"
+    },
+    "placement": {
+      "enum": [
+        "left",
+        "right",
+        "bottom"
+      ]
+    },
+    "activation": {
+      "type": "object",
+      "properties": {
+        "always": {
+          "type": "boolean"
+        },
+        "signal": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "^[a-z][a-z0-9_.-]*$"
+        },
+        "cue": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "minimumCharacters": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200000
+        }
+      },
+      "required": [
+        "threshold",
+        "minimumCharacters"
+      ],
+      "additionalProperties": false
+    },
+    "ports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "direction": {
+            "enum": [
+              "in",
+              "out"
+            ]
+          },
+          "accepts": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "text",
+                "citation",
+                "image",
+                "artifact",
+                "component"
+              ]
+            },
+            "maxItems": 32
+          }
+        },
+        "required": [
+          "name",
+          "direction",
+          "accepts"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 32
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "apiVersion",
+    "title",
+    "description",
+    "owner",
+    "kind",
+    "entry",
+    "builtin",
+    "accepts",
+    "provides",
+    "permissions",
+    "sideEffect",
+    "network",
+    "cost",
+    "reversible",
+    "inputSchema",
+    "outputSchema",
+    "stateSchema"
+  ],
+  "additionalProperties": false,
+  "description": "Trusted local packages. Runtime validates the documented JSON Schema subset and additional kind-specific invariants. Components compose independently, without exclusive surface modes."
+}

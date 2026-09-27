@@ -74,3 +74,16 @@ python3 tools/selftest.py
 本轮交付是 WanjieGate 的本机单用户 Runtime。十种 View Primitive 有统一登记与投影状态，但并非十套完整桌面应用。网页显示只读摘录；代码视图和受控执行不等于完整 IDE；临时 worker 不宣称接入了外部自治 Agent。
 
 已增加百炼 ASR 文件流桥接和 Hyprland 当前窗口的只读观察工具；尚无常驻桌面观察与胶囊麦克风入口。系统通知源、日历、远程设备及其他 VimalinxOS 项目的接入需要对应 owner 完成适配和验证，详见 [交接清单](docs/runtime-integration-handoff.md)。模型生成和真实行情的当前可用性不由离线测试证明。取消不能撤回已发送的上游请求；未知结果不自动重试。
+
+## 组件、对象图与批量扩展
+
+[工程标准入口](docs/standards/README.md)统一维护组件协议、对象关系、语义动效和批量执行规范。前台使用独立组件组合，正文、引用、图片和行情可以共存；模型读取有界上下文，只产生建议，执行和权限留在 Runtime。
+
+```sh
+bin/wanjie module list
+bin/wanjie module new component notes.counter
+bin/wanjie module check
+bin/wanjie module install notes.counter
+```
+
+批量任务默认只显示计划；加 `--run` 才提交。具体上限与未知结果恢复规则见 [批量标准](docs/standards/BATCH_v0.1.md)。最新实现与验收边界见 [本轮记录](docs/acceptance-adaptive-standards.md)。

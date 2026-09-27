@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:wanjie:extension:0.1:batch",
+  "type": "object",
+  "properties": {
+    "version": {
+      "const": "0.1"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-zA-Z0-9_-]+$"
+    },
+    "intent": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "maxParallel": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "maxSubmissions": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "timeoutSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 86400
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "capability": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "input": {
+            "type": "object"
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "maxItems": 32
+          }
+        },
+        "required": [
+          "id",
+          "capability",
+          "input",
+          "dependsOn"
+        ],
+        "additionalProperties": false
+      },
+      "maxItems": 1000,
+      "minItems": 1
+    }
+  },
+  "required": [
+    "version",
+    "id",
+    "intent",
+    "maxParallel",
+    "maxSubmissions",
+    "timeoutSeconds",
+    "jobs"
+  ],
+  "additionalProperties": false
+}

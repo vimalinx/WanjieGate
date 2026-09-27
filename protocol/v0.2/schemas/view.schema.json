@@ -61,6 +61,12 @@
     "updated": {
       "type": "integer",
       "minimum": 0
+    },
+    "role": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[A-Za-z0-9_.-]+$"
     }
   },
   "required": [

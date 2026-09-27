@@ -9,6 +9,9 @@
 | IDEA-0001 | vimalinx | 架构、协议、Context、组合、权限 | accepted · 本地已实现，外部待接入 | [最小语义操作系统与 Intent Runtime](vimalinx/0001-intent-runtime.md) |
 | IDEA-0002 | vimalinx | 胶囊入口、渐进展开 | implemented | [前端保留胶囊入口](vimalinx/0002-capsule-interface.md) |
 | IDEA-0003 | vimalinx | 正交语义维度、DAG、流式输入 | accepted · 首个切片已验证 | [Semantic Control DAG](vimalinx/0003-semantic-control-dag.md) |
+| IDEA-0004 | vimalinx | 无模式生长、拖拽、内容反馈 | implemented · 最新交互待验收 | [生长工作集](vimalinx/0004-growing-workspace.md) |
+| IDEA-0005 | vimalinx | 语义动效、扩展、批量 | implemented · 静态检查 | [动效与扩展](vimalinx/0005-semantic-motion-and-extension-standard.md) |
+| IDEA-0006 | vimalinx | 对象图、上下文角色、动态查询 | implemented · 静态检查 | [上下文对象图](vimalinx/0006-contextual-object-graph.md) |
 | 待提交 | kanemaverick | 待提交 | awaiting-submission | [协作者入口](kanemaverick/README.md) |
 | REVIEW-0001 | Wilson | 当前实现与迁移建议 | review | [源码对照评估](reviews/0001-runtime-gap-review.md) |
 
@@ -44,3 +47,10 @@
 - 2026-09-27：vimalinx 授权完整实现；本地 Runtime 已落地，证据与未验收项见 [验收记录](../docs/acceptance-runtime-v01.md)。第三方参考研究由 Wilson 整理于 [研究记录](research/0001-reference-implementations.md)，不推定为双方共同观点。
 
 - [参考研究后的本地改动](reviews/0002-reference-driven-changes.md)：请求身份、旧响应保护、显式读取深度与执行边界。
+
+## 生长工作集与扩展标准 · 2026-09-27
+
+- [IDEA-0004 · 无模式生长工作集](vimalinx/0004-growing-workspace.md)：正文与行情、引用等独立组合；有界视图内容反馈给 JEV。
+- [IDEA-0005 · 语义动效与扩展标准](vimalinx/0005-semantic-motion-and-extension-standard.md)：人工优先、运动原语、模块脚手架与可恢复批量执行。
+- [IDEA-0006 · 上下文对象图](vimalinx/0006-contextual-object-graph.md)：稳定对象、Context Relation、Explicit/Computed Set。
+- [工程标准总入口](../docs/standards/README.md)。以上均来自 vimalinx；kanemaverick 尚未提交回应，不记为双方共识。

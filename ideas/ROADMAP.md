@@ -70,3 +70,11 @@
 ## 2026-09-27 · v0.2 语义控制 DAG
 
 vimalinx 的 [IDEA-0003](vimalinx/0003-semantic-control-dag.md) 已采纳，作为下一阶段架构。已落地有限候选并行判断、IntentFrame、阶段契约、显式提交、事件去旧、生命周期和局部输出验证。真实百炼 ASR → OpenRouter JEV 及 Hyprland 单次观察通过；常驻观察、麦克风入口、多层候选扩展、后台 Resource Router、Reflection、通用目标验证尚待完成。真实延迟未达到 Fast Loop 目标。kanemaverick 意见仍未收到。
+
+## 2026-09-27 · 生长工作集、语义动效与对象图
+
+vimalinx 新增 IDEA-0004/0005/0006。当前工程收敛为独立组件组合，而非排他场景分类；对象身份与 Context Role 分开，模型仅提议，人工固定/明确集合优先。前台保留空白与胶囊，不展示内部本体分类。
+
+实现入口：[工程标准](../docs/standards/README.md)、[本轮范围和证据](../docs/acceptance-adaptive-standards.md)。枢衡受管 Codex 负责对象图；主 Agent 与两个授权子代理负责组合、动效、扩展与批量工具。跨项目代码没有修改。
+
+后续仍需用户交互验收、多窗口冲突验收、完整分支/合并连续动效、通用富文本块编辑和外部桌面常驻适配。最新修订不沿用旧回归数字作为全部验证证据。kanemaverick 意见未收到。

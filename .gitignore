@@ -8,3 +8,5 @@ artifacts/models/
 .ai/shots/
 .ai/test-data/
 .ai/live-smoke/
+
+.ai/handoffs/
