@@ -1,26 +1,31 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f6f6f1"><title>万界门 · Intent Runtime</title><link rel="stylesheet" href="/runtime.css"><link rel="icon" href="data:,"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f8f9f7"><title>万界门 · WanJie</title><link rel="stylesheet" href="/runtime.css"><link rel="stylesheet" href="/capsule.css"><link rel="icon" href="data:,"></head>
 <body>
 <a class="skip" href="#request">跳到输入</a>
-<aside class="rail">
-  <a class="brand" href="/">万界门<span>WANJIE</span></a>
-  <button id="new-intent" class="primary">＋ 新的意图</button>
+<dialog id="history-dialog" class="history-drawer" aria-labelledby="history-title">
+  <div class="dialog-heading"><h2 id="history-title">历史</h2><button id="history-close" aria-label="关闭历史">×</button></div>
+  <button id="new-intent" class="new-intent">＋ 新的空间</button>
   <nav id="intent-list" aria-label="意图空间"></nav>
-  <div class="rail-footer"><button id="modules-button">能力与模块</button><span id="connection" role="status">连接中</span></div>
-</aside>
-<main>
-  <header class="top"><div><span class="eyebrow" id="intent-status">开始一件事</span><h1 id="intent-title">你现在想做什么？</h1><p id="intent-goal"></p></div><div class="actions" id="intent-actions" hidden><button id="edit-intent">状态</button><button id="fork-intent">分支</button><button id="suspend-intent">暂停</button><button id="archive-intent">归档</button></div></header>
-  <div id="empty" class="empty">把一件事放进一个意图空间。内容、工具和执行记录会随它一起保留。<button id="start-intent">创建第一个意图 →</button></div>
+  <div id="empty" class="resume-list"><button id="start-intent">创建新的空间</button></div>
+  <div class="history-footer"><button id="modules-button">能力与模块</button><span id="connection" role="status">连接中</span></div>
+</dialog>
+<main class="page">
+  <section class="composer" aria-label="表达目的">
+    <div class="capsule">
+      <button id="history-open" class="icon-button" aria-label="打开历史" title="历史"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.5 7M3 5v6h6M12 7v5l3 2"/></svg></button>
+      <label class="sr-only" for="request">当前请求</label><textarea id="request" rows="1" maxlength="12000" placeholder="想做什么？"></textarea>
+      <button id="generate" class="icon-button send-button" aria-label="生成内容" title="生成内容 · Ctrl Enter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+    </div>
+    <div id="capsule-context" class="capsule-context" hidden>
+      <div class="capsule-tools"><div class="quick-tools"><button id="import-data" class="icon-button" aria-label="导入数据" title="导入数据">＋</button><button id="save-note" title="存为本地笔记">存为笔记</button><span id="semantic-status" role="status"></span></div><label class="local-toggle"><input id="local-only" type="checkbox" checked>仅本地</label></div>
+      <section id="suggestions" class="suggestions" aria-live="polite"></section>
+      <details class="more-tools"><summary>更多</summary><div class="composer-tools"><button id="save-memory">记为事实</button><button id="add-notification">记提醒</button><button id="observe">判断当前意图</button><button id="market">查看行情</button><button id="run-workflow">组合执行</button><button id="run-capability">更多能力</button><label><input id="auto-run" type="checkbox">自动内容</label><select id="generation-mode" aria-label="生成方式"><option value="scene">组合内容</option><option value="write">文稿</option><option value="plan">行动</option><option value="answer">回答</option></select></div></details>
+    </div>
+  </section>
   <section id="workspace" hidden>
-    <section class="composer">
-      <label class="sr-only" for="request">当前请求</label><textarea id="request" rows="2" placeholder="描述想完成的事，或补充当前目标…"></textarea>
-      <div class="composer-tools"><div><button id="save-note">存为笔记</button><button id="save-memory">记为事实</button><button id="import-data">导入数据</button><button id="add-notification">记提醒</button></div><div><label><input id="local-only" type="checkbox" checked>仅本地</label><label><input id="auto-run" type="checkbox">自动内容</label><select id="generation-mode" aria-label="生成方式"><option value="scene">组合内容</option><option value="write">文稿</option><option value="plan">行动</option><option value="answer">回答</option></select><button id="generate" class="primary">生成</button></div></div>
-      <div class="context-line"><span id="semantic-status">输入驱动语义判断，模型离线时明确显示。</span><button id="observe">判断当前意图</button><button id="market">查看行情</button><button id="run-workflow">组合执行</button><button id="run-capability">更多能力</button></div>
-    </section>
-    <section id="suggestions" class="suggestions" aria-live="polite"></section>
+    <header class="work-heading"><div><h1 id="intent-title"></h1><p id="intent-goal" hidden></p><span id="intent-status" class="sr-only"></span></div><div class="work-actions"><button data-tab="content" class="selected">内容</button><button data-tab="context">工作集</button><details class="space-menu"><summary aria-label="空间选项">···</summary><div class="space-options"><div id="intent-actions" class="actions" hidden><button id="edit-intent">状态</button><button id="fork-intent">分支</button><button id="suspend-intent">暂停</button><button id="archive-intent">归档</button></div><button data-tab="graph">关系</button><button data-tab="activity">过程</button><button data-tab="permissions">授权</button><button id="export">导出</button></div></details></div></header>
     <section id="notifications" class="notifications"></section>
-    <nav class="tabs" aria-label="工作区视图"><button data-tab="content" class="selected">内容</button><button data-tab="context">工作集</button><button data-tab="graph">关系</button><button data-tab="activity">过程</button><button data-tab="permissions">授权</button><button id="export">导出</button></nav>
     <section id="tasks" aria-live="polite"></section>
     <section id="content" class="surface"></section>
     <section id="context" class="panel" hidden></section>

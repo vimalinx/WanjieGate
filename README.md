@@ -1,6 +1,6 @@
 # 万界门 · WanjieGate
 
-围绕持久 Intent 组织内容、能力、工作集和视图的本地工作台。前端通过类型化 Command 与 Runtime 通信；语义模型输出 Signal，Policy 决定状态变化，Capability 执行动作。
+以胶囊条为入口，围绕持久 Intent 组织内容、能力、工作集和视图的本地工作台。输入后展开内容；历史、工作集和空间设置按需打开。前端通过类型化 Command 与 Runtime 通信；语义模型输出 Signal，Policy 决定状态变化，Capability 执行动作。
 
 [共同设计区](ideas/README.md) · [Intent Runtime Protocol v0.1](protocol/v0.1/README.md) · [本轮验收](docs/acceptance-runtime-v01.md)
 

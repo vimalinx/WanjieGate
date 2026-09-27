@@ -7,6 +7,7 @@
 | 编号 | 作者 | 主题 | 状态 | 内容 |
 |---|---|---|---|---|
 | IDEA-0001 | vimalinx | 架构、协议、Context、组合、权限 | accepted · 本地已实现，外部待接入 | [最小语义操作系统与 Intent Runtime](vimalinx/0001-intent-runtime.md) |
+| IDEA-0002 | vimalinx | 胶囊入口、渐进展开 | implemented | [前端保留胶囊入口](vimalinx/0002-capsule-interface.md) |
 | 待提交 | kanemaverick | 待提交 | awaiting-submission | [协作者入口](kanemaverick/README.md) |
 | REVIEW-0001 | Wilson | 当前实现与迁移建议 | review | [源码对照评估](reviews/0001-runtime-gap-review.md) |
 
